@@ -1,0 +1,274 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const engagements = [
+  {
+    type: 'Embedded Lead',
+    duration: '3–6 months',
+    description:
+      'I join your product team as your design lead — running crits, unblocking designers, aligning with PM and eng, and setting the design direction. Right for teams that need a steady hand, not just a consultant.',
+    best: 'Post-Series A teams scaling from 0→1 design culture',
+  },
+  {
+    type: 'Design Sprint',
+    duration: '2–4 weeks',
+    description:
+      'Focused engagement on a single high-stakes problem — a new feature, a redesign, a broken flow. I come in, diagnose fast, and deliver clear direction your team can execute.',
+    best: 'Teams stuck on a specific problem or shipping deadline',
+  },
+  {
+    type: 'Fractional Retainer',
+    duration: 'Ongoing monthly',
+    description:
+      'A set number of hours per week, every week. I stay close enough to give real feedback, catch upstream issues, and keep design quality consistent — without being on your payroll.',
+    best: 'Lean teams that need senior oversight without a full-time hire',
+  },
+];
+
+const caseStudies = [
+  {
+    label: 'Series B SaaS / B2B',
+    headline: 'Rebuilt the onboarding flow. Activation went from 34% to 61%.',
+    detail:
+      'The team had been A/B testing surface-level copy changes for months. I traced the real drop-off to a conceptual mismatch in how we introduced the product. Four weeks from diagnosis to shipped solution.',
+    tags: ['Onboarding', 'Information Architecture', 'Design Systems'],
+  },
+  {
+    label: 'Series A Marketplace',
+    headline: 'Hired and ramped a 3-person design team in 8 weeks.',
+    detail:
+      'No design process, no shared language, two designers doing their own thing. I built the hiring rubric, ran interviews, onboarded the team, and shipped a component library before the next funding round.',
+    tags: ['Team Building', 'Design Systems', 'Process'],
+  },
+  {
+    label: 'Pre-Series A Mobile App',
+    headline: 'Cut time-to-first-value from 11 steps to 4.',
+    detail:
+      'Founders were too close to the product to see where users were getting lost. I ran two rounds of usability testing, mapped the full journey, and redesigned the critical path in two sprints.',
+    tags: ['User Research', 'Mobile', 'UX Strategy'],
+  },
+];
+---
+
+<Layout>
+  <!-- NAV -->
+  <header class="fixed top-0 inset-x-0 z-50 border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md">
+    <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+      <span class="font-serif text-base tracking-tight">L Dante Guarin</span>
+      <a
+        href="https://cal.com/ldanteguarin/intro"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm font-medium bg-white text-neutral-950 px-4 py-1.5 rounded-full hover:bg-neutral-200 transition-colors"
+      >
+        Book a call
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="min-h-screen flex flex-col justify-center pt-14 px-6">
+      <div class="max-w-5xl mx-auto w-full py-24">
+        <p class="text-sm font-medium text-neutral-400 tracking-widest uppercase mb-8">
+          Fractional Design Leadership · Irvine, CA
+        </p>
+        <h1 class="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] tracking-tight text-white mb-8 max-w-4xl">
+          Your design lead is here.<br />
+          <span class="italic text-neutral-400">Just not on your payroll.</span>
+        </h1>
+        <p class="text-lg sm:text-xl text-neutral-400 max-w-xl leading-relaxed mb-12">
+          Senior design leadership for Series A–C startups — without the 18-month hiring process or the full-time overhead.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a
+            href="https://cal.com/ldanteguarin/intro"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center bg-white text-neutral-950 font-medium px-7 py-3.5 rounded-full hover:bg-neutral-200 transition-colors text-base"
+          >
+            See if we're a fit — 30 min
+          </a>
+          <a
+            href="#work"
+            class="inline-flex items-center justify-center border border-neutral-700 text-neutral-300 font-medium px-7 py-3.5 rounded-full hover:border-neutral-500 hover:text-white transition-colors text-base"
+          >
+            See past work
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNAL BAR -->
+    <section class="border-y border-neutral-800 py-8 px-6 overflow-hidden">
+      <div class="max-w-5xl mx-auto">
+        <ul class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12 text-sm text-neutral-500">
+          <li class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></span>Available for new engagements</li>
+          <li>10+ years shipping product design</li>
+          <li>Series A through post-Series C</li>
+          <li>B2B SaaS · Marketplace · Consumer</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- HOW I ENGAGE -->
+    <section id="services" class="py-24 px-6">
+      <div class="max-w-5xl mx-auto">
+        <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">How I engage</p>
+        <h2 class="font-serif text-4xl sm:text-5xl text-white mb-16 max-w-lg leading-tight">
+          Three ways to work together
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          {engagements.map((e) => (
+            <div class="border border-neutral-800 rounded-2xl p-7 flex flex-col gap-5 hover:border-neutral-600 transition-colors">
+              <div>
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-2">{e.duration}</p>
+                <h3 class="text-xl font-semibold text-white">{e.type}</h3>
+              </div>
+              <p class="text-neutral-400 text-sm leading-relaxed flex-1">{e.description}</p>
+              <div class="pt-4 border-t border-neutral-800">
+                <p class="text-xs text-neutral-500"><span class="text-neutral-400 font-medium">Best for: </span>{e.best}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div class="mt-10 text-center">
+          <p class="text-neutral-500 text-sm">Not sure which fits? <a href="https://cal.com/ldanteguarin/intro" target="_blank" rel="noopener noreferrer" class="text-neutral-300 underline underline-offset-2 hover:text-white transition-colors">Let's figure it out together.</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CASE STUDIES -->
+    <section id="work" class="py-24 px-6 border-t border-neutral-800">
+      <div class="max-w-5xl mx-auto">
+        <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">Past work</p>
+        <h2 class="font-serif text-4xl sm:text-5xl text-white mb-16 max-w-lg leading-tight">
+          Real problems. Measurable outcomes.
+        </h2>
+        <div class="flex flex-col gap-8">
+          {caseStudies.map((c) => (
+            <div class="border border-neutral-800 rounded-2xl p-8 hover:border-neutral-600 transition-colors">
+              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-4">{c.label}</p>
+              <h3 class="font-serif text-2xl sm:text-3xl text-white mb-4 leading-snug">{c.headline}</h3>
+              <p class="text-neutral-400 leading-relaxed mb-6 max-w-2xl">{c.detail}</p>
+              <div class="flex flex-wrap gap-2">
+                {c.tags.map((tag) => (
+                  <span class="text-xs font-medium text-neutral-400 bg-neutral-800 px-3 py-1 rounded-full">{tag}</span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="mt-8 text-neutral-500 text-sm">
+          Details are anonymized. Happy to go deeper on any of these on a call.
+        </p>
+      </div>
+    </section>
+
+    <!-- PHILOSOPHY -->
+    <section id="philosophy" class="py-24 px-6 border-t border-neutral-800">
+      <div class="max-w-5xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+          <div>
+            <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">How I think</p>
+            <h2 class="font-serif text-4xl sm:text-5xl text-white mb-6 leading-tight">
+              Products are systems,<br/><span class="italic text-neutral-400">not collections of screens.</span>
+            </h2>
+          </div>
+          <div class="space-y-6 text-neutral-400 leading-relaxed">
+            <p>
+              Drop a stone in a lake. The ripple doesn't stop at the edge of the frame — it moves the whole surface. Most design problems work the same way. A change to onboarding affects retention. A broken component erodes trust. A vague CTA distorts the entire user mental model.
+            </p>
+            <p>
+              I don't fix symptoms. I trace downstream effects, identify the root system, and fix the thing that's actually broken. Then I make sure the team has the language and the process to stay consistent after I'm gone.
+            </p>
+            <p>
+              Clarity before execution. Always.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="py-24 px-6 border-t border-neutral-800">
+      <div class="max-w-5xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-16">
+          <div>
+            <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">About</p>
+            <h2 class="font-serif text-4xl sm:text-5xl text-white mb-6 leading-tight">
+              L Dante Guarin
+            </h2>
+            <p class="text-neutral-400 leading-relaxed mb-4">
+              I've spent a decade leading design at startups across B2B SaaS, marketplace, and consumer — from pre-seed to post-Series C. I've built teams from scratch, shipped design systems used by dozens of engineers, and turned "we have one designer" into a design-forward culture.
+            </p>
+            <p class="text-neutral-400 leading-relaxed mb-8">
+              I work fractionally because I believe great design leadership shouldn't be locked behind a full-time hire. The right expertise at the right moment moves companies faster than a full-time generalist who ramps for six months.
+            </p>
+            <a
+              href="https://cal.com/ldanteguarin/intro"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-white font-medium text-sm hover:text-neutral-300 transition-colors"
+            >
+              Book a 30-min intro call
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="space-y-6">
+            <div class="border border-neutral-800 rounded-2xl p-6">
+              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-3">Strengths</p>
+              <ul class="space-y-2 text-neutral-300 text-sm">
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Design systems architecture</li>
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Team building + hiring rubrics</li>
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Cross-functional alignment (PM, eng, exec)</li>
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> User research + usability testing</li>
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> 0→1 product design</li>
+                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Information architecture + UX strategy</li>
+              </ul>
+            </div>
+            <div class="border border-neutral-800 rounded-2xl p-6">
+              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-3">Industries</p>
+              <div class="flex flex-wrap gap-2">
+                {['B2B SaaS', 'Marketplace', 'Consumer Mobile', 'Fintech', 'Health Tech', 'Developer Tools'].map((ind) => (
+                  <span class="text-xs text-neutral-400 bg-neutral-800 px-3 py-1 rounded-full">{ind}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 px-6 border-t border-neutral-800">
+      <div class="max-w-5xl mx-auto text-center">
+        <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl text-white mb-6 leading-tight max-w-2xl mx-auto">
+          Ready to close the design gap?
+        </h2>
+        <p class="text-neutral-400 text-lg mb-10 max-w-md mx-auto">
+          30 minutes. No pitch. Just an honest conversation about where you're stuck and whether I can help.
+        </p>
+        <a
+          href="https://cal.com/ldanteguarin/intro"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center bg-white text-neutral-950 font-medium px-8 py-4 rounded-full hover:bg-neutral-200 transition-colors text-base"
+        >
+          Book your intro call
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-neutral-800 py-8 px-6">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-600">
+      <span>© {new Date().getFullYear()} L Dante Guarin. All rights reserved.</span>
+      <div class="flex gap-6">
+        <a href="https://linkedin.com/in/ldanteguarin" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-400 transition-colors">LinkedIn</a>
+        <a href="mailto:hello@ldante.com" class="hover:text-neutral-400 transition-colors">hello@ldante.com</a>
+      </div>
+    </div>
+  </footer>
+</Layout>
