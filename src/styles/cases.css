@@ -6,9 +6,9 @@
   --cd-border: rgba(255, 255, 255, 0.08);
   --cd-border-strong: rgba(255, 255, 255, 0.15);
   --cd-text: #ffffff;
-  --cd-text-body: rgba(255, 255, 255, 0.68);
-  --cd-text-muted: rgba(255, 255, 255, 0.55);
-  --cd-text-dim: rgba(255, 255, 255, 0.45);
+  --cd-text-body: rgba(255, 255, 255, 0.76);
+  --cd-text-muted: rgba(255, 255, 255, 0.66);
+  --cd-text-dim: rgba(255, 255, 255, 0.6);
   --cd-accent: var(--color-pink);
 }
 .case-body img {
@@ -75,7 +75,7 @@
 }
 .case-body .cd-closer .cd-body {
   font-size: clamp(1rem, 1.2vw, 1.1rem);
-  color: rgba(31, 31, 31, 0.6);
+  color: var(--cd-text-muted);
   font-style: italic;
 }
 .case-body .cd-screenshots-row {
@@ -294,8 +294,8 @@
 }
 .case-body .cs-reject-badge {
   display: inline-block;
-  background: #fee2e2;
-  color: #dc2626;
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
   font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
@@ -305,8 +305,8 @@
 }
 .case-body .cs-partial-badge {
   display: inline-block;
-  background: #fef3c7;
-  color: #d97706;
+  background: rgba(251, 191, 36, 0.14);
+  color: #fcd34d;
   font-size: 11px;
   font-weight: 500;
   padding: 2px 8px;
@@ -314,8 +314,10 @@
   margin-left: 8px;
   border: 1px solid rgba(217,119,6,0.2);
 }
+/* Rejected options read as set aside through a dashed outline, not by fading
+   the text below readable contrast. */
 .case-body .cs-tradeoff-card.rejected {
-  opacity: 0.6;
+  border-style: dashed;
 }
 .case-body .cs-chosen-badge {
   display: inline-block;
@@ -451,14 +453,14 @@
   flex-shrink: 0;
 }
 .case-body .tag-gone {
-  background: #fff1f2;
-  color: #be123c;
-  border: 1px solid rgba(190,18,60,0.2);
+  background: rgba(251, 113, 133, 0.12);
+  color: #fda4af;
+  border: 1px solid rgba(251, 113, 133, 0.3);
 }
 .case-body .tag-kept {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid rgba(22,163,74,0.2);
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+  border: 1px solid rgba(74, 222, 128, 0.3);
 }
 .case-body .finding-block {
   border: 1px solid var(--cd-border);
