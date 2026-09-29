@@ -278,15 +278,18 @@ html:not(.js) [data-reveal] {
     z-index: 30;
     pointer-events: none;
   }
-  /* Signposts: solid pink so they read as navigation, never as content. */
-  .signpost {
+  /* Signposts stack in the bottom-right corner, right-aligned, opposite the
+     zoom buttons. Solid pink so they read as navigation, never content. */
+  #signpost-dock {
     position: absolute;
-    left: 0;
-    top: 0;
-    /* Centred on its left/top point. With the origin at that point, the
-       hover and grow scales happen around the pill's own centre. */
-    transform: translate(-50%, -50%);
-    transform-origin: 0 0;
+    right: 24px;
+    bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .signpost {
     display: inline-flex;
     align-items: center;
     gap: 12px;
@@ -299,6 +302,8 @@ html:not(.js) [data-reveal] {
     white-space: nowrap;
     pointer-events: auto;
     cursor: pointer;
+    /* Grow and hover-scale from the pill's right edge, where the stack is anchored. */
+    transform-origin: 100% 50%;
     transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
   }
   .signpost[hidden] {
