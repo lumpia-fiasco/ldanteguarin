@@ -199,12 +199,6 @@ const jsonLd = {
 
       // ── Zoom-out / zoom-in navigation ──
       let anim = null;
-      // Damped wobble over the last stretch of the move: 0 at both ends, a
-      // few decaying swings between, so every landing settles exactly.
-      const wobble = (u) => {
-        const t = (u - 0.62) / 0.38;
-        return t <= 0 ? 0 : Math.sin(Math.PI * 3 * t) * (1 - t) * (1 - t);
-      };
       const easeInOut = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
 
       function cancelAnim() {
@@ -213,6 +207,7 @@ const jsonLd = {
         const last = anim.last;
         anim = null;
         canvasMain.style.transform = '';
+        canvasMain.style.willChange = '';
         if (last) commit(last);
       }
 
@@ -238,21 +233,23 @@ const jsonLd = {
         // — rotating the grid would pivot about the whole canvas.
         const dist = Math.hypot(g1.x - c0.x, g1.y - c0.y);
         const dip = 0.12 + 0.1 * Math.min(1, dist / 5000);
-        const lean = (g1.x >= c0.x ? 1 : -1) * (2.2 + Math.random() * 0.6);
+        const lean = (g1.x >= c0.x ? 1 : -1) * 2.4;
         const duration = 1150;
         const t0 = performance.now();
         anim = { raf: 0, last: null };
+        canvasMain.style.willChange = 'transform';
         const frame = (now) => {
           const u = Math.min(1, (now - t0) / duration);
           const e = easeInOut(u);
           const b = Math.sin(Math.PI * u);
-          const w = wobble(u);
-          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b) * (1 + 0.01 * w);
+          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b);
           const c = { x: c0.x + (g1.x - c0.x) * e, y: c0.y + (g1.y - c0.y) * e };
           const st = stateFor(c, s);
-          // Arrival tilt: 0 until the second half, swings in, settles to 0.
-          const a = Math.min(1, Math.max(0, (u - 0.4) / 0.6));
-          const tilt = lean * Math.sin(Math.PI * a) * (1 - 0.35 * a) - lean * 0.25 * w;
+          // Arrival tilt: one smooth swing in the second half — eases in from
+          // 0 and settles back to 0 with no wobble (sin² has zero slope at
+          // both ends).
+          const a = Math.min(1, Math.max(0, (u - 0.35) / 0.65));
+          const tilt = lean * Math.sin(Math.PI * a) ** 2;
           canvasGrid.style.transition = 'none';
           canvasGrid.style.transform = `scale(${st.s}) translate(${st.tx}px, ${st.ty}px)`;
           canvasMain.style.transform = u < 1 ? `rotate(${tilt}deg)` : '';
@@ -261,6 +258,7 @@ const jsonLd = {
             anim.raf = requestAnimationFrame(frame);
           } else {
             anim = null;
+            canvasMain.style.willChange = '';
             commit(end);
           }
         };
