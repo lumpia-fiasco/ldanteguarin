@@ -2,26 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import cases from '../data/cases.json';
 
-// Same images the live ldanteguarin.com serves from Framer's CDN.
+// The avatar is the same image the live ldanteguarin.com serves from Framer's CDN.
 const AVATAR = 'https://framerusercontent.com/images/vALSaYwJFYN4P5QpqMFZc4vMlM.png?scale-down-to=512&width=2799&height=2799';
-const APP_SHOT = 'https://framerusercontent.com/images/iqS0ZKGvD0peT2Kb1Ed4AEjqwiA.png?scale-down-to=2048&width=4409&height=2184';
 
 const BOOK_URL = 'https://tidycal.com/ldante';
-
-// 'invert' turns a transparent-background wordmark into a clean white
-// silhouette on the charcoal background; 'flat' just desaturates in place
-// (Farm Bureau's filled badge would lose its own contrast otherwise).
-const companies = [
-  { name: 'T-Mobile', logo: '/logos/tmobile.png', mono: 'invert' },
-  { name: 'Adobe', logo: '/logos/adobe.png', mono: 'invert' },
-  { name: 'Marketo', logo: '/logos/marketo.png', mono: 'invert' },
-  { name: 'Teamshares', logo: '/logos/teamshares.png', mono: 'invert' },
-  { name: 'Greenpeace', logo: '/logos/greenpeace.png', mono: 'invert' },
-  { name: 'Meroxa', logo: '/logos/meroxa.png', mono: 'invert' },
-  { name: 'CMA', logo: '/logos/cma.png', mono: 'invert' },
-  { name: 'Upwork', logo: '/logos/upwork.png', mono: 'invert' },
-  { name: 'Tennessee Farm Bureau', logo: '/logos/farmbureau-tn.png', mono: 'flat' },
-];
 
 // Every number is sourced from the verified case studies on ldante.com.
 const PORTFOLIO_URL = 'https://www.ldante.com';
@@ -158,18 +142,17 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
   <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
   <main id="main" class="pt-[68px]">
     <div id="canvas-grid">
-    <div class="canvas-row">
-    <div class="canvas-col">
       <!-- HERO -->
-      <section id="hero" data-tile data-label="Intro" class="tile">
+      <section id="hero" style="--c:1;--r:1" data-tile data-label="Intro" class="tile">
       <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20">
-        <p class="text-base mb-8">
+        <div>
+        <p class="text-base mb-8 slide:mb-6">
           <span class="font-semibold text-white">L Dante Guarin —</span> Fractional Design Lead · Product Design · Design Systems
         </p>
         <h1 class="font-display font-normal text-[clamp(2.75rem,7vw,5.25rem)] leading-[0.98] tracking-[-0.02em] text-white max-w-4xl mb-8">
-          Fractional design leadership that gets the work moving.
+          I get in where I fit in.
         </h1>
-        <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-10">
+        <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-10 slide:mb-8">
           I help growing product teams make better decisions, build better products, and establish the design systems and practices they need to scale. I lead where you need leadership, stay hands-on where it matters, and work directly with Product, Engineering, and company leadership.
         </p>
         <div class="flex flex-col sm:flex-row gap-3">
@@ -183,34 +166,19 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
             See services
           </a>
         </div>
-        <img src={APP_SHOT} alt="Four screens of a mobile app designed by L Dante Guarin" width="912" height="452" class="w-full h-auto mt-16" loading="eager" />
-        <div id="experience" class="mt-16 pt-16 border-t border-white/10">
+        </div>
+        <div id="experience" class="mt-16 pt-16 border-t border-white/10 slide:mt-12 slide:pt-10">
           <p class={eyebrow}>20+ years of leading design across web, branding and product</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>Experience across startups, enterprise, and everything in between.</h2>
-          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+          <h2 class={`${h2} max-w-3xl mb-6 slide:text-[30px] slide:mb-3`}>Experience across startups, enterprise, and everything in between.</h2>
+          <p class="text-lg leading-relaxed max-w-3xl mb-12 slide:text-base slide:mb-0">
             I've worked inside large organizations, helped build early-stage products, and led design through the muddy parts where teams, products, and processes have to catch up with growth.
           </p>
-          <div class="overflow-hidden">
-            <div class="flex items-center gap-14 marquee-track w-max">
-              {[...companies, ...companies].map((c, i) => (
-                <img
-                  src={c.logo}
-                  alt={c.name}
-                  aria-hidden={i >= companies.length ? 'true' : undefined}
-                  class:list={[
-                    'h-10 w-auto object-contain shrink-0 opacity-60 hover:opacity-100 transition duration-200',
-                    c.mono === 'invert' ? 'brightness-0 invert' : 'grayscale hover:grayscale-0',
-                  ]}
-                />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
       </section>
 
       <!-- TRACK RECORD -->
-      <section id="track-record" data-tile data-label="Track record" class={`tile ${section}`} data-reveal>
+      <section id="track-record" style="--c:2;--r:1" data-tile data-label="Track record" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Track record</p>
           <h2 class={`${h2} mb-12`}>Real numbers, not vibes.</h2>
@@ -231,16 +199,16 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- CASE STUDIES -->
-      <section id="case-studies" data-tile data-label="Case studies" class={`tile ${section}`} data-reveal>
+      <section id="case-studies" style="--c:3;--r:1" data-tile data-label="Case studies" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Case studies</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>The work behind the numbers.</h2>
           <p class="text-lg leading-relaxed max-w-3xl mb-12">
             Five write-ups, from the brief to what shipped. Pick one to read it here.
           </p>
-          <ul class="grid sm:grid-cols-2 gap-4">
+          <ul class="grid sm:grid-cols-2 slide:grid-cols-5 gap-4">
             {caseStudies.map((c, i) => (
-              <li class:list={[i === caseStudies.length - 1 && caseStudies.length % 2 === 1 && 'sm:col-span-2']}>
+              <li class:list={[i === caseStudies.length - 1 && caseStudies.length % 2 === 1 && 'sm:col-span-2 slide:col-span-1']}>
                 <a
                   href={`#${c.id}`}
                   class="group flex h-full flex-col gap-6 rounded-2xl border border-white/10 bg-card p-6 transition-colors hover:border-pink"
@@ -248,7 +216,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
                   <img src={c.logo} alt="" class="h-9 w-auto self-start object-contain brightness-0 invert opacity-80 transition-opacity group-hover:opacity-100" />
                   <span>
                     <span class="block text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-2">{c.company}</span>
-                    <span class="block font-display text-xl leading-snug tracking-[-0.01em] text-white">{c.headline}</span>
+                    <span class="block font-display text-xl slide:text-lg leading-snug tracking-[-0.01em] text-white">{c.headline}</span>
                   </span>
                   <span class="mt-auto text-sm font-semibold text-sky">Read the case →</span>
                 </a>
@@ -257,25 +225,23 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
           </ul>
         </div>
       </section>
-    </div>
 
-    <div class="canvas-col">
       <!-- WHAT I DO -->
-      <section id="what-i-do" data-tile data-label="What I do" class={`tile ${section}`} data-reveal>
+      <section id="what-i-do" style="--c:3;--r:2" data-tile data-label="What I do" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>What I do</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>You don't always need a full-time Head of Design.</h2>
           <p class="text-lg leading-relaxed max-w-3xl mb-12">
             Sometimes you need someone senior enough to lead the function, experienced enough to see what's wrong, and hands-on enough to actually fix it. That's where I come in.
           </p>
-          <div class="grid md:grid-cols-2 gap-4">
+          <div class="grid md:grid-cols-2 slide:grid-cols-4 gap-4">
             {offer.map((o) => (
               <div class="rounded-2xl border border-white/10 bg-card p-6">
                 <div class="w-10 h-10 rounded-lg bg-pink/15 text-pink flex items-center justify-center mb-6">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={o.icon} />
                 </div>
                 <h3 class="font-display font-normal text-[22px] tracking-[-0.01em] text-white mb-3">{o.title}</h3>
-                <p class="text-lg leading-relaxed">{o.body}</p>
+                <p class="text-lg slide:text-base leading-relaxed">{o.body}</p>
               </div>
             ))}
           </div>
@@ -283,11 +249,11 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- WHO I HELP -->
-      <section id="who-i-help" data-tile data-label="Who I help" class={`tile ${section}`} data-reveal>
+      <section id="who-i-help" style="--c:2;--r:2" data-tile data-label="Who I help" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Who I help</p>
           <h2 class={`${h2} max-w-3xl mb-12`}>Maybe you don't need more designers. You might need more design leadership.</h2>
-          <div class="grid md:grid-cols-2 gap-x-12">
+          <div class="grid md:grid-cols-2 slide:grid-cols-3 gap-x-12">
             {painPoints.map((p) => (
               <div class="border-t border-white/10 py-6">
                 <h3 class="font-display font-normal text-xl tracking-[-0.01em] text-white mb-2">{p.title}</h3>
@@ -297,11 +263,9 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
           </div>
         </div>
       </section>
-    </div>
 
-    <div class="canvas-col">
       <!-- HOW I WORK -->
-      <section id="how-i-work" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
+      <section id="how-i-work" style="--c:1;--r:2" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>How I work</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>Part-time leadership. Full-time commitment to the work.</h2>
@@ -326,7 +290,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
               </button>
             ))}
           </div>
-          <div class="rounded-2xl border border-white/10 bg-card mb-20">
+          <div class="rounded-2xl border border-white/10 bg-card">
             {ways.map((w, i) => (
               <div
                 role="tabpanel"
@@ -342,9 +306,14 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
             ))}
           </div>
 
-          <h3 class="font-display font-normal text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.02em] text-white mb-10">
-            The process is a "we" thing.
-          </h3>
+        </div>
+      </section>
+
+      <!-- THE PROCESS -->
+      <section id="the-process" style="--c:1;--r:3" data-tile data-label="The process" class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>The process</p>
+          <h2 class={`${h2} max-w-3xl mb-12`}>The process is a "we" thing.</h2>
           <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-8">
             {process.map((step) => (
               <li>
@@ -358,7 +327,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- DESIGN SYSTEMS & AI -->
-      <section id="design-systems" data-tile data-label="Design systems" class={`tile ${section}`} data-reveal>
+      <section id="design-systems" style="--c:2;--r:3" data-tile data-label="Design systems" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Design systems &amp; AI</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>Design systems aren't just component libraries.</h2>
@@ -381,7 +350,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- CTA -->
-      <section id="contact" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
+      <section id="contact" style="--c:3;--r:3" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <div class="rounded-3xl border border-white/10 bg-card px-6 py-16 md:py-20 text-center">
             <p class={eyebrow}>Let's work together</p>
@@ -405,19 +374,20 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
         </footer>
         </div>
       </section>
-    </div>
-    </div>
 
     <!-- CASE STUDIES, one panel each. A branch off the Case studies panel:
          on the canvas they sit in a row beneath everything else; on phones
          they come after the main page. -->
-    <div class="canvas-row canvas-row--cases">
-      {caseStudies.map((c) => (
-        <section id={c.id} data-tile data-branch="cases" data-label={c.label} class={`tile case-tile ${section}`}>
-          <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-            <p class={eyebrow}>Case study · {c.company}</p>
-            <h2 class={`${h2} max-w-3xl mb-6`}>{c.headline}</h2>
-            <p class="text-lg leading-relaxed max-w-3xl mb-10" set:html={c.intro} />
+      {caseStudies.map((c, i) => (
+        <section id={c.id} style={`--c:${i + 4};--r:1`} data-tile data-branch="cases" data-label={c.label} class={`tile case-tile ${section}`}>
+          <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 slide:grid slide:grid-cols-[440px_1fr] slide:gap-x-14 slide:h-full">
+            <div class="slide:flex slide:flex-col slide:justify-center">
+              <p class={eyebrow}>Case study · {c.company}</p>
+              <h2 class={`${h2} max-w-3xl mb-6 slide:text-[34px] slide:leading-[1.08]`}>{c.headline}</h2>
+              <p class="text-lg leading-relaxed max-w-3xl mb-10 slide:text-base slide:mb-8" set:html={c.intro} />
+              <a href="#case-studies" class="hidden slide:inline text-sky underline underline-offset-4 hover:text-white transition-colors">← All case studies</a>
+            </div>
+            <div class="case-scroll panzoom-exclude">
             <div class="case-gate-wrap">
               <div class="case-locked-content" data-case-locked>
               {c.metrics.length > 0 && (
@@ -453,10 +423,10 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
                 </form>
               </div>
             </div>
+            </div>
           </div>
         </section>
       ))}
-    </div>
     </div>
   </main>
   </div>

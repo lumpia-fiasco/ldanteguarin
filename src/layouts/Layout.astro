@@ -154,32 +154,34 @@ const jsonLd = {
       // Where a panel lands: at full size (only shrunk if it's wider than
       // the window), centred if it fits, otherwise with its top edge just
       // below the header so it reads from the start — scroll to see the rest.
+      // Where a slide lands: centred and scaled so the whole slide fills the
+      // window (a little breathing room at the edges).
       function frameFor(t) {
         const v = vpSize();
-        const m = 32;
-        const s = Math.min(1, (v.w - 2 * m) / t.offsetWidth);
-        const x = t.offsetLeft + t.offsetWidth / 2;
-        const y = t.offsetHeight * s <= v.h - 2 * m
-          ? t.offsetTop + t.offsetHeight / 2
-          : t.offsetTop + (v.h / 2 - m) / s;
-        return { s, c: { x, y } };
-      }
-      function overview(tiles = tileOrder) {
-        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        tiles.forEach((t) => {
-          minX = Math.min(minX, t.offsetLeft);
-          minY = Math.min(minY, t.offsetTop);
-          maxX = Math.max(maxX, t.offsetLeft + t.offsetWidth);
-          maxY = Math.max(maxY, t.offsetTop + t.offsetHeight);
-        });
-        const v = vpSize();
-        return {
-          s: Math.min((v.w - 128) / (maxX - minX), (v.h - 128) / (maxY - minY)),
-          cx: (minX + maxX) / 2,
-          cy: (minY + maxY) / 2,
-        };
+        const m = 20;
+        const s = Math.min(1.35, Math.max(0.3, Math.min((v.w - 2 * m) / t.offsetWidth, (v.h - 2 * m) / t.offsetHeight)));
+        return { s, c: { x: t.offsetLeft + t.offsetWidth / 2, y: t.offsetTop + t.offsetHeight / 2 } };
       }
 
+      // Slides are a fixed size; if a slide's content runs taller than the
+      // slide, shrink that content to fit instead of letting it spill.
+      function fitSlides() {
+        tileOrder.forEach((t) => {
+          const inner = t.querySelector(':scope > .tile-inner');
+          if (!inner || t.classList.contains('case-tile')) return;
+          inner.style.zoom = '';
+          const cs = getComputedStyle(t);
+          const avail = t.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+          const need = inner.scrollHeight;
+          if (need > avail) inner.style.zoom = String(Math.max(0.6, avail / need));
+        });
+      }
+      function unfitSlides() {
+        tileOrder.forEach((t) => {
+          const inner = t.querySelector(':scope > .tile-inner');
+          if (inner) inner.style.zoom = '';
+        });
+      }
       // Force the DOM transform to match Panzoom's logical state (Panzoom
       // writes inside requestAnimationFrame and no-ops on unchanged values).
       function settleInstantly() {
@@ -216,7 +218,6 @@ const jsonLd = {
 
       function animateTo(tile, instant) {
         cancelAnim();
-        const currentIndexBefore = currentIndex;
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
@@ -230,21 +231,15 @@ const jsonLd = {
         const c0 = centerOf(s0, p0.x, p0.y);
         if (Math.hypot(c0.x - g1.x, c0.y - g1.y) < 2 && Math.abs(s0 - s1) < 0.01) return;
 
-        // Scale dips *halfway* toward the whole-field overview at the
-        // midpoint (a hop, not a full pull-back), drifting halfway toward the
-        // field's centre with it. The tilt goes on #main, whose centre is the
-        // viewport's — rotating the grid would pivot about the whole canvas.
-        // Jumps within the main site pull back relative to the main site
-        // only, so the tall case-study row doesn't deepen every hop.
-        const from = tileOrder[currentIndexBefore];
-        const involvesCase = tile.dataset.branch || (from && from.dataset.branch);
-        const ov = overview(involvesCase ? tileOrder : tileOrder.filter((t) => !t.dataset.branch));
-        const sOut = Math.min(ov.s, s0, s1);
-        const dip = ((Math.log(s0) + Math.log(s1)) / 2 - Math.log(sOut)) * 0.5;
-        const dx = (ov.cx - (c0.x + g1.x) / 2) * 0.5;
-        const dy = (ov.cy - (c0.y + g1.y) / 2) * 0.5;
-        const lean = (g1.x >= c0.x ? 1 : -1) * (0.9 + Math.random() * 0.4);
-        const duration = 1300;
+        // A gentle glide rather than a hop: the view pulls back only slightly
+        // (a little more for longer trips) and heads straight for the target.
+        // As the new slide comes in it swings in at an angle and straightens
+        // as it lands. The tilt goes on #main, whose centre is the viewport's
+        // — rotating the grid would pivot about the whole canvas.
+        const dist = Math.hypot(g1.x - c0.x, g1.y - c0.y);
+        const dip = 0.12 + 0.1 * Math.min(1, dist / 5000);
+        const lean = (g1.x >= c0.x ? 1 : -1) * (2.2 + Math.random() * 0.6);
+        const duration = 1150;
         const t0 = performance.now();
         anim = { raf: 0, last: null };
         const frame = (now) => {
@@ -252,10 +247,12 @@ const jsonLd = {
           const e = easeInOut(u);
           const b = Math.sin(Math.PI * u);
           const w = wobble(u);
-          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b) * (1 + 0.015 * w);
-          const c = { x: c0.x + (g1.x - c0.x) * e + dx * b, y: c0.y + (g1.y - c0.y) * e + dy * b };
+          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b) * (1 + 0.01 * w);
+          const c = { x: c0.x + (g1.x - c0.x) * e, y: c0.y + (g1.y - c0.y) * e };
           const st = stateFor(c, s);
-          const tilt = lean * Math.sin(Math.PI * Math.min(1, u / 0.7)) - lean * 0.35 * w;
+          // Arrival tilt: 0 until the second half, swings in, settles to 0.
+          const a = Math.min(1, Math.max(0, (u - 0.4) / 0.6));
+          const tilt = lean * Math.sin(Math.PI * a) * (1 - 0.35 * a) - lean * 0.25 * w;
           canvasGrid.style.transition = 'none';
           canvasGrid.style.transform = `scale(${st.s}) translate(${st.tx}px, ${st.ty}px)`;
           canvasMain.style.transform = u < 1 ? `rotate(${tilt}deg)` : '';
@@ -494,6 +491,7 @@ const jsonLd = {
         buildOverlay();
         document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
           if (canvasOn()) {
+            fitSlides();
             layoutConnectors();
             animateTo(tileOrder[currentIndex] || heroTile, true);
           }
@@ -509,6 +507,7 @@ const jsonLd = {
         canvasGrid.style.transition = '';
         canvasMain.style.transform = '';
         canvasMain.style.cursor = '';
+        unfitSlides();
       }
       if (canvasViewport && canvasGrid) {
         if (desktop.matches) enableCanvas();
@@ -520,6 +519,15 @@ const jsonLd = {
           'wheel',
           (e) => {
             if (!canvasOn()) return;
+            // Over a case write-up that can still scroll this way, let it
+            // scroll instead of panning the canvas.
+            const scroller = !e.ctrlKey && e.target.closest && e.target.closest('.case-scroll');
+            if (scroller && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+              const canScroll = e.deltaY > 0
+                ? scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 1
+                : scroller.scrollTop > 0;
+              if (canScroll) return;
+            }
             e.preventDefault();
             cancelAnim();
             if (e.ctrlKey) {
@@ -603,6 +611,7 @@ const jsonLd = {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
             if (!canvasOn()) return;
+            fitSlides();
             layoutConnectors();
             animateTo(tileOrder[currentIndex], true);
           }, 150);

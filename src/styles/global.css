@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "./cases.css";
 
+/* Desktop-only layout for the canvas slides (same breakpoint as the canvas). */
+@custom-variant slide (@media (min-width: 901px));
+
 @theme {
   /* Same faces as the live ldanteguarin.com: Cal Sans titles, Golos Text body. */
   --font-sans: 'Golos Text', system-ui, sans-serif;
@@ -40,18 +43,6 @@ html {
 :focus-visible {
   outline: 3px solid var(--color-pink);
   outline-offset: 2px;
-}
-
-/* Marquee for the logo strip — paused for reduced motion via the block above */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.marquee-track {
-  animation: marquee 32s linear infinite;
-}
-.marquee-track:hover {
-  animation-play-state: paused;
 }
 
 /* Scroll-reveal — JS toggles [data-revealed]; no-JS/reduced-motion always shows content */
@@ -122,10 +113,6 @@ html:not(.js) [data-reveal] {
 }
 /* Column wrappers only exist for the canvas; on the scrolling page they
    dissolve so the sections flow exactly as before. */
-.canvas-row,
-.canvas-col {
-  display: contents;
-}
 #zoom-controls {
   display: none;
 }
@@ -155,53 +142,54 @@ html:not(.js) [data-reveal] {
     height: 100%;
   }
   #canvas-grid {
-    /* Three independent columns: panels stack down each column and the
-       columns sit side by side, with the same gap everywhere. Invisible
-       panels only look evenly spaced if each is exactly as tall as its
-       content, which a row-based grid can't do once one panel is much
-       taller than its neighbours. */
-    --canvas-gap: 240px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    /* Every panel is a 16:9 slide (1440x810) on a grid with equal gaps.
+       Main site: a 3x3 grid read in a snake (left-to-right, then back,
+       then forward again) so each slide sits next to the one before it.
+       The five case studies extend in a row to the right of the Case
+       studies slide. Positions come from --c / --r on each section. */
+    --canvas-gap: 200px;
+    --slide-w: 1440px;
+    --slide-h: 810px;
+    display: grid;
+    grid-template-columns: repeat(8, var(--slide-w));
+    grid-template-rows: repeat(3, var(--slide-h));
     gap: var(--canvas-gap);
     position: relative; /* the offsetParent, so tile offsets are canvas-local */
     width: max-content;
   }
-  /* Rows of columns: the main site on top, the case studies in a row of
-     their own beneath it. Neither rows nor columns may be positioned, so
-     tile offsets stay relative to #canvas-grid. */
-  .canvas-row {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--canvas-gap);
-  }
-  .canvas-row--cases > .tile {
-    flex: 0 0 1000px;
-    width: 1000px;
-    min-width: 0;
-  }
-  .canvas-col {
-    display: flex;
-    flex-direction: column;
-    gap: var(--canvas-gap);
-    width: 1000px;
-  }
   #canvas-grid .tile {
+    grid-column: var(--c);
+    grid-row: var(--r);
     position: relative;
     z-index: 1;
-    /* Real containers (fixed width, padding, equal gaps) that read as
-       open space: no border, no fill. */
+    width: var(--slide-w);
+    height: var(--slide-h);
     border: 0;
     background: transparent;
-    padding: 56px;
+    padding: 64px 72px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  /* Case slides: the write-up scrolls inside the slide. */
+  #canvas-grid .case-scroll {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 12px;
+    cursor: auto;
   }
   /* Panels replace the page's full-width sections: drop their page-level
      rules and paddings and the inner centred container. */
   #canvas-grid .tile > .tile-inner {
     max-width: none;
+    width: 100%;
     margin: 0;
     padding: 0;
+  }
+  #canvas-grid .case-tile > .tile-inner {
+    height: 100%;
   }
   [data-reveal] {
     opacity: 1;
@@ -289,43 +277,64 @@ html:not(.js) [data-reveal] {
     align-items: flex-end;
     gap: 12px;
   }
+  /* Brushed silver, like the transport buttons on an '80s stereo: fine
+     horizontal grain over a metal gradient, a dark rim, a bevel, and a
+     press-in on click. */
   .signpost {
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 20px 8px 8px;
+    padding: 7px 20px 7px 7px;
     border-radius: 999px;
-    background: var(--color-pink);
-    color: var(--color-charcoal);
-    box-shadow: 0 0 0 6px rgba(28, 28, 28, 0.55), 0 12px 32px rgba(0, 0, 0, 0.55);
+    color: #1c1c1c;
+    background:
+      repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0 1px, rgba(0, 0, 0, 0.05) 1px 2px, rgba(255, 255, 255, 0) 2px 3px),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0) 0 31px, rgba(255, 255, 255, 0.08) 31px 33px),
+      linear-gradient(180deg, #f4f4f4 0%, #d6d6d6 38%, #b9b9b9 52%, #cfcfcf 78%, #e9e9e9 100%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25),
+      0 0 0 1px #5d5d5d,
+      0 0 0 5px rgba(20, 20, 20, 0.6),
+      0 10px 26px rgba(0, 0, 0, 0.6);
     text-align: left;
     white-space: nowrap;
     pointer-events: auto;
     cursor: pointer;
     /* Grow and hover-scale from the pill's right edge, where the stack is anchored. */
     transform-origin: 100% 50%;
-    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, translate 0.08s ease;
   }
   .signpost[hidden] {
     display: none;
   }
   .signpost:hover,
   .signpost:focus-visible {
-    scale: 1.06;
-    background: #f7b8c8;
+    scale: 1.04;
+    filter: brightness(1.06);
+  }
+  .signpost:active {
+    translate: 0 1px;
+    box-shadow:
+      inset 0 2px 4px rgba(0, 0, 0, 0.3),
+      0 0 0 1px #5d5d5d,
+      0 0 0 5px rgba(20, 20, 20, 0.6),
+      0 4px 10px rgba(0, 0, 0, 0.5);
   }
   .signpost:focus-visible {
-    outline: 3px solid #fff;
-    outline-offset: 3px;
+    outline: 3px solid var(--color-pink);
+    outline-offset: 4px;
   }
+  /* A dark recessed round button face with a pink arrow. */
   .signpost-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 999px;
-    background: var(--color-charcoal);
+    border-radius: 50%;
+    background: linear-gradient(180deg, #2b2b2b, #151515);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.7);
     color: var(--color-pink);
   }
   .signpost-icon svg {
@@ -342,16 +351,20 @@ html:not(.js) [data-reveal] {
     flex-direction: column;
     line-height: 1.15;
   }
+  /* Engraved caps, like the labels stamped on a faceplate. */
   .signpost-kicker {
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    opacity: 0.75;
+    color: #4a4a4a;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
   }
   .signpost-label {
     font-family: var(--font-display);
     font-size: 17px;
+    color: #161616;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
   }
   @media (prefers-reduced-motion: reduce) {
     .connector.is-hot {
