@@ -213,6 +213,7 @@ const jsonLd = {
 
       function animateTo(tile, instant) {
         cancelAnim();
+        stopZoom();
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
@@ -265,14 +266,65 @@ const jsonLd = {
         anim.raf = requestAnimationFrame(frame);
       }
 
-      function zoomAtCenter(factor) {
+      // ── Smooth zoom ──
+      // Pinch, Ctrl/Cmd+wheel, the +/- buttons and keys all set a target
+      // scale; a slightly under-damped spring carries the view there, so
+      // zooming glides and lands with a small bounce instead
+      // of snapping. The point under the cursor (or the window centre) stays
+      // put while it zooms.
+      const ZOOM_MIN = 0.1;
+      const ZOOM_MAX = 2.5;
+      let zoomSpring = null;
+
+      function stopZoom() {
+        if (!zoomSpring) return;
+        cancelAnimationFrame(zoomSpring.raf);
+        zoomSpring = null;
+      }
+      function zoomBy(factor, clientX, clientY) {
         cancelAnim();
+        const from = zoomSpring ? zoomSpring.target : panzoom.getScale();
+        const target = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, from * factor));
+        const focal = { clientX, clientY };
+        if (reduceMotion) {
+          panzoom.zoomToPoint(target, focal, { animate: false });
+          settleInstantly();
+          return;
+        }
+        if (zoomSpring) {
+          zoomSpring.target = target;
+          zoomSpring.focal = focal;
+          return;
+        }
+        zoomSpring = { target, focal, v: 0, s: panzoom.getScale(), last: performance.now(), raf: 0 };
+        const step = (now) => {
+          const z = zoomSpring;
+          if (!z) return;
+          const dt = Math.min(0.032, (now - z.last) / 1000);
+          z.last = now;
+          // Spring in log-scale so zooming in and out feel the same.
+          const x = Math.log(z.s);
+          const goal = Math.log(z.target);
+          const stiffness = 170;
+          const damping = 14; // ratio ≈ 0.54: one visible overshoot, then settles
+          z.v += (stiffness * (goal - x) - damping * z.v) * dt;
+          const next = Math.exp(x + z.v * dt);
+          z.s = next;
+          panzoom.zoomToPoint(next, z.focal, { animate: false });
+          settleInstantly();
+          if (Math.abs(goal - Math.log(next)) < 0.0005 && Math.abs(z.v) < 0.001) {
+            panzoom.zoomToPoint(z.target, z.focal, { animate: false });
+            settleInstantly();
+            zoomSpring = null;
+            return;
+          }
+          z.raf = requestAnimationFrame(step);
+        };
+        zoomSpring.raf = requestAnimationFrame(step);
+      }
+      function zoomAtCenter(factor) {
         const r = canvasViewport.getBoundingClientRect();
-        panzoom.zoomToPoint(
-          panzoom.getScale() * factor,
-          { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 },
-          { animate: !reduceMotion }
-        );
+        zoomBy(factor, r.left + r.width / 2, r.top + r.height / 2);
       }
 
       // ── Connectors + edge signposts ──
@@ -498,6 +550,7 @@ const jsonLd = {
       function disableCanvas() {
         if (!canvasOn()) return;
         cancelAnim();
+        stopZoom();
         destroyOverlay();
         panzoom.destroy();
         panzoom = null;
@@ -527,11 +580,14 @@ const jsonLd = {
               if (canScroll) return;
             }
             e.preventDefault();
-            cancelAnim();
             if (e.ctrlKey) {
-              panzoom.zoomWithWheel(e, { animate: false });
+              // Trackpad pinches send small deltas; mouse wheels send big
+              // notches — clamp so one notch is a comfortable step.
+              const d = Math.max(-40, Math.min(40, e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY));
+              zoomBy(Math.exp(-d * 0.008), e.clientX, e.clientY);
               return;
             }
+            cancelAnim();
             const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vpSize().h : 1;
             const scale = panzoom.getScale();
             panzoom.pan((-e.deltaX * unit) / scale, (-e.deltaY * unit) / scale, { relative: true, animate: false });

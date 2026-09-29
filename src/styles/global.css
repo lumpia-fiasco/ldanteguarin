@@ -67,23 +67,6 @@ html:not(.js) [data-reveal] {
   transform: none;
 }
 
-/* "Find your fit" tabs — the selected tab is a solid pink pill. */
-[data-fit-tab] {
-  color: rgba(255, 255, 255, 0.8);
-  border-color: rgba(255, 255, 255, 0.18);
-  border-width: 1px;
-  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
-}
-[data-fit-tab]:hover {
-  color: #fff;
-  border-color: var(--color-pink);
-}
-[data-fit-tab][aria-selected='true'] {
-  background-color: var(--color-pink);
-  color: var(--color-charcoal);
-  border-color: var(--color-pink);
-}
-
 /* ── Hamburger menu ─────────────────────────────────────────────────── */
 #menu-panel {
   transform-origin: top right;

@@ -79,14 +79,6 @@ const ways = [
   { title: 'Interim leadership', body: "Keeping the team moving when you're between design leaders or building your team." },
 ];
 
-const fitOptions = [
-  { label: 'No real direction' },
-  { label: 'Stuck on strategy' },
-  { label: 'No systems in place' },
-  { label: "Team's underwater" },
-  { label: 'Between design leaders' },
-];
-
 const process = [
   { n: '01', title: 'Understand', body: 'I start with the product, the business, the customers, and the people doing the work.' },
   { n: '02', title: 'Align', body: "We identify what's actually worth solving and get Product, Engineering, and Design working from the same understanding." },
@@ -99,7 +91,6 @@ const navLinks = [
   { href: '#what-i-do', label: 'What I do' },
   { href: '#how-i-work', label: 'How I work' },
   { href: '#who-i-help', label: 'Who I help' },
-  { href: '#design-systems', label: 'Design systems' },
 ];
 
 const eyebrow = 'text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-4';
@@ -182,7 +173,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Track record</p>
           <h2 class={`${h2} mb-12`}>Real numbers, not vibes.</h2>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-2 gap-4 max-w-4xl">
             {stats.map((s) => (
               <div class="rounded-2xl border border-white/10 bg-card p-6">
                 <p class="font-display text-4xl md:text-5xl text-white tracking-[-0.02em] mb-3">{s.value}</p>
@@ -273,39 +264,14 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
             I embed with your team rather than operating from the sidelines. I work directly with founders, Product, Engineering, and Design to understand what's getting in the way, establish priorities, and move the work forward.
           </p>
 
-          <p class="text-white font-semibold mb-4">Not sure which fits? Tell me what's in the way.</p>
-          <div class="flex flex-wrap gap-2.5 mb-6" role="tablist" aria-label="What's getting in the way">
-            {fitOptions.map((opt, i) => (
-              <button
-                type="button"
-                role="tab"
-                id={`fit-tab-${i}`}
-                aria-controls={`fit-panel-${i}`}
-                aria-selected={i === 0 ? 'true' : 'false'}
-                tabindex={i === 0 ? 0 : -1}
-                data-fit-tab
-                class="text-sm font-medium border rounded-full px-4 py-2"
-              >
-                {opt.label}
-              </button>
+          <ul class="grid sm:grid-cols-2 slide:grid-cols-5 gap-4">
+            {ways.map((w) => (
+              <li class="rounded-2xl border border-white/10 bg-card p-6">
+                <h3 class="font-display font-normal text-[22px] leading-tight tracking-[-0.01em] text-white mb-3">{w.title}</h3>
+                <p class="text-base leading-relaxed">{w.body}</p>
+              </li>
             ))}
-          </div>
-          <div class="rounded-2xl border border-white/10 bg-card">
-            {ways.map((w, i) => (
-              <div
-                role="tabpanel"
-                id={`fit-panel-${i}`}
-                aria-labelledby={`fit-tab-${i}`}
-                data-fit-panel
-                hidden={i !== 0}
-                class="p-8 md:p-10"
-              >
-                <h3 class="font-display font-normal text-2xl md:text-3xl tracking-[-0.01em] text-white mb-3">{w.title}</h3>
-                <p class="text-lg leading-relaxed max-w-xl">{w.body}</p>
-              </div>
-            ))}
-          </div>
-
+          </ul>
         </div>
       </section>
 
@@ -326,31 +292,8 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
         </div>
       </section>
 
-      <!-- DESIGN SYSTEMS & AI -->
-      <section id="design-systems" style="--c:2;--r:3" data-tile data-label="Design systems" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>Design systems &amp; AI</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>Design systems aren't just component libraries.</h2>
-          <div class="grid md:grid-cols-2 gap-x-16 gap-y-8 text-lg leading-relaxed">
-            <div class="space-y-5">
-              <p class="text-white">They help determine how a design organization scales its decisions.</p>
-              <p>
-                I help teams create the foundations, patterns, tokens, documentation, and governance that make good design easier to repeat—and make designers less dependent on constant review.
-              </p>
-            </div>
-            <div class="space-y-5">
-              <h3 class="font-display font-normal text-2xl tracking-[-0.01em] text-white">AI makes good teams faster. It doesn't replace good judgement.</h3>
-              <p>
-                I use AI throughout the design process to reduce repetitive work, explore ideas faster, prototype more quickly, and help teams turn design decisions into production-ready systems.
-              </p>
-              <p>The goal isn't to make more design. It's to spend more time on the decisions that matter.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- CTA -->
-      <section id="contact" style="--c:3;--r:3" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
+      <section id="contact" style="--c:2;--r:3" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <div class="rounded-3xl border border-white/10 bg-card px-6 py-16 md:py-20 text-center">
             <p class={eyebrow}>Let's work together</p>
@@ -432,39 +375,6 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
   </div>
 
   <script>
-    // "Find your fit" — a standard ARIA tabs pattern: one tab selected, one
-    // panel visible, arrow keys move focus and activate.
-    const tabs = Array.from(document.querySelectorAll('[data-fit-tab]'));
-    const panels = Array.from(document.querySelectorAll('[data-fit-panel]'));
-
-    function activate(index) {
-      tabs.forEach((tab, i) => {
-        const selected = i === index;
-        tab.setAttribute('aria-selected', String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-      });
-      panels.forEach((panel, i) => {
-        panel.hidden = i !== index;
-      });
-    }
-
-    tabs.forEach((tab, i) => {
-      tab.addEventListener('click', () => activate(i));
-      tab.addEventListener('keydown', (e) => {
-        const key = e.key;
-        let next = null;
-        if (key === 'ArrowRight' || key === 'ArrowDown') next = (i + 1) % tabs.length;
-        else if (key === 'ArrowLeft' || key === 'ArrowUp') next = (i - 1 + tabs.length) % tabs.length;
-        else if (key === 'Home') next = 0;
-        else if (key === 'End') next = tabs.length - 1;
-        if (next !== null) {
-          e.preventDefault();
-          activate(next);
-          tabs[next].focus();
-        }
-      });
-    });
-
     // Hamburger menu. Links inside it are ordinary #anchors, so the canvas
     // (or the mobile scroll fallback) in the layout script handles the travel.
     const menuButton = document.getElementById('menu-button');
