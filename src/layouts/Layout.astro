@@ -77,6 +77,9 @@ const jsonLd = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script is:inline>
       document.documentElement.classList.add('js');
+      try {
+        if (localStorage.getItem('ldg-cases-unlocked')) document.documentElement.classList.add('cases-unlocked');
+      } catch {}
     </script>
   </head>
   <body class="bg-charcoal text-neutral-400 antialiased">
@@ -161,9 +164,9 @@ const jsonLd = {
           : t.offsetTop + (v.h / 2 - m) / s;
         return { s, c: { x, y } };
       }
-      function overview() {
+      function overview(tiles = tileOrder) {
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-        tileOrder.forEach((t) => {
+        tiles.forEach((t) => {
           minX = Math.min(minX, t.offsetLeft);
           minY = Math.min(minY, t.offsetTop);
           maxX = Math.max(maxX, t.offsetLeft + t.offsetWidth);
@@ -213,6 +216,7 @@ const jsonLd = {
 
       function animateTo(tile, instant) {
         cancelAnim();
+        const currentIndexBefore = currentIndex;
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
@@ -230,7 +234,11 @@ const jsonLd = {
         // midpoint (a hop, not a full pull-back), drifting halfway toward the
         // field's centre with it. The tilt goes on #main, whose centre is the
         // viewport's — rotating the grid would pivot about the whole canvas.
-        const ov = overview();
+        // Jumps within the main site pull back relative to the main site
+        // only, so the tall case-study row doesn't deepen every hop.
+        const from = tileOrder[currentIndexBefore];
+        const involvesCase = tile.dataset.branch || (from && from.dataset.branch);
+        const ov = overview(involvesCase ? tileOrder : tileOrder.filter((t) => !t.dataset.branch));
         const sOut = Math.min(ov.s, s0, s1);
         const dip = ((Math.log(s0) + Math.log(s1)) / 2 - Math.log(sOut)) * 0.5;
         const dx = (ov.cx - (c0.x + g1.x) / 2) * 0.5;
@@ -272,6 +280,244 @@ const jsonLd = {
         );
       }
 
+      // ── Connectors + edge signposts ──
+      // Dotted curves join the panels in reading order. They're drawn once,
+      // in canvas space, inside the grid — so they pan and zoom rigidly with
+      // the panels. Separately, when a neighbouring panel is off-screen, a
+      // signpost pill sits on the screen edge in the direction of that panel.
+      const SVG_NS = 'http://www.w3.org/2000/svg';
+      // Two chains: the main site in reading order, and the case-study branch
+      // hanging off the Case studies panel.
+      const chain = (list) => list.slice(1).map((t, i) => [list[i], t]);
+      const mainChain = tileOrder.filter((t) => !t.dataset.branch);
+      const caseHub = document.getElementById('case-studies');
+      const caseChain = [caseHub, ...tileOrder.filter((t) => t.dataset.branch === 'cases')].filter(Boolean);
+      const pairs = [...chain(mainChain), ...(caseChain.length > 1 ? chain(caseChain) : [])];
+      let overlay = null;
+      let lineLayer = null;
+      let links = [];
+      let posts = new Map();
+      let hotTile = null;
+      let overlayRaf = 0;
+
+      function buildOverlay() {
+        lineLayer = document.createElementNS(SVG_NS, 'svg');
+        lineLayer.id = 'canvas-lines';
+        lineLayer.setAttribute('aria-hidden', 'true');
+        links = pairs.map(([a, b]) => {
+          const path = document.createElementNS(SVG_NS, 'path');
+          path.setAttribute('class', 'connector');
+          const ends = [0, 1].map(() => {
+            const dot = document.createElementNS(SVG_NS, 'circle');
+            dot.setAttribute('class', 'connector-end');
+            dot.setAttribute('r', '5');
+            return dot;
+          });
+          lineLayer.append(path, ...ends);
+          return { a, b, path, ends };
+        });
+        canvasGrid.prepend(lineLayer);
+        layoutConnectors();
+
+        overlay = document.createElement('div');
+        overlay.id = 'canvas-overlay';
+        posts = new Map();
+        tileOrder.forEach((tile) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'signpost';
+          btn.hidden = true;
+          btn.setAttribute('aria-label', `Go to ${tile.dataset.label}`);
+          btn.innerHTML =
+            '<span class="signpost-icon" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+            '<span class="signpost-text"><span class="signpost-kicker"></span><span class="signpost-label"></span></span>';
+          btn.querySelector('.signpost-label').textContent = tile.dataset.label;
+          btn.addEventListener('click', () => animateTo(tile, false));
+          btn.addEventListener('pointerenter', () => setHot(tile));
+          btn.addEventListener('pointerleave', () => setHot(null));
+          btn.addEventListener('focus', () => setHot(tile));
+          btn.addEventListener('blur', () => setHot(null));
+          overlay.appendChild(btn);
+          posts.set(tile, { btn, x: 0, y: 0, placed: false });
+        });
+        canvasViewport.appendChild(overlay);
+        overlayRaf = requestAnimationFrame(drawOverlay);
+      }
+      function destroyOverlay() {
+        cancelAnimationFrame(overlayRaf);
+        overlay?.remove();
+        lineLayer?.remove();
+        overlay = null;
+        lineLayer = null;
+        hotTile = null;
+      }
+      // Hovering a signpost lights up the line from the panel you're on to
+      // the one it points at.
+      function setHot(tile) {
+        hotTile = tile;
+        const from = tile && posts.get(tile)?.near;
+        links.forEach((L) =>
+          L.path.classList.toggle('is-hot', !!from && ((L.a === tile && L.b === from) || (L.b === tile && L.a === from)))
+        );
+      }
+
+      // Where a ray from a rect's centre toward point p crosses its edge,
+      // plus the outward normal of that side.
+      function exitPoint(r, p) {
+        const cx = r.x + r.w / 2;
+        const cy = r.y + r.h / 2;
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const tx = dx === 0 ? Infinity : (r.w / 2) / Math.abs(dx);
+        const ty = dy === 0 ? Infinity : (r.h / 2) / Math.abs(dy);
+        const t = Math.min(tx, ty);
+        return tx < ty
+          ? { x: cx + dx * t, y: cy + dy * t, nx: Math.sign(dx), ny: 0 }
+          : { x: cx + dx * t, y: cy + dy * t, nx: 0, ny: Math.sign(dy) };
+      }
+      const canvasRect = (t) => ({ x: t.offsetLeft, y: t.offsetTop, w: t.offsetWidth, h: t.offsetHeight });
+
+      // Static curves between facing panel edges, in canvas coordinates.
+      function layoutConnectors() {
+        if (!lineLayer) return;
+        lineLayer.setAttribute('width', canvasGrid.offsetWidth);
+        lineLayer.setAttribute('height', canvasGrid.offsetHeight);
+        links.forEach((L) => {
+          const ra = canvasRect(L.a);
+          const rb = canvasRect(L.b);
+          const pa = exitPoint(ra, { x: rb.x + rb.w / 2, y: rb.y + rb.h / 2 });
+          const pb = exitPoint(rb, { x: ra.x + ra.w / 2, y: ra.y + ra.h / 2 });
+          const k = Math.min(Math.hypot(pb.x - pa.x, pb.y - pa.y) * 0.45, 280);
+          L.path.setAttribute(
+            'd',
+            `M${pa.x} ${pa.y}C${pa.x + pa.nx * k} ${pa.y + pa.ny * k} ${pb.x + pb.nx * k} ${pb.y + pb.ny * k} ${pb.x} ${pb.y}`
+          );
+          [pa, pb].forEach((p, i) => {
+            L.ends[i].setAttribute('cx', p.x);
+            L.ends[i].setAttribute('cy', p.y);
+          });
+        });
+      }
+
+      function clipRect(r, W, H) {
+        const x0 = Math.max(r.x, 0);
+        const y0 = Math.max(r.y, 0);
+        const x1 = Math.min(r.x + r.w, W);
+        const y1 = Math.min(r.y + r.h, H);
+        return x1 - x0 > 80 && y1 - y0 > 80 ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : null;
+      }
+
+      // Signposts: for each neighbouring pair with one panel on screen and
+      // the other off it, place a pill where a line from the visible panel
+      // toward the hidden one meets the (inset) screen edge.
+      function drawOverlay() {
+        overlayRaf = requestAnimationFrame(drawOverlay);
+        if (!overlay) return;
+        const vp = canvasViewport.getBoundingClientRect();
+        const W = vp.width;
+        const H = vp.height;
+        const rects = new Map(
+          tileOrder.map((t) => {
+            const b = t.getBoundingClientRect();
+            return [t, { x: b.left - vp.left, y: b.top - vp.top, w: b.width, h: b.height }];
+          })
+        );
+        const visible = new Map(tileOrder.map((t) => [t, clipRect(rects.get(t), W, H)]));
+        const MX = 150;
+        const MY = 52;
+        // Fixed spots along each edge (start / middle / end). A signpost sits
+        // in the spot nearest the direction of its panel, and only moves when
+        // that direction clearly favours another spot, so it stays put while
+        // you pan instead of creeping along the edge.
+        const SLOTS = [0.18, 0.5, 0.82];
+        const spotXY = (edge, slot) => {
+          const t = SLOTS[slot];
+          if (edge === 'left') return { x: MX, y: MY + (H - 2 * MY) * t };
+          if (edge === 'right') return { x: W - MX, y: MY + (H - 2 * MY) * t };
+          if (edge === 'top') return { x: MX + (W - 2 * MX) * t, y: MY };
+          return { x: MX + (W - 2 * MX) * t, y: H - MY };
+        };
+        const taken = new Set();
+        const wanted = new Map();
+
+        pairs.forEach(([a, b]) => {
+          const va = visible.get(a);
+          const vb = visible.get(b);
+          if (!va === !vb) return;
+          const [near, far] = va ? [a, b] : [b, a];
+          if (wanted.has(far)) return;
+          const fr = rects.get(far);
+          const fc = { x: fr.x + fr.w / 2, y: fr.y + fr.h / 2 };
+          const pa = exitPoint(visible.get(near), fc);
+          const ax = Math.min(Math.max(pa.x, MX), W - MX);
+          const ay = Math.min(Math.max(pa.y, MY), H - MY);
+          const dx = fc.x - ax;
+          const dy = fc.y - ay;
+          const sx = dx > 0 ? (W - MX - ax) / dx : dx < 0 ? (MX - ax) / dx : Infinity;
+          const sy = dy > 0 ? (H - MY - ay) / dy : dy < 0 ? (MY - ay) / dy : Infinity;
+          const k = Math.max(0, Math.min(sx, sy));
+          const hx = ax + dx * k;
+          const hy = ay + dy * k;
+          const edge = sx < sy ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'bottom' : 'top';
+          const along = edge === 'left' || edge === 'right' ? (hy - MY) / (H - 2 * MY) : (hx - MX) / (W - 2 * MX);
+
+          const prev = posts.get(far);
+          let slot = SLOTS.reduce((best, v, i) => (Math.abs(v - along) < Math.abs(SLOTS[best] - along) ? i : best), 0);
+          if (prev.edge === edge && prev.slot != null && Math.abs(SLOTS[prev.slot] - along) < 0.24) slot = prev.slot;
+          // Keep clear of the zoom buttons in the bottom-left corner.
+          if ((edge === 'left' && slot === 2) || (edge === 'bottom' && slot === 0)) slot = 1;
+          if (taken.has(edge + slot)) slot = [1, 0, 2].find((s) => !taken.has(edge + s)) ?? slot;
+          taken.add(edge + slot);
+
+          // Arrow snapped to eight directions.
+          const angle = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * 45;
+          const forward = tileOrder.indexOf(far) > tileOrder.indexOf(near);
+          const kicker = !forward ? 'Back' : far.dataset.branch ? 'Case study' : 'Next';
+          wanted.set(far, { edge, slot, angle, forward, kicker, near });
+        });
+
+        const moving = !!anim;
+        posts.forEach((p, tile) => {
+          const sp = wanted.get(tile);
+          if (!sp || moving) {
+            if (!p.btn.hidden) p.btn.hidden = true;
+            p.key = null;
+            p.edge = null;
+            p.slot = null;
+            if (hotTile === tile && !sp) setHot(null);
+            return;
+          }
+          p.near = sp.near;
+          const key = `${sp.edge}${sp.slot}|${sp.angle}|${sp.kicker}|${W}x${H}`;
+          if (key === p.key) return; // nothing changed: leave the DOM alone
+          const { x, y } = spotXY(sp.edge, sp.slot);
+          const appearing = p.btn.hidden;
+          const moved = appearing || p.x !== x || p.y !== y;
+          p.key = key;
+          p.edge = sp.edge;
+          p.slot = sp.slot;
+          p.x = x;
+          p.y = y;
+          p.btn.querySelector('.signpost-kicker').textContent = sp.kicker;
+          p.btn.style.setProperty('--arrow-angle', `${sp.angle}deg`);
+          p.btn.style.left = `${x}px`;
+          p.btn.style.top = `${y}px`;
+          p.btn.hidden = false;
+          // No sliding between spots: the pill reappears in its new spot and
+          // grows in from its centre.
+          if (moved && !reduceMotion) {
+            p.btn.getAnimations().forEach((an) => an.id === 'grow' && an.cancel());
+            p.btn.animate(
+              [
+                { scale: 0.35, opacity: 0 },
+                { scale: 1, opacity: 1 },
+              ],
+              { id: 'grow', duration: 480, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
+            );
+          }
+        });
+      }
+
       // ── Switching the canvas on and off ──
       function enableCanvas() {
         if (canvasOn() || !canvasGrid) return;
@@ -284,13 +530,18 @@ const jsonLd = {
           duration: 300,
           easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
         });
+        buildOverlay();
         document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
-          if (canvasOn()) animateTo(tileOrder[currentIndex] || heroTile, true);
+          if (canvasOn()) {
+            layoutConnectors();
+            animateTo(tileOrder[currentIndex] || heroTile, true);
+          }
         })));
       }
       function disableCanvas() {
         if (!canvasOn()) return;
         cancelAnim();
+        destroyOverlay();
         panzoom.destroy();
         panzoom = null;
         canvasGrid.style.transform = '';
@@ -389,7 +640,11 @@ const jsonLd = {
         window.addEventListener('resize', () => {
           if (!canvasOn()) return;
           clearTimeout(resizeTimer);
-          resizeTimer = setTimeout(() => canvasOn() && animateTo(tileOrder[currentIndex], true), 150);
+          resizeTimer = setTimeout(() => {
+            if (!canvasOn()) return;
+            layoutConnectors();
+            animateTo(tileOrder[currentIndex], true);
+          }, 150);
         });
       }
 

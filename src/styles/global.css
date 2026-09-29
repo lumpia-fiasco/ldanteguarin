@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./cases.css";
 
 @theme {
   /* Same faces as the live ldanteguarin.com: Cal Sans titles, Golos Text body. */
@@ -121,6 +122,7 @@ html:not(.js) [data-reveal] {
 }
 /* Column wrappers only exist for the canvas; on the scrolling page they
    dissolve so the sections flow exactly as before. */
+.canvas-row,
 .canvas-col {
   display: contents;
 }
@@ -129,6 +131,11 @@ html:not(.js) [data-reveal] {
 }
 
 @media (min-width: 901px) {
+  /* On the canvas, signposts and the canvas itself are the navigation. */
+  #menu-button,
+  #menu-panel {
+    display: none !important;
+  }
   body:has(#canvas-viewport) {
     height: 100vh;
     overflow: hidden;
@@ -155,10 +162,24 @@ html:not(.js) [data-reveal] {
        taller than its neighbours. */
     --canvas-gap: 240px;
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
     gap: var(--canvas-gap);
     position: relative; /* the offsetParent, so tile offsets are canvas-local */
     width: max-content;
+  }
+  /* Rows of columns: the main site on top, the case studies in a row of
+     their own beneath it. Neither rows nor columns may be positioned, so
+     tile offsets stay relative to #canvas-grid. */
+  .canvas-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--canvas-gap);
+  }
+  .canvas-row--cases > .tile {
+    flex: 0 0 1000px;
+    width: 1000px;
+    min-width: 0;
   }
   .canvas-col {
     display: flex;
@@ -217,4 +238,189 @@ html:not(.js) [data-reveal] {
   #zoom-controls button + button {
     border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
+}
+
+/* ── Connectors + edge signposts (desktop canvas only; built by JS) ── */
+@media (min-width: 901px) {
+  /* The lines live inside the grid, so they move with the canvas. Stroke
+     and dot spacing stay the same on screen at any zoom. */
+  #canvas-lines {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .connector {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.28);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 0.01 13;
+    vector-effect: non-scaling-stroke;
+    transition: stroke 0.25s ease;
+  }
+  .connector.is-hot {
+    stroke: var(--color-pink);
+    animation: connector-flow 0.9s linear infinite;
+  }
+  @keyframes connector-flow {
+    to { stroke-dashoffset: -13; }
+  }
+  .connector-end {
+    fill: rgba(255, 255, 255, 0.35);
+  }
+
+  #canvas-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+  }
+  /* Signposts: solid pink so they read as navigation, never as content. */
+  .signpost {
+    position: absolute;
+    left: 0;
+    top: 0;
+    /* Centred on its left/top point. With the origin at that point, the
+       hover and grow scales happen around the pill's own centre. */
+    transform: translate(-50%, -50%);
+    transform-origin: 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 20px 8px 8px;
+    border-radius: 999px;
+    background: var(--color-pink);
+    color: var(--color-charcoal);
+    box-shadow: 0 0 0 6px rgba(28, 28, 28, 0.55), 0 12px 32px rgba(0, 0, 0, 0.55);
+    text-align: left;
+    white-space: nowrap;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+  }
+  .signpost[hidden] {
+    display: none;
+  }
+  .signpost:hover,
+  .signpost:focus-visible {
+    scale: 1.06;
+    background: #f7b8c8;
+  }
+  .signpost:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+  }
+  .signpost-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--color-charcoal);
+    color: var(--color-pink);
+  }
+  .signpost-icon svg {
+    width: 16px;
+    height: 16px;
+    transform: rotate(var(--arrow-angle, 0deg));
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), translate 0.2s ease;
+  }
+  .signpost:hover .signpost-icon svg {
+    translate: calc(cos(var(--arrow-angle, 0deg)) * 2px) calc(sin(var(--arrow-angle, 0deg)) * 2px);
+  }
+  .signpost-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .signpost-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .signpost-label {
+    font-family: var(--font-display);
+    font-size: 17px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .connector.is-hot {
+      animation: none;
+    }
+  }
+}
+
+/* ── Case-study gate ───────────────────────────────────────────────────
+   Until a visitor leaves a name and email, each case shows its headline
+   and intro, then a short, heavily blurred preview under the form. The
+   preview is clipped rather than blurring the whole (very tall) case, which
+   keeps the canvas smooth. html.cases-unlocked is set by the form, and on
+   return visits by an inline script in Layout.astro. */
+.case-gate-wrap {
+  position: relative;
+}
+html:not(.cases-unlocked) .case-gate-wrap {
+  max-height: 1100px;
+  overflow: hidden;
+}
+html:not(.cases-unlocked) .case-locked-content {
+  filter: blur(10px);
+  opacity: 0.55;
+  user-select: none;
+  pointer-events: none;
+}
+.case-gate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 0;
+  background: linear-gradient(to bottom, rgba(28, 28, 28, 0) 0%, rgba(28, 28, 28, 0.4) 35%, #1c1c1c 100%);
+}
+html.cases-unlocked .case-gate {
+  display: none;
+}
+.case-gate-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--color-card);
+  padding: 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  cursor: auto;
+}
+.case-gate-input {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--color-charcoal);
+  color: #fff;
+  padding: 12px 14px;
+  font-size: 16px;
+}
+.case-gate-input:focus-visible {
+  outline: 2px solid var(--color-pink);
+  outline-offset: 1px;
+}
+.case-gate-input[aria-invalid='true'] {
+  border-color: #ff9b9b;
+}
+.case-gate-error {
+  color: #ffb3b3;
+  min-height: 1.25rem;
+}
+.case-gate-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }

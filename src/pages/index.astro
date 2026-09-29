@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import cases from '../data/cases.json';
 
 // Same images the live ldanteguarin.com serves from Framer's CDN.
 const AVATAR = 'https://framerusercontent.com/images/vALSaYwJFYN4P5QpqMFZc4vMlM.png?scale-down-to=512&width=2799&height=2799';
 const APP_SHOT = 'https://framerusercontent.com/images/iqS0ZKGvD0peT2Kb1Ed4AEjqwiA.png?scale-down-to=2048&width=4409&height=2184';
 
-const BOOK_URL = 'https://cal.com/ldanteguarin/intro';
+const BOOK_URL = 'https://tidycal.com/ldante';
 
 // 'invert' turns a transparent-background wordmark into a clean white
 // silhouette on the charcoal background; 'flat' just desaturates in place
@@ -31,6 +32,10 @@ const stats = [
   { value: '33%', label: "faster time-to-resource after redesigning Meroxa's core workflow, measured in usability testing" },
   { value: '~60%', label: 'production-ready fidelity reached out of the gate with an AI-assisted workflow at Vye Health' },
 ];
+
+// The full case studies from ldante.com (exported from the portfolio's
+// case data), each shown as its own panel on the canvas.
+const caseStudies = cases;
 
 const offer = [
   {
@@ -153,9 +158,10 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
   <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
   <main id="main" class="pt-[68px]">
     <div id="canvas-grid">
+    <div class="canvas-row">
     <div class="canvas-col">
       <!-- HERO -->
-      <section id="hero" data-tile class="tile">
+      <section id="hero" data-tile data-label="Intro" class="tile">
       <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20">
         <p class="text-base mb-8">
           <span class="font-semibold text-white">L Dante Guarin —</span> Fractional Design Lead · Product Design · Design Systems
@@ -200,7 +206,12 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
             </div>
           </div>
         </div>
-        <div id="track-record" class="mt-16 pt-16 border-t border-white/10">
+      </div>
+      </section>
+
+      <!-- TRACK RECORD -->
+      <section id="track-record" data-tile data-label="Track record" class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Track record</p>
           <h2 class={`${h2} mb-12`}>Real numbers, not vibes.</h2>
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -212,23 +223,45 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
             ))}
           </div>
           <p class="mt-8">
-            <a
-              href={PORTFOLIO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sky underline underline-offset-4 hover:text-white transition-colors"
-            >
-              See the full case studies on ldante.com →
+            <a href="#case-studies" class="text-sky underline underline-offset-4 hover:text-white transition-colors">
+              See the case studies →
             </a>
           </p>
         </div>
-      </div>
+      </section>
+
+      <!-- CASE STUDIES -->
+      <section id="case-studies" data-tile data-label="Case studies" class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>Case studies</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>The work behind the numbers.</h2>
+          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+            Five write-ups, from the brief to what shipped. Pick one to read it here.
+          </p>
+          <ul class="grid sm:grid-cols-2 gap-4">
+            {caseStudies.map((c, i) => (
+              <li class:list={[i === caseStudies.length - 1 && caseStudies.length % 2 === 1 && 'sm:col-span-2']}>
+                <a
+                  href={`#${c.id}`}
+                  class="group flex h-full flex-col gap-6 rounded-2xl border border-white/10 bg-card p-6 transition-colors hover:border-pink"
+                >
+                  <img src={c.logo} alt="" class="h-9 w-auto self-start object-contain brightness-0 invert opacity-80 transition-opacity group-hover:opacity-100" />
+                  <span>
+                    <span class="block text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-2">{c.company}</span>
+                    <span class="block font-display text-xl leading-snug tracking-[-0.01em] text-white">{c.headline}</span>
+                  </span>
+                  <span class="mt-auto text-sm font-semibold text-sky">Read the case →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
     </div>
 
     <div class="canvas-col">
       <!-- WHAT I DO -->
-      <section id="what-i-do" data-tile class={`tile ${section}`} data-reveal>
+      <section id="what-i-do" data-tile data-label="What I do" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>What I do</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>You don't always need a full-time Head of Design.</h2>
@@ -250,7 +283,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- WHO I HELP -->
-      <section id="who-i-help" data-tile class={`tile ${section}`} data-reveal>
+      <section id="who-i-help" data-tile data-label="Who I help" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Who I help</p>
           <h2 class={`${h2} max-w-3xl mb-12`}>Maybe you don't need more designers. You might need more design leadership.</h2>
@@ -268,7 +301,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
 
     <div class="canvas-col">
       <!-- HOW I WORK -->
-      <section id="how-i-work" data-tile class={`tile ${section}`} data-reveal>
+      <section id="how-i-work" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>How I work</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>Part-time leadership. Full-time commitment to the work.</h2>
@@ -325,7 +358,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- DESIGN SYSTEMS & AI -->
-      <section id="design-systems" data-tile class={`tile ${section}`} data-reveal>
+      <section id="design-systems" data-tile data-label="Design systems" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>Design systems &amp; AI</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>Design systems aren't just component libraries.</h2>
@@ -348,7 +381,7 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
       </section>
 
       <!-- CTA -->
-      <section id="contact" data-tile class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
+      <section id="contact" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <div class="rounded-3xl border border-white/10 bg-card px-6 py-16 md:py-20 text-center">
             <p class={eyebrow}>Let's work together</p>
@@ -372,6 +405,57 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
         </footer>
         </div>
       </section>
+    </div>
+    </div>
+
+    <!-- CASE STUDIES, one panel each. A branch off the Case studies panel:
+         on the canvas they sit in a row beneath everything else; on phones
+         they come after the main page. -->
+    <div class="canvas-row canvas-row--cases">
+      {caseStudies.map((c) => (
+        <section id={c.id} data-tile data-branch="cases" data-label={c.label} class={`tile case-tile ${section}`}>
+          <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+            <p class={eyebrow}>Case study · {c.company}</p>
+            <h2 class={`${h2} max-w-3xl mb-6`}>{c.headline}</h2>
+            <p class="text-lg leading-relaxed max-w-3xl mb-10" set:html={c.intro} />
+            <div class="case-gate-wrap">
+              <div class="case-locked-content" data-case-locked>
+              {c.metrics.length > 0 && (
+                <ul class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-10">
+                  {c.metrics.map((m) => (
+                    <li class="rounded-2xl border border-white/10 bg-card p-5">
+                      <span class="block font-display text-3xl text-white tracking-[-0.02em] mb-2">{m.value}</span>
+                      <span class="block text-sm leading-snug">{m.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div class="case-body" set:html={c.html} />
+              <p class="mt-12 pt-8 border-t border-white/10">
+                <a href="#case-studies" class="text-sky underline underline-offset-4 hover:text-white transition-colors">← All case studies</a>
+              </p>
+              </div>
+              <div class="case-gate panzoom-exclude">
+                <form class="case-gate-card" data-case-gate novalidate>
+                  <p class="text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-3">Case studies</p>
+                  <h3 class="font-display text-2xl leading-tight tracking-[-0.01em] text-white mb-2">Read the full case studies</h3>
+                  <p class="text-base leading-relaxed mb-6">Tell me who you are and all five open up.</p>
+                  <label class="block text-sm font-semibold text-white mb-1.5" for={`${c.id}-name`}>Name</label>
+                  <input id={`${c.id}-name`} name="name" type="text" autocomplete="name" required maxlength="100" class="case-gate-input mb-4" />
+                  <label class="block text-sm font-semibold text-white mb-1.5" for={`${c.id}-email`}>Work email</label>
+                  <input id={`${c.id}-email`} name="email" type="email" autocomplete="email" required maxlength="254" class="case-gate-input mb-2" />
+                  <div class="case-gate-honeypot" aria-hidden="true">
+                    <label>Company <input name="company" type="text" tabindex="-1" autocomplete="off" /></label>
+                  </div>
+                  <p class="case-gate-error text-sm mb-2" role="alert" data-case-gate-error></p>
+                  <button type="submit" class={`${pill} w-full text-base px-6 py-3.5 mt-2`}>Unlock case studies</button>
+                  <input type="hidden" name="case" value={c.id} />
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      ))}
     </div>
     </div>
   </main>
@@ -452,6 +536,93 @@ const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font
     });
     menuPanel.addEventListener('focusout', (e) => {
       if (e.relatedTarget && !menuPanel.contains(e.relatedTarget) && e.relatedTarget !== menuButton) closeMenu(false);
+    });
+
+    // Case-study gate. One submission unlocks all five cases and is
+    // remembered on this browser. While locked, the blurred content is inert
+    // so it can't be tabbed into or read out.
+    const UNLOCK_KEY = 'ldg-cases-unlocked';
+    const lockedRegions = Array.from(document.querySelectorAll('[data-case-locked]'));
+
+    function setCasesLocked(locked) {
+      document.documentElement.classList.toggle('cases-unlocked', !locked);
+      lockedRegions.forEach((el) => {
+        el.inert = locked;
+        if (locked) el.setAttribute('aria-hidden', 'true');
+        else el.removeAttribute('aria-hidden');
+      });
+    }
+    setCasesLocked(!document.documentElement.classList.contains('cases-unlocked'));
+
+    const GATE_ERRORS = {
+      invalid_name: 'Add your name so I know who you are.',
+      invalid_email: "That email doesn't look deliverable. Double-check it?",
+    };
+
+    document.querySelectorAll('[data-case-gate]').forEach((form) => {
+      const nameInput = form.elements.namedItem('name');
+      const emailInput = form.elements.namedItem('email');
+      const error = form.querySelector('[data-case-gate-error]');
+      const button = form.querySelector('button[type="submit"]');
+
+      const fail = (input, message) => {
+        error.textContent = message;
+        if (input) {
+          input.setAttribute('aria-invalid', 'true');
+          input.focus();
+        }
+      };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        error.textContent = '';
+        nameInput.removeAttribute('aria-invalid');
+        emailInput.removeAttribute('aria-invalid');
+
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        if (!name) return fail(nameInput, GATE_ERRORS.invalid_name);
+        if (!email || !emailInput.checkValidity() || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+          return fail(emailInput, 'Enter a valid email address.');
+        }
+
+        button.disabled = true;
+        const label = button.textContent;
+        button.textContent = 'Unlocking…';
+        try {
+          const res = await fetch('/api/unlock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name,
+              email,
+              company: form.elements.namedItem('company').value,
+              case: form.elements.namedItem('case').value,
+            }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok) {
+            const field = data.error === 'invalid_name' ? nameInput : data.error === 'invalid_email' ? emailInput : null;
+            return fail(field, GATE_ERRORS[data.error] || "Couldn't unlock right now. Try again, or email hello@ldante.com.");
+          }
+          try {
+            localStorage.setItem(UNLOCK_KEY, '1');
+          } catch {}
+          setCasesLocked(false);
+          // The cases just grew; let the canvas re-measure and re-frame.
+          window.dispatchEvent(new Event('resize'));
+          const heading = form.closest('section')?.querySelector('h2');
+          if (heading) {
+            heading.tabIndex = -1;
+            heading.focus({ preventScroll: true });
+          }
+        } catch {
+          fail(null, "Couldn't unlock right now. Try again, or email hello@ldante.com.");
+        } finally {
+          button.disabled = false;
+          button.textContent = label;
+        }
+      });
     });
   </script>
 </Layout>

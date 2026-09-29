@@ -1,0 +1,615 @@
+/* Case-study panels. Ported from ldante.com's case-study styles (the same
+   dark theme, Cal Sans + Golos Text, pink accent) and scoped to .case-body. */
+.case-body {
+  --cd-bg-surface: rgba(255, 255, 255, 0.05);
+  --cd-bg-card: rgba(255, 255, 255, 0.04);
+  --cd-border: rgba(255, 255, 255, 0.08);
+  --cd-border-strong: rgba(255, 255, 255, 0.15);
+  --cd-text: #ffffff;
+  --cd-text-body: rgba(255, 255, 255, 0.68);
+  --cd-text-muted: rgba(255, 255, 255, 0.55);
+  --cd-text-dim: rgba(255, 255, 255, 0.45);
+  --cd-accent: var(--color-pink);
+}
+.case-body img {
+  height: auto;
+}
+/* Meroxa's hypothesis table had no styles on ldante.com; match the finding rows. */
+.case-body .cs-hypothesis-block {
+  border: 1px solid var(--cd-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+.case-body .cs-hyp-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--cd-border);
+}
+.case-body .cs-hyp-row:first-child {
+  border-top: 0;
+}
+.case-body .cs-hyp-tag {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cd-text-muted);
+}
+.case-body .cs-hyp-tag.actual,
+.case-body .cs-hyp-tag.implication {
+  color: var(--cd-accent);
+}
+.case-body .cs-hyp-body {
+  color: var(--cd-text-body);
+  line-height: 1.6;
+}
+
+.case-body .cd-block {
+  margin-top: 64px;
+  margin-bottom: 0;
+  padding-top: 56px;
+  border-top: 1px solid rgba(31, 31, 31, 0.07);
+}
+.case-body .cd-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  font-weight: 400;
+  color: var(--cd-text-body);
+  line-height: 1.65;
+  max-width: 60em;
+  margin-bottom: 12px;
+}
+.case-body .cd-article .cd-hero-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.case-body .cd-closer {
+  border-top: 1.5px solid var(--cd-border);
+  padding-top: 32px;
+  margin-top: 8px;
+  max-width: 60em;
+}
+.case-body .cd-closer .cd-body {
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  color: rgba(31, 31, 31, 0.6);
+  font-style: italic;
+}
+.case-body .cd-screenshots-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 24px 0;
+}
+.case-body .cd-screenshot-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 10px 10px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+.case-body .cd-screenshot-frame img {
+  width: 100%;
+  display: block;
+  height: auto;
+  border-radius: 6px 6px 0 0;
+}
+.case-body .cd-screenshot-frame span {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--cd-text-dim);
+  padding: 0 14px 12px;
+}
+.case-body .cd-hero-img-wrap {
+  width: calc(100% + 120px);
+  margin-left: -60px;
+  margin-top: 56px;
+  margin-bottom: 56px;
+  overflow: hidden;
+}
+.case-body .cd-hero-img-wrap + .cd-block {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+.case-body .cd-hero-img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+.case-body .cd-video-wrap {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  margin: 32px 0;
+}
+.case-body .cd-video-wrap iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+.case-body .cd-screenshot-wrap {
+  margin: 16px 0 44px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent;
+  padding: 0;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.11), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+.case-body .cd-screenshot {
+  width: 100%;
+  display: block;
+  height: auto;
+  border-radius: 14px;
+}
+.case-body .cs-section { margin: 3rem 0; max-width: 60em; }
+.case-body .cs-section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--cd-border);
+}
+.case-body .cs-section-num {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--cd-text-dim);
+  flex-shrink: 0;
+}
+.case-body .cs-section-title {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--cd-text);
+}
+.case-body .cs-callout {
+  background: var(--cd-bg-surface);
+  border-left: 2px solid var(--cd-border-strong);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+.case-body .cs-callout-label {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--cd-text-muted);
+  margin-bottom: 6px;
+}
+.case-body .cs-callout .cd-body { font-size: 14px; margin-bottom: 0; }
+.case-body .cs-pull-quote {
+  margin: 2rem 0;
+  padding: 28px 32px;
+  border-left: 3px solid var(--cd-border-strong);
+  background: var(--cd-bg-surface);
+  border-radius: 0 8px 8px 0;
+  max-width: 60em;
+}
+.case-body .cs-pull-quote-text {
+  font-family: 'Cal Sans', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--cd-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+.case-body .cs-pull-quote-attr {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cd-text-muted);
+  letter-spacing: 0.02em;
+}
+.case-body .cs-pull-quote-attr strong {
+  color: rgba(255,255,255,0.7);
+  font-weight: 600;
+}
+.case-body .cs-hypothesis-block {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.case-body .cs-hyp-row { display: flex; gap: 12px; align-items: flex-start; }
+.case-body .cs-hyp-tag {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-width: 90px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.case-body .cs-hyp-tag.assumed { color: var(--cd-text-dim); }
+.case-body .cs-hyp-tag.actual { color: #16a34a; }
+.case-body .cs-hyp-tag.implication { color: #d97706; }
+.case-body .cs-hyp-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  color: var(--cd-text-body);
+  line-height: 1.65;
+}
+.case-body .cs-tradeoff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 1.5rem 0;
+}
+.case-body .cs-tradeoff-card {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: var(--cd-bg-surface);
+}
+.case-body .cs-tradeoff-card.chosen {
+  border-color: rgba(249,149,172,0.35);
+  background: rgba(249,149,172,0.08);
+}
+.case-body .cs-tc-label {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--cd-text-muted);
+  margin-bottom: 6px;
+}
+.case-body .cs-tradeoff-card.chosen .cs-tc-label { color: var(--cd-accent); }
+.case-body .cs-tc-title {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cd-text);
+  margin-bottom: 6px;
+}
+.case-body .cs-tradeoff-card.chosen .cs-tc-title { color: var(--cd-accent); }
+.case-body .cs-tc-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--cd-text-body);
+  line-height: 1.6;
+}
+.case-body .cs-reject-badge {
+  display: inline-block;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+  border: 1px solid rgba(220,38,38,0.2);
+}
+.case-body .cs-partial-badge {
+  display: inline-block;
+  background: #fef3c7;
+  color: #d97706;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
+  border: 1px solid rgba(217,119,6,0.2);
+}
+.case-body .cs-tradeoff-card.rejected {
+  opacity: 0.6;
+}
+.case-body .cs-chosen-badge {
+  display: inline-block;
+  background: rgba(249,149,172,0.15);
+  color: var(--cd-accent);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 6px;
+  border: 1px solid rgba(249,149,172,0.3);
+  vertical-align: middle;
+}
+.case-body .cs-outcome-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--cd-border);
+}
+.case-body .cs-outcome-row:last-child { border-bottom: none; }
+.case-body .cs-outcome-num {
+  font-family: 'Cal Sans', sans-serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  font-weight: 400;
+  color: var(--cd-accent);
+  width: 160px;
+  flex-shrink: 0;
+  text-align: right;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  padding-top: 2px;
+}
+.case-body .cs-od-title {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cd-text);
+  margin-bottom: 4px;
+}
+.case-body .cs-od-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--cd-text-body);
+  line-height: 1.65;
+}
+.case-body .cs-reflection {
+  border: 1px solid var(--cd-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: var(--cd-bg-surface);
+  margin-top: 2rem;
+}
+.case-body .cs-reflection-title {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cd-text);
+  margin-bottom: 0.75rem;
+}
+.case-body .cs-meta-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 2rem 0 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cd-border);
+  max-width: 60em;
+}
+.case-body .cs-meta-label {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  color: var(--cd-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4px;
+}
+.case-body .cs-meta-val {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  color: var(--cd-text);
+  font-weight: 500;
+}
+@media (max-width: 680px) {
+  .case-body .cs-tradeoff-grid { grid-template-columns: 1fr; }
+  .case-body .cs-outcome-num { width: 100px; font-size: 1.5rem; }
+}
+.case-body .workflow-block {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+.case-body .workflow-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--cd-border);
+}
+.case-body .workflow-row:last-child { border-bottom: none; }
+.case-body .workflow-step {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cd-text-muted);
+  width: 160px;
+  flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  background: var(--cd-bg-surface);
+  border-right: 1px solid var(--cd-border);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+}
+.case-body .workflow-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--cd-text-body);
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+  flex: 1;
+}
+.case-body .workflow-tag {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-left: auto;
+  margin-right: 1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.case-body .tag-gone {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid rgba(190,18,60,0.2);
+}
+.case-body .tag-kept {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid rgba(22,163,74,0.2);
+}
+.case-body .finding-block {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+.case-body .finding-row {
+  display: flex;
+  border-bottom: 1px solid var(--cd-border);
+}
+.case-body .finding-row:last-child { border-bottom: none; }
+.case-body .finding-tag {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cd-text-muted);
+  width: 160px;
+  flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  background: var(--cd-bg-surface);
+  border-right: 1px solid var(--cd-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: right;
+  line-height: 1.4;
+}
+.case-body .finding-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--cd-text-body);
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+}
+.case-body .finding-block--padded {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+}
+.case-body .finding-block--padded .finding-row {
+  border: none;
+  border-bottom: 1px solid var(--cd-border);
+  padding: 0.75rem 0;
+  gap: 12px;
+  align-items: flex-start;
+}
+.case-body .finding-block--padded .finding-row:first-child { padding-top: 0; }
+.case-body .finding-block--padded .finding-row:last-child { border-bottom: none; padding-bottom: 0; }
+.case-body .finding-block--padded .finding-tag {
+  background: none;
+  border: none;
+  padding: 0;
+  padding-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: 160px;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  text-align: right;
+}
+.case-body .finding-block--padded .finding-body {
+  padding: 0;
+}
+.case-body .alumni-row {
+  display: flex;
+  gap: 12px;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.case-body .alumni-card {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  background: var(--cd-bg-surface);
+  flex: 1;
+  min-width: 140px;
+}
+.case-body .alumni-co {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cd-text);
+  margin-bottom: 3px;
+}
+.case-body .alumni-role {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  color: var(--cd-text-body);
+}
+.case-body .sprint-block {
+  border: 1px solid var(--cd-border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+.case-body .sprint-row {
+  display: flex;
+  border-bottom: 1px solid var(--cd-border);
+}
+.case-body .sprint-row:last-child { border-bottom: none; }
+.case-body .sprint-label {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cd-text-muted);
+  width: 160px;
+  flex-shrink: 0;
+  padding: 0.75rem 1rem;
+  background: var(--cd-bg-surface);
+  border-right: 1px solid var(--cd-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: right;
+}
+.case-body .sprint-body {
+  font-family: 'Golos Text', sans-serif;
+  font-size: 13px;
+  color: var(--cd-text-body);
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+}
+@media (max-width: 680px) {
+  .case-body .workflow-step { width: 100px; }
+  .case-body .workflow-tag { display: none; }
+  .case-body .finding-tag { width: 100px; }
+  .case-body .sprint-label { width: 100px; }
+  .case-body .finding-block--padded .finding-tag { width: 100px; }
+}
+.case-body .cs-tradeoff-label { font-family: 'Golos Text', sans-serif; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--cd-text-muted); margin-bottom: 6px; }
+.case-body .cs-tradeoff-card.chosen .cs-tradeoff-label { color: var(--cd-accent); }
+.case-body .cs-tradeoff-title { font-family: 'Golos Text', sans-serif; font-size: 14px; font-weight: 500; color: var(--cd-text); margin-bottom: 6px; }
+.case-body .cs-tradeoff-card.chosen .cs-tradeoff-title { color: var(--cd-accent); }
+.case-body .cs-tradeoff-body { font-family: 'Golos Text', sans-serif; font-size: 13px; color: var(--cd-text-body); line-height: 1.6; }
+@media (max-width: 680px) {
+  .case-body .cd-hero-img-wrap {
+    width: calc(100% + 40px);
+    margin-left: -20px;
+  }
+  .case-body .cd-two-col, .case-body .cd-reframe, .case-body .cd-screenshots-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* No bleed here: panels have their own padding, and on phones a negative
+   margin would push the page sideways. */
+.case-body .cd-hero-img-wrap {
+  width: 100%;
+  margin-left: 0;
+  border-radius: 12px;
+}
