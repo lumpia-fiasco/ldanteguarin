@@ -1,274 +1,457 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const engagements = [
+// Same images the live ldanteguarin.com serves from Framer's CDN.
+const AVATAR = 'https://framerusercontent.com/images/vALSaYwJFYN4P5QpqMFZc4vMlM.png?scale-down-to=512&width=2799&height=2799';
+const APP_SHOT = 'https://framerusercontent.com/images/iqS0ZKGvD0peT2Kb1Ed4AEjqwiA.png?scale-down-to=2048&width=4409&height=2184';
+
+const BOOK_URL = 'https://cal.com/ldanteguarin/intro';
+
+// 'invert' turns a transparent-background wordmark into a clean white
+// silhouette on the charcoal background; 'flat' just desaturates in place
+// (Farm Bureau's filled badge would lose its own contrast otherwise).
+const companies = [
+  { name: 'T-Mobile', logo: '/logos/tmobile.png', mono: 'invert' },
+  { name: 'Adobe', logo: '/logos/adobe.png', mono: 'invert' },
+  { name: 'Marketo', logo: '/logos/marketo.png', mono: 'invert' },
+  { name: 'Teamshares', logo: '/logos/teamshares.png', mono: 'invert' },
+  { name: 'Greenpeace', logo: '/logos/greenpeace.png', mono: 'invert' },
+  { name: 'Meroxa', logo: '/logos/meroxa.png', mono: 'invert' },
+  { name: 'CMA', logo: '/logos/cma.png', mono: 'invert' },
+  { name: 'Upwork', logo: '/logos/upwork.png', mono: 'invert' },
+  { name: 'Tennessee Farm Bureau', logo: '/logos/farmbureau-tn.png', mono: 'flat' },
+];
+
+// Every number is sourced from the verified case studies on ldante.com.
+const PORTFOLIO_URL = 'https://ldante.com?p=SHOWME';
+
+const stats = [
+  { value: '$3.1M+', label: 'saved through a payroll analytics redesign at Teamshares' },
+  { value: '6x', label: "increase in design-system adoption after migrating Marketo to Adobe's Sky system" },
+  { value: '33%', label: "faster time-to-resource after redesigning Meroxa's core workflow, measured in usability testing" },
+  { value: '~60%', label: 'production-ready fidelity reached out of the gate with an AI-assisted workflow at Vye Health' },
+];
+
+const offer = [
   {
-    type: 'Embedded Lead',
-    duration: '3–6 months',
-    description:
-      'I join your product team as your design lead — running crits, unblocking designers, aligning with PM and eng, and setting the design direction. Right for teams that need a steady hand, not just a consultant.',
-    best: 'Post-Series A teams scaling from 0→1 design culture',
+    title: 'Lead',
+    body: 'Set design direction, establish priorities, mentor designers, and give Product and Engineering a strong design partner.',
+    icon: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
   },
   {
-    type: 'Design Sprint',
-    duration: '2–4 weeks',
-    description:
-      'Focused engagement on a single high-stakes problem — a new feature, a redesign, a broken flow. I come in, diagnose fast, and deliver clear direction your team can execute.',
-    best: 'Teams stuck on a specific problem or shipping deadline',
+    title: 'Build',
+    body: 'Create the systems, processes, rituals, and governance that allow design to scale without becoming bureaucracy.',
+    icon: '<rect x="4" y="3" width="10" height="18" rx="1"/><path d="M14 9h5a1 1 0 0 1 1 1v11H14"/><path d="M8 7h2M8 11h2M8 15h2"/>',
   },
   {
-    type: 'Fractional Retainer',
-    duration: 'Ongoing monthly',
-    description:
-      'A set number of hours per week, every week. I stay close enough to give real feedback, catch upstream issues, and keep design quality consistent — without being on your payroll.',
-    best: 'Lean teams that need senior oversight without a full-time hire',
+    title: 'Design',
+    body: 'Stay close to the product. Research, flows, prototypes, interaction design, and production-ready UI when the work calls for it.',
+    icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  },
+  {
+    title: 'Scale',
+    body: "Help you hire, structure, and mature your design organization—or bridge the gap until you're ready for your next full-time leader.",
+    icon: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
   },
 ];
 
-const caseStudies = [
+const painPoints = [
   {
-    label: 'Series B SaaS / B2B',
-    headline: 'Rebuilt the onboarding flow. Activation went from 34% to 61%.',
-    detail:
-      'The team had been A/B testing surface-level copy changes for months. I traced the real drop-off to a conceptual mismatch in how we introduced the product. Four weeks from diagnosis to shipped solution.',
-    tags: ['Onboarding', 'Information Architecture', 'Design Systems'],
+    title: 'You have designers, but no real direction.',
+    body: 'I can provide the direction, mentorship, and decision-making your team is missing.',
   },
   {
-    label: 'Series A Marketplace',
-    headline: 'Hired and ramped a 3-person design team in 8 weeks.',
-    detail:
-      'No design process, no shared language, two designers doing their own thing. I built the hiring rubric, ran interviews, onboarded the team, and shipped a component library before the next funding round.',
-    tags: ['Team Building', 'Design Systems', 'Process'],
+    title: 'Your product has outgrown the way you design it.',
+    body: "I'll help establish the systems and processes needed to handle the next stage.",
   },
   {
-    label: 'Pre-Series A Mobile App',
-    headline: 'Cut time-to-first-value from 11 steps to 4.',
-    detail:
-      'Founders were too close to the product to see where users were getting lost. I ran two rounds of usability testing, mapped the full journey, and redesigned the critical path in two sprints.',
-    tags: ['User Research', 'Mobile', 'UX Strategy'],
+    title: 'Product and Engineering are carrying too much of the design burden.',
+    body: 'Especially in this age of AI and the velocity that comes with it, design needs to be in the conversation earlier and help make better design decisions together.',
+  },
+  {
+    title: 'You need senior design help, but not five days a week.',
+    body: 'Exactly what fractional leadership is made for.',
+  },
+  {
+    title: "You're building your first real design organization.",
+    body: "I'll help define the roles, processes, expectations, and systems you need before they become problems.",
+  },
+  {
+    title: "You're between design leaders.",
+    body: "I'll keep the team moving while you figure out the permanent structure.",
   },
 ];
+
+const ways = [
+  { title: 'Design leadership', body: 'Direction, critique, team mentorship, hiring, and organizational structure.' },
+  { title: 'Product strategy', body: 'Helping teams turn ambiguous problems into something they can actually build.' },
+  { title: 'Design systems', body: 'Creating the foundations, standards, and governance that make quality repeatable.' },
+  { title: 'Hands-on product design', body: 'Diving into the work when something needs design attention.' },
+  { title: 'Interim leadership', body: "Keeping the team moving when you're between design leaders or building your team." },
+];
+
+const fitOptions = [
+  { label: 'No real direction' },
+  { label: 'Stuck on strategy' },
+  { label: 'No systems in place' },
+  { label: "Team's underwater" },
+  { label: 'Between design leaders' },
+];
+
+const process = [
+  { n: '01', title: 'Understand', body: 'I start with the product, the business, the customers, and the people doing the work.' },
+  { n: '02', title: 'Align', body: "We identify what's actually worth solving and get Product, Engineering, and Design working from the same understanding." },
+  { n: '03', title: 'Build', body: 'We establish the workflows, systems, and design direction needed to move faster without creating more chaos.' },
+  { n: '04', title: 'Ship', body: 'I stay close to the work and help turn decisions into products your team can actually build.' },
+  { n: '05', title: 'Scale', body: "The goal isn't to make you dependent on me. It's to leave your team more capable than when I arrived." },
+];
+
+const navLinks = [
+  { href: '#what-i-do', label: 'What I do' },
+  { href: '#how-i-work', label: 'How I work' },
+  { href: '#who-i-help', label: 'Who I help' },
+  { href: '#design-systems', label: 'Design systems' },
+];
+
+const eyebrow = 'text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-4';
+const h2 = 'font-display font-normal text-[clamp(2rem,4vw,2.75rem)] leading-[1.02] tracking-[-0.02em] text-white';
+const section = 'border-t border-white/10 py-20 md:py-28';
+const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font-semibold rounded-full transition hover:brightness-110 active:scale-95';
 ---
 
 <Layout>
-  <!-- NAV -->
-  <header class="fixed top-0 inset-x-0 z-50 border-b border-neutral-800/50 bg-neutral-950/80 backdrop-blur-md">
-    <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-      <span class="font-serif text-base tracking-tight">L Dante Guarin</span>
-      <a
-        href="https://cal.com/ldanteguarin/intro"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-sm font-medium bg-white text-neutral-950 px-4 py-1.5 rounded-full hover:bg-neutral-200 transition-colors"
-      >
-        Book a call
+  <header class="fixed top-0 inset-x-0 z-50 h-[68px] border-b border-white/10 bg-charcoal/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-6 md:px-8 h-full flex items-center justify-between">
+      <a href="#main" aria-label="L Dante Guarin — top">
+        <img src={AVATAR} alt="" width="40" height="40" class="w-10 h-10 rounded-full object-cover" />
       </a>
+      <div class="relative flex items-center gap-3">
+        <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-sm px-[18px] py-2.5`}>
+          Book a call
+        </a>
+        <button
+          type="button"
+          id="menu-button"
+          aria-expanded="false"
+          aria-controls="menu-panel"
+          aria-label="Menu"
+          class="w-11 h-11 rounded-full border border-white/15 flex flex-col items-center justify-center gap-1 hover:border-pink transition-colors"
+        >
+          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
+          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
+          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
+        </button>
+        <nav id="menu-panel" aria-label="Primary" hidden class="absolute right-0 top-[calc(100%+14px)] w-72 rounded-2xl border border-white/10 bg-card p-2 shadow-2xl">
+          {navLinks.map((l) => (
+            <a href={l.href} class="block rounded-xl px-4 py-3 text-base font-semibold text-white hover:bg-white/5 focus-visible:bg-white/5 transition-colors">{l.label}</a>
+          ))}
+        </nav>
+      </div>
     </div>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="min-h-screen flex flex-col justify-center pt-14 px-6">
-      <div class="max-w-5xl mx-auto w-full py-24">
-        <p class="text-sm font-medium text-neutral-400 tracking-widest uppercase mb-8">
-          Fractional Design Leadership · Irvine, CA
+  <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
+  <main id="main" class="pt-[68px]">
+    <div id="canvas-grid">
+    <div class="canvas-col">
+      <!-- HERO -->
+      <section id="hero" data-tile class="tile">
+      <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20">
+        <p class="text-base mb-8">
+          <span class="font-semibold text-white">L Dante Guarin —</span> Fractional Design Lead · Product Design · Design Systems
         </p>
-        <h1 class="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] tracking-tight text-white mb-8 max-w-4xl">
-          Your design lead is here.<br />
-          <span class="italic text-neutral-400">Just not on your payroll.</span>
+        <h1 class="font-display font-normal text-[clamp(2.75rem,7vw,5.25rem)] leading-[0.98] tracking-[-0.02em] text-white max-w-4xl mb-8">
+          Fractional design leadership that gets the work moving.
         </h1>
-        <p class="text-lg sm:text-xl text-neutral-400 max-w-xl leading-relaxed mb-12">
-          Senior design leadership for Series A–C startups — without the 18-month hiring process or the full-time overhead.
+        <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-10">
+          I help growing product teams make better decisions, build better products, and establish the design systems and practices they need to scale. I lead where you need leadership, stay hands-on where it matters, and work directly with Product, Engineering, and company leadership.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a
-            href="https://cal.com/ldanteguarin/intro"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center bg-white text-neutral-950 font-medium px-7 py-3.5 rounded-full hover:bg-neutral-200 transition-colors text-base"
-          >
-            See if we're a fit — 30 min
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-base px-6 py-3.5`}>
+            Book an intro call
           </a>
           <a
-            href="#work"
-            class="inline-flex items-center justify-center border border-neutral-700 text-neutral-300 font-medium px-7 py-3.5 rounded-full hover:border-neutral-500 hover:text-white transition-colors text-base"
+            href="#how-i-work"
+            class="inline-flex items-center justify-center border border-white/15 text-white font-semibold rounded-full px-6 py-3.5 text-base hover:border-pink hover:text-pink transition-colors"
           >
-            See past work
+            See services
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- SIGNAL BAR -->
-    <section class="border-y border-neutral-800 py-8 px-6 overflow-hidden">
-      <div class="max-w-5xl mx-auto">
-        <ul class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-12 text-sm text-neutral-500">
-          <li class="flex items-center gap-2.5"><span class="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></span>Available for new engagements</li>
-          <li>10+ years shipping product design</li>
-          <li>Series A through post-Series C</li>
-          <li>B2B SaaS · Marketplace · Consumer</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- HOW I ENGAGE -->
-    <section id="services" class="py-24 px-6">
-      <div class="max-w-5xl mx-auto">
-        <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">How I engage</p>
-        <h2 class="font-serif text-4xl sm:text-5xl text-white mb-16 max-w-lg leading-tight">
-          Three ways to work together
-        </h2>
-        <div class="grid md:grid-cols-3 gap-6">
-          {engagements.map((e) => (
-            <div class="border border-neutral-800 rounded-2xl p-7 flex flex-col gap-5 hover:border-neutral-600 transition-colors">
-              <div>
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-2">{e.duration}</p>
-                <h3 class="text-xl font-semibold text-white">{e.type}</h3>
-              </div>
-              <p class="text-neutral-400 text-sm leading-relaxed flex-1">{e.description}</p>
-              <div class="pt-4 border-t border-neutral-800">
-                <p class="text-xs text-neutral-500"><span class="text-neutral-400 font-medium">Best for: </span>{e.best}</p>
-              </div>
+        <img src={APP_SHOT} alt="Four screens of a mobile app designed by L Dante Guarin" width="912" height="452" class="w-full h-auto mt-16" loading="eager" />
+        <div id="experience" class="mt-16 pt-16 border-t border-white/10">
+          <p class={eyebrow}>20+ years designing products and leading design</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>Experience across startups, enterprise, and everything in between.</h2>
+          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+            I've worked inside large organizations, helped build early-stage products, and led design through the muddy parts where teams, products, and processes have to catch up with growth.
+          </p>
+          <div class="overflow-hidden">
+            <div class="flex items-center gap-14 marquee-track w-max">
+              {[...companies, ...companies].map((c, i) => (
+                <img
+                  src={c.logo}
+                  alt={c.name}
+                  aria-hidden={i >= companies.length ? 'true' : undefined}
+                  class:list={[
+                    'h-10 w-auto object-contain shrink-0 opacity-60 hover:opacity-100 transition duration-200',
+                    c.mono === 'invert' ? 'brightness-0 invert' : 'grayscale hover:grayscale-0',
+                  ]}
+                />
+              ))}
             </div>
-          ))}
-        </div>
-        <div class="mt-10 text-center">
-          <p class="text-neutral-500 text-sm">Not sure which fits? <a href="https://cal.com/ldanteguarin/intro" target="_blank" rel="noopener noreferrer" class="text-neutral-300 underline underline-offset-2 hover:text-white transition-colors">Let's figure it out together.</a></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CASE STUDIES -->
-    <section id="work" class="py-24 px-6 border-t border-neutral-800">
-      <div class="max-w-5xl mx-auto">
-        <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">Past work</p>
-        <h2 class="font-serif text-4xl sm:text-5xl text-white mb-16 max-w-lg leading-tight">
-          Real problems. Measurable outcomes.
-        </h2>
-        <div class="flex flex-col gap-8">
-          {caseStudies.map((c) => (
-            <div class="border border-neutral-800 rounded-2xl p-8 hover:border-neutral-600 transition-colors">
-              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-4">{c.label}</p>
-              <h3 class="font-serif text-2xl sm:text-3xl text-white mb-4 leading-snug">{c.headline}</h3>
-              <p class="text-neutral-400 leading-relaxed mb-6 max-w-2xl">{c.detail}</p>
-              <div class="flex flex-wrap gap-2">
-                {c.tags.map((tag) => (
-                  <span class="text-xs font-medium text-neutral-400 bg-neutral-800 px-3 py-1 rounded-full">{tag}</span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <p class="mt-8 text-neutral-500 text-sm">
-          Details are anonymized. Happy to go deeper on any of these on a call.
-        </p>
-      </div>
-    </section>
-
-    <!-- PHILOSOPHY -->
-    <section id="philosophy" class="py-24 px-6 border-t border-neutral-800">
-      <div class="max-w-5xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-16 items-center">
-          <div>
-            <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">How I think</p>
-            <h2 class="font-serif text-4xl sm:text-5xl text-white mb-6 leading-tight">
-              Products are systems,<br/><span class="italic text-neutral-400">not collections of screens.</span>
-            </h2>
-          </div>
-          <div class="space-y-6 text-neutral-400 leading-relaxed">
-            <p>
-              Drop a stone in a lake. The ripple doesn't stop at the edge of the frame — it moves the whole surface. Most design problems work the same way. A change to onboarding affects retention. A broken component erodes trust. A vague CTA distorts the entire user mental model.
-            </p>
-            <p>
-              I don't fix symptoms. I trace downstream effects, identify the root system, and fix the thing that's actually broken. Then I make sure the team has the language and the process to stay consistent after I'm gone.
-            </p>
-            <p>
-              Clarity before execution. Always.
-            </p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about" class="py-24 px-6 border-t border-neutral-800">
-      <div class="max-w-5xl mx-auto">
-        <div class="grid md:grid-cols-2 gap-16">
-          <div>
-            <p class="text-sm font-medium text-neutral-500 tracking-widest uppercase mb-4">About</p>
-            <h2 class="font-serif text-4xl sm:text-5xl text-white mb-6 leading-tight">
-              L Dante Guarin
-            </h2>
-            <p class="text-neutral-400 leading-relaxed mb-4">
-              I've spent a decade leading design at startups across B2B SaaS, marketplace, and consumer — from pre-seed to post-Series C. I've built teams from scratch, shipped design systems used by dozens of engineers, and turned "we have one designer" into a design-forward culture.
-            </p>
-            <p class="text-neutral-400 leading-relaxed mb-8">
-              I work fractionally because I believe great design leadership shouldn't be locked behind a full-time hire. The right expertise at the right moment moves companies faster than a full-time generalist who ramps for six months.
-            </p>
+        <div id="track-record" class="mt-16 pt-16 border-t border-white/10">
+          <p class={eyebrow}>Track record</p>
+          <h2 class={`${h2} mb-12`}>Real numbers, not vibes.</h2>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {stats.map((s) => (
+              <div class="rounded-2xl border border-white/10 bg-card p-6">
+                <p class="font-display text-4xl md:text-5xl text-white tracking-[-0.02em] mb-3">{s.value}</p>
+                <p class="text-sm leading-snug">{s.label}</p>
+              </div>
+            ))}
+          </div>
+          <p class="mt-8">
             <a
-              href="https://cal.com/ldanteguarin/intro"
+              href={PORTFOLIO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-white font-medium text-sm hover:text-neutral-300 transition-colors"
+              class="text-sky underline underline-offset-4 hover:text-white transition-colors"
             >
-              Book a 30-min intro call
-              <span aria-hidden="true">→</span>
+              See the full case studies on ldante.com →
             </a>
-          </div>
-          <div class="space-y-6">
-            <div class="border border-neutral-800 rounded-2xl p-6">
-              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-3">Strengths</p>
-              <ul class="space-y-2 text-neutral-300 text-sm">
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Design systems architecture</li>
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Team building + hiring rubrics</li>
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Cross-functional alignment (PM, eng, exec)</li>
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> User research + usability testing</li>
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> 0→1 product design</li>
-                <li class="flex items-start gap-2"><span class="text-neutral-600 mt-0.5">–</span> Information architecture + UX strategy</li>
-              </ul>
-            </div>
-            <div class="border border-neutral-800 rounded-2xl p-6">
-              <p class="text-xs font-medium text-neutral-500 uppercase tracking-widest mb-3">Industries</p>
-              <div class="flex flex-wrap gap-2">
-                {['B2B SaaS', 'Marketplace', 'Consumer Mobile', 'Fintech', 'Health Tech', 'Developer Tools'].map((ind) => (
-                  <span class="text-xs text-neutral-400 bg-neutral-800 px-3 py-1 rounded-full">{ind}</span>
-                ))}
+          </p>
+        </div>
+      </div>
+      </section>
+    </div>
+
+    <div class="canvas-col">
+      <!-- WHAT I DO -->
+      <section id="what-i-do" data-tile class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>What I do</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>You don't always need a full-time Head of Design.</h2>
+          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+            Sometimes you need someone senior enough to lead the function, experienced enough to see what's wrong, and hands-on enough to actually fix it. That's where I come in.
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            {offer.map((o) => (
+              <div class="rounded-2xl border border-white/10 bg-card p-6">
+                <div class="w-10 h-10 rounded-lg bg-pink/15 text-pink flex items-center justify-center mb-6">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={o.icon} />
+                </div>
+                <h3 class="font-display font-normal text-[22px] tracking-[-0.01em] text-white mb-3">{o.title}</h3>
+                <p class="text-lg leading-relaxed">{o.body}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- WHO I HELP -->
+      <section id="who-i-help" data-tile class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>Who I help</p>
+          <h2 class={`${h2} max-w-3xl mb-12`}>Maybe you don't need more designers. You might need more design leadership.</h2>
+          <div class="grid md:grid-cols-2 gap-x-12">
+            {painPoints.map((p) => (
+              <div class="border-t border-white/10 py-6">
+                <h3 class="font-display font-normal text-xl tracking-[-0.01em] text-white mb-2">{p.title}</h3>
+                <p class="text-base leading-relaxed">{p.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="canvas-col">
+      <!-- HOW I WORK -->
+      <section id="how-i-work" data-tile class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>How I work</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>Part-time leadership. Full-time commitment to the work.</h2>
+          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+            I embed with your team rather than operating from the sidelines. I work directly with founders, Product, Engineering, and Design to understand what's getting in the way, establish priorities, and move the work forward.
+          </p>
+
+          <p class="text-white font-semibold mb-4">Not sure which fits? Tell me what's in the way.</p>
+          <div class="flex flex-wrap gap-2.5 mb-6" role="tablist" aria-label="What's getting in the way">
+            {fitOptions.map((opt, i) => (
+              <button
+                type="button"
+                role="tab"
+                id={`fit-tab-${i}`}
+                aria-controls={`fit-panel-${i}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+                data-fit-tab
+                class="text-sm font-medium border rounded-full px-4 py-2"
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-card mb-20">
+            {ways.map((w, i) => (
+              <div
+                role="tabpanel"
+                id={`fit-panel-${i}`}
+                aria-labelledby={`fit-tab-${i}`}
+                data-fit-panel
+                hidden={i !== 0}
+                class="p-8 md:p-10"
+              >
+                <h3 class="font-display font-normal text-2xl md:text-3xl tracking-[-0.01em] text-white mb-3">{w.title}</h3>
+                <p class="text-lg leading-relaxed max-w-xl">{w.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <h3 class="font-display font-normal text-[clamp(1.5rem,3vw,2.25rem)] tracking-[-0.02em] text-white mb-10">
+            The process is a "we" thing.
+          </h3>
+          <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-8">
+            {process.map((step) => (
+              <li>
+                <p class="text-[13px] font-semibold tracking-[0.08em] text-pink mb-3">{step.n}</p>
+                <h4 class="font-display font-normal text-[22px] tracking-[-0.01em] text-white mb-2">{step.title}</h4>
+                <p class="text-base leading-relaxed">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <!-- DESIGN SYSTEMS & AI -->
+      <section id="design-systems" data-tile class={`tile ${section}`} data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>Design systems &amp; AI</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>Design systems aren't just component libraries.</h2>
+          <div class="grid md:grid-cols-2 gap-x-16 gap-y-8 text-lg leading-relaxed">
+            <div class="space-y-5">
+              <p class="text-white">They help determine how a design organization scales its decisions.</p>
+              <p>
+                I help teams create the foundations, patterns, tokens, documentation, and governance that make good design easier to repeat—and make designers less dependent on constant review.
+              </p>
+            </div>
+            <div class="space-y-5">
+              <h3 class="font-display font-normal text-2xl tracking-[-0.01em] text-white">AI makes good teams faster. It doesn't replace good judgement.</h3>
+              <p>
+                I use AI throughout the design process to reduce repetitive work, explore ideas faster, prototype more quickly, and help teams turn design decisions into production-ready systems.
+              </p>
+              <p>The goal isn't to make more design. It's to spend more time on the decisions that matter.</p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- CTA -->
-    <section class="py-24 px-6 border-t border-neutral-800">
-      <div class="max-w-5xl mx-auto text-center">
-        <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl text-white mb-6 leading-tight max-w-2xl mx-auto">
-          Ready to close the design gap?
-        </h2>
-        <p class="text-neutral-400 text-lg mb-10 max-w-md mx-auto">
-          30 minutes. No pitch. Just an honest conversation about where you're stuck and whether I can help.
-        </p>
-        <a
-          href="https://cal.com/ldanteguarin/intro"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center justify-center bg-white text-neutral-950 font-medium px-8 py-4 rounded-full hover:bg-neutral-200 transition-colors text-base"
-        >
-          Book your intro call
-        </a>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-neutral-800 py-8 px-6">
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-600">
-      <span>© {new Date().getFullYear()} L Dante Guarin. All rights reserved.</span>
-      <div class="flex gap-6">
-        <a href="https://linkedin.com/in/ldanteguarin" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-400 transition-colors">LinkedIn</a>
-        <a href="mailto:hello@ldante.com" class="hover:text-neutral-400 transition-colors">hello@ldante.com</a>
-      </div>
+      <!-- CTA -->
+      <section id="contact" data-tile class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <div class="rounded-3xl border border-white/10 bg-card px-6 py-16 md:py-20 text-center">
+            <p class={eyebrow}>Let's work together</p>
+            <h2 class={`${h2} max-w-2xl mx-auto mb-6`}>Need design leadership? Let's talk.</h2>
+            <p class="text-lg leading-relaxed max-w-xl mx-auto mb-10">
+              Tell me where your team is today, what's getting in the way, and where you're trying to go. If I can help, we'll figure out what that looks like.
+            </p>
+            <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-base px-8 py-4`}>
+              Start a conversation
+            </a>
+          </div>
+        <footer class="mt-12 pt-8 border-t border-white/10 text-sm">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span>© {new Date().getFullYear()} L Dante Guarin</span>
+            <span>Product &amp; Fractional Design · Los Angeles</span>
+            <div class="flex gap-6">
+              <a href="https://linkedin.com/in/ldanteguarin" target="_blank" rel="noopener noreferrer" class="text-sky underline underline-offset-4 hover:text-white transition-colors">LinkedIn</a>
+              <a href="mailto:hello@ldante.com" class="text-sky underline underline-offset-4 hover:text-white transition-colors">hello@ldante.com</a>
+            </div>
+          </div>
+        </footer>
+        </div>
+      </section>
     </div>
-  </footer>
+    </div>
+  </main>
+  </div>
+
+  <script>
+    // "Find your fit" — a standard ARIA tabs pattern: one tab selected, one
+    // panel visible, arrow keys move focus and activate.
+    const tabs = Array.from(document.querySelectorAll('[data-fit-tab]'));
+    const panels = Array.from(document.querySelectorAll('[data-fit-panel]'));
+
+    function activate(index) {
+      tabs.forEach((tab, i) => {
+        const selected = i === index;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach((panel, i) => {
+        panel.hidden = i !== index;
+      });
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => activate(i));
+      tab.addEventListener('keydown', (e) => {
+        const key = e.key;
+        let next = null;
+        if (key === 'ArrowRight' || key === 'ArrowDown') next = (i + 1) % tabs.length;
+        else if (key === 'ArrowLeft' || key === 'ArrowUp') next = (i - 1 + tabs.length) % tabs.length;
+        else if (key === 'Home') next = 0;
+        else if (key === 'End') next = tabs.length - 1;
+        if (next !== null) {
+          e.preventDefault();
+          activate(next);
+          tabs[next].focus();
+        }
+      });
+    });
+
+    // Hamburger menu. Links inside it are ordinary #anchors, so the canvas
+    // (or the mobile scroll fallback) in the layout script handles the travel.
+    const menuButton = document.getElementById('menu-button');
+    const menuPanel = document.getElementById('menu-panel');
+    const menuLinks = Array.from(menuPanel.querySelectorAll('a'));
+    let menuTimer = 0;
+
+    function openMenu() {
+      clearTimeout(menuTimer);
+      menuPanel.hidden = false;
+      menuButton.setAttribute('aria-expanded', 'true');
+      requestAnimationFrame(() => requestAnimationFrame(() => { menuPanel.dataset.open = 'true'; }));
+      menuLinks[0].focus();
+    }
+    function closeMenu(returnFocus) {
+      if (menuButton.getAttribute('aria-expanded') !== 'true') return;
+      menuButton.setAttribute('aria-expanded', 'false');
+      delete menuPanel.dataset.open;
+      menuTimer = window.setTimeout(() => { menuPanel.hidden = true; }, 160);
+      if (returnFocus) menuButton.focus();
+    }
+
+    menuButton.addEventListener('click', () => {
+      if (menuButton.getAttribute('aria-expanded') === 'true') closeMenu(false);
+      else openMenu();
+    });
+    menuLinks.forEach((link, i) => {
+      link.addEventListener('click', () => closeMenu(false));
+      link.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); menuLinks[(i + 1) % menuLinks.length].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); menuLinks[(i - 1 + menuLinks.length) % menuLinks.length].focus(); }
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu(true);
+    });
+    document.addEventListener('pointerdown', (e) => {
+      if (!menuPanel.contains(e.target) && !menuButton.contains(e.target)) closeMenu(false);
+    });
+    menuPanel.addEventListener('focusout', (e) => {
+      if (e.relatedTarget && !menuPanel.contains(e.relatedTarget) && e.relatedTarget !== menuButton) closeMenu(false);
+    });
+  </script>
 </Layout>

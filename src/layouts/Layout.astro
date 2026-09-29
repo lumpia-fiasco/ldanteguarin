@@ -7,9 +7,49 @@ interface Props {
 }
 
 const {
-  title = 'L Dante Guarin — Fractional Design Leadership',
-  description = 'Senior design leadership for Series A–C startups. Embedded expertise without the full-time overhead.',
+  title = 'L Dante Guarin — Product & Fractional Design for Startups',
+  description = 'L Dante Guarin is a fractional design lead — design leadership, design systems and AI-assisted workflows for growing product teams. 20+ years in enterprise SaaS. $3.1M+ saved, 6x adoption shipped.',
 } = Astro.props;
+
+const siteUrl = 'https://ldanteguarin.com';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${siteUrl}/#person`,
+      name: 'L Dante Guarin',
+      jobTitle: 'Fractional Design Lead',
+      url: siteUrl,
+      email: 'mailto:hello@ldante.com',
+      sameAs: ['https://linkedin.com/in/ldanteguarin', 'https://ldante.com'],
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Los Angeles',
+        addressRegion: 'CA',
+        addressCountry: 'US',
+      },
+      knowsAbout: [
+        'Product Design',
+        'Design Systems',
+        'AI-Assisted Design Workflows',
+        'Design Leadership',
+        'Enterprise SaaS',
+      ],
+    },
+    {
+      '@type': 'ProfessionalService',
+      '@id': `${siteUrl}/#service`,
+      name: 'L Dante Guarin — Fractional Design Leadership',
+      url: siteUrl,
+      description,
+      provider: { '@id': `${siteUrl}/#person` },
+      areaServed: 'US',
+      serviceType: ['Fractional Design Leadership', 'Design Systems', 'Interim Design Leadership'],
+    },
+  ],
+};
 ---
 
 <html lang="en">
@@ -19,15 +59,355 @@ const {
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta name="theme-color" content="#1c1c1c" />
+    <link rel="canonical" href={siteUrl} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Golos+Text:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" href="/favicon.ico" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
   </head>
-  <body class="bg-neutral-950 text-neutral-100 antialiased">
+  <body class="bg-charcoal text-neutral-400 antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-pink focus:text-charcoal focus:font-semibold focus:px-4 focus:py-2 focus:rounded-full"
+    >
+      Skip to content
+    </a>
     <slot />
+    <div id="zoom-controls">
+      <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" id="zoom-reset" aria-label="Back to the top panel">⌂</button>
+    </div>
+    <script>
+      import Panzoom from '@panzoom/panzoom';
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canvasViewport = document.getElementById('canvas-viewport');
+      const canvasGrid = document.getElementById('canvas-grid');
+      const canvasMain = canvasGrid && canvasGrid.parentElement;
+      // Same breakpoint as the canvas CSS. The canvas switches on and off
+      // live when the window crosses it, not just at page load.
+      const desktop = window.matchMedia('(min-width: 901px)');
+      const canvasOn = () => !!panzoom;
+      let panzoom = null;
+
+      // Scroll-reveal for the mobile page (the canvas CSS shows everything
+      // regardless); no-JS and reduced-motion always show everything.
+      const els = document.querySelectorAll('[data-reveal]');
+      if (!reduceMotion && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.setAttribute('data-revealed', 'true');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.setAttribute('data-revealed', 'true'));
+      }
+
+      const tileOrder = canvasGrid ? Array.from(canvasGrid.querySelectorAll('[data-tile]')) : [];
+      const heroTile = document.getElementById('hero');
+      let currentIndex = 0;
+
+      // ── Geometry ──
+      // Panzoom's transform is `scale(s) translate(tx, ty)` about the grid's
+      // centre, so a view is the canvas point at the middle of the viewport
+      // plus a scale. Tile positions come from offsetLeft/Top, which are
+      // grid-local (and ignore the transform) because the grid is
+      // position:relative.
+      const vpSize = () => ({ w: canvasViewport.clientWidth, h: canvasViewport.clientHeight });
+      function stateFor(c, s) {
+        const v = vpSize();
+        const W = canvasGrid.offsetWidth;
+        const H = canvasGrid.offsetHeight;
+        return { s, tx: (v.w / 2 - W / 2) / s + W / 2 - c.x, ty: (v.h / 2 - H / 2) / s + H / 2 - c.y };
+      }
+      function centerOf(s, tx, ty) {
+        const v = vpSize();
+        const W = canvasGrid.offsetWidth;
+        const H = canvasGrid.offsetHeight;
+        return { x: (v.w / 2 - W / 2) / s + W / 2 - tx, y: (v.h / 2 - H / 2) / s + H / 2 - ty };
+      }
+      // Where a panel lands: at full size (only shrunk if it's wider than
+      // the window), centred if it fits, otherwise with its top edge just
+      // below the header so it reads from the start — scroll to see the rest.
+      function frameFor(t) {
+        const v = vpSize();
+        const m = 32;
+        const s = Math.min(1, (v.w - 2 * m) / t.offsetWidth);
+        const x = t.offsetLeft + t.offsetWidth / 2;
+        const y = t.offsetHeight * s <= v.h - 2 * m
+          ? t.offsetTop + t.offsetHeight / 2
+          : t.offsetTop + (v.h / 2 - m) / s;
+        return { s, c: { x, y } };
+      }
+      function overview() {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        tileOrder.forEach((t) => {
+          minX = Math.min(minX, t.offsetLeft);
+          minY = Math.min(minY, t.offsetTop);
+          maxX = Math.max(maxX, t.offsetLeft + t.offsetWidth);
+          maxY = Math.max(maxY, t.offsetTop + t.offsetHeight);
+        });
+        const v = vpSize();
+        return {
+          s: Math.min((v.w - 128) / (maxX - minX), (v.h - 128) / (maxY - minY)),
+          cx: (minX + maxX) / 2,
+          cy: (minY + maxY) / 2,
+        };
+      }
+
+      // Force the DOM transform to match Panzoom's logical state (Panzoom
+      // writes inside requestAnimationFrame and no-ops on unchanged values).
+      function settleInstantly() {
+        const p = panzoom.getPan();
+        const s = panzoom.getScale();
+        canvasGrid.style.transition = 'none';
+        canvasGrid.style.transform = `scale(${s}) translate(${p.x}px, ${p.y}px)`;
+      }
+      // Hand a finished view back to Panzoom so drag/zoom continue from it.
+      function commit(st) {
+        panzoom.zoom(st.s, { animate: false });
+        panzoom.pan(st.tx, st.ty, { animate: false });
+        settleInstantly();
+      }
+
+      // ── Zoom-out / zoom-in navigation ──
+      let anim = null;
+      // Damped wobble over the last stretch of the move: 0 at both ends, a
+      // few decaying swings between, so every landing settles exactly.
+      const wobble = (u) => {
+        const t = (u - 0.62) / 0.38;
+        return t <= 0 ? 0 : Math.sin(Math.PI * 3 * t) * (1 - t) * (1 - t);
+      };
+      const easeInOut = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+
+      function cancelAnim() {
+        if (!anim) return;
+        cancelAnimationFrame(anim.raf);
+        const last = anim.last;
+        anim = null;
+        canvasMain.style.transform = '';
+        if (last) commit(last);
+      }
+
+      function animateTo(tile, instant) {
+        cancelAnim();
+        const idx = tileOrder.indexOf(tile);
+        if (idx !== -1) currentIndex = idx;
+        const { s: s1, c: g1 } = frameFor(tile);
+        const end = stateFor(g1, s1);
+        if (instant || reduceMotion) {
+          commit(end);
+          return;
+        }
+        const s0 = panzoom.getScale();
+        const p0 = panzoom.getPan();
+        const c0 = centerOf(s0, p0.x, p0.y);
+        if (Math.hypot(c0.x - g1.x, c0.y - g1.y) < 2 && Math.abs(s0 - s1) < 0.01) return;
+
+        // Scale dips *halfway* toward the whole-field overview at the
+        // midpoint (a hop, not a full pull-back), drifting halfway toward the
+        // field's centre with it. The tilt goes on #main, whose centre is the
+        // viewport's — rotating the grid would pivot about the whole canvas.
+        const ov = overview();
+        const sOut = Math.min(ov.s, s0, s1);
+        const dip = ((Math.log(s0) + Math.log(s1)) / 2 - Math.log(sOut)) * 0.5;
+        const dx = (ov.cx - (c0.x + g1.x) / 2) * 0.5;
+        const dy = (ov.cy - (c0.y + g1.y) / 2) * 0.5;
+        const lean = (g1.x >= c0.x ? 1 : -1) * (0.9 + Math.random() * 0.4);
+        const duration = 1300;
+        const t0 = performance.now();
+        anim = { raf: 0, last: null };
+        const frame = (now) => {
+          const u = Math.min(1, (now - t0) / duration);
+          const e = easeInOut(u);
+          const b = Math.sin(Math.PI * u);
+          const w = wobble(u);
+          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b) * (1 + 0.015 * w);
+          const c = { x: c0.x + (g1.x - c0.x) * e + dx * b, y: c0.y + (g1.y - c0.y) * e + dy * b };
+          const st = stateFor(c, s);
+          const tilt = lean * Math.sin(Math.PI * Math.min(1, u / 0.7)) - lean * 0.35 * w;
+          canvasGrid.style.transition = 'none';
+          canvasGrid.style.transform = `scale(${st.s}) translate(${st.tx}px, ${st.ty}px)`;
+          canvasMain.style.transform = u < 1 ? `rotate(${tilt}deg)` : '';
+          anim.last = st;
+          if (u < 1) {
+            anim.raf = requestAnimationFrame(frame);
+          } else {
+            anim = null;
+            commit(end);
+          }
+        };
+        anim.raf = requestAnimationFrame(frame);
+      }
+
+      function zoomAtCenter(factor) {
+        cancelAnim();
+        const r = canvasViewport.getBoundingClientRect();
+        panzoom.zoomToPoint(
+          panzoom.getScale() * factor,
+          { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 },
+          { animate: !reduceMotion }
+        );
+      }
+
+      // ── Switching the canvas on and off ──
+      function enableCanvas() {
+        if (canvasOn() || !canvasGrid) return;
+        panzoom = Panzoom(canvasGrid, {
+          canvas: true,
+          cursor: 'grab',
+          minScale: 0.05,
+          maxScale: 3,
+          animate: !reduceMotion,
+          duration: 300,
+          easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        });
+        document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (canvasOn()) animateTo(tileOrder[currentIndex] || heroTile, true);
+        })));
+      }
+      function disableCanvas() {
+        if (!canvasOn()) return;
+        cancelAnim();
+        panzoom.destroy();
+        panzoom = null;
+        canvasGrid.style.transform = '';
+        canvasGrid.style.transition = '';
+        canvasMain.style.transform = '';
+        canvasMain.style.cursor = '';
+      }
+      if (canvasViewport && canvasGrid) {
+        if (desktop.matches) enableCanvas();
+        desktop.addEventListener('change', (e) => (e.matches ? enableCanvas() : disableCanvas()));
+
+        // Scroll / two-finger swipe pans the canvas freely; Ctrl/Cmd+wheel
+        // (also how browsers report a trackpad pinch) zooms at the pointer.
+        canvasViewport.addEventListener(
+          'wheel',
+          (e) => {
+            if (!canvasOn()) return;
+            e.preventDefault();
+            cancelAnim();
+            if (e.ctrlKey) {
+              panzoom.zoomWithWheel(e, { animate: false });
+              return;
+            }
+            const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vpSize().h : 1;
+            const scale = panzoom.getScale();
+            panzoom.pan((-e.deltaX * unit) / scale, (-e.deltaY * unit) / scale, { relative: true, animate: false });
+          },
+          { passive: false }
+        );
+
+        // Grabbing the canvas mid-flight takes over from the animation.
+        canvasViewport.addEventListener('pointerdown', () => canvasOn() && cancelAnim(), true);
+
+        // Keyboard: arrow keys pan, +/- zoom, 0 returns to the hero — only
+        // when the viewport itself has focus, so this never fights a nested
+        // control's own arrow-key behavior (like the "find your fit" tablist).
+        canvasViewport.addEventListener('keydown', (e) => {
+          if (!canvasOn() || document.activeElement !== canvasViewport) return;
+          const step = 80;
+          const scale = panzoom.getScale();
+          const pan = (x, y) => {
+            cancelAnim();
+            panzoom.pan(x / scale, y / scale, { relative: true, animate: !reduceMotion });
+          };
+          const actions = {
+            ArrowUp: () => pan(0, step),
+            ArrowDown: () => pan(0, -step),
+            ArrowLeft: () => pan(step, 0),
+            ArrowRight: () => pan(-step, 0),
+            '+': () => zoomAtCenter(1.3),
+            '=': () => zoomAtCenter(1.3),
+            '-': () => zoomAtCenter(1 / 1.3),
+            _: () => zoomAtCenter(1 / 1.3),
+            '0': () => animateTo(heroTile, false),
+          };
+          if (actions[e.key]) {
+            e.preventDefault();
+            actions[e.key]();
+          }
+        });
+
+        document.getElementById('zoom-in')?.addEventListener('click', () => canvasOn() && zoomAtCenter(1.3));
+        document.getElementById('zoom-out')?.addEventListener('click', () => canvasOn() && zoomAtCenter(1 / 1.3));
+        document.getElementById('zoom-reset')?.addEventListener('click', () => canvasOn() && animateTo(heroTile, false));
+
+        // Keyboard focus landing in another panel travels there; inside the
+        // current one it just nudges the element into view. Mouse clicks are
+        // left alone (:focus-visible only).
+        canvasGrid.addEventListener('focusin', (e) => {
+          if (!canvasOn()) return;
+          const tile = e.target.closest && e.target.closest('[data-tile]');
+          const keyboard = e.target.matches && e.target.matches(':focus-visible');
+          if (keyboard && tile && tile !== tileOrder[currentIndex]) {
+            animateTo(tile, false);
+            return;
+          }
+          if (anim) return;
+          settleInstantly();
+          const vpRect = canvasViewport.getBoundingClientRect();
+          const elRect = e.target.getBoundingClientRect();
+          const margin = 32;
+          let dx = 0;
+          let dy = 0;
+          if (elRect.left < vpRect.left + margin) dx = vpRect.left + margin - elRect.left;
+          else if (elRect.right > vpRect.right - margin) dx = vpRect.right - margin - elRect.right;
+          if (elRect.top < vpRect.top + margin) dy = vpRect.top + margin - elRect.top;
+          else if (elRect.bottom > vpRect.bottom - margin) dy = vpRect.bottom - margin - elRect.bottom;
+          if (dx || dy) {
+            const scale = panzoom.getScale();
+            panzoom.pan(dx / scale, dy / scale, { relative: true, animate: !reduceMotion });
+          }
+        });
+
+        // Keep the current panel framed when the window changes size.
+        let resizeTimer = 0;
+        window.addEventListener('resize', () => {
+          if (!canvasOn()) return;
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => canvasOn() && animateTo(tileOrder[currentIndex], true), 150);
+        });
+      }
+
+      // In-page links: on the canvas, zoom out and back in on the panel; on
+      // the mobile page, just scroll to it.
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', (e) => {
+          const id = a.getAttribute('href').slice(1);
+          const target = id && document.getElementById(id);
+          if (!target) return;
+          e.preventDefault();
+          if (canvasOn()) {
+            animateTo(id === 'main' ? heroTile : target.closest('[data-tile]') || target, false);
+          } else if (id === 'main') {
+            window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          } else {
+            target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          }
+        });
+      });
+    </script>
   </body>
 </html>

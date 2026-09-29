@@ -1,10 +1,220 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-serif: 'DM Serif Display', Georgia, serif;
+  /* Same faces as the live ldanteguarin.com: Cal Sans titles, Golos Text body. */
+  --font-sans: 'Golos Text', system-ui, sans-serif;
+  --font-display: 'Cal Sans', 'Golos Text', system-ui, sans-serif;
+
+  --color-charcoal: #1c1c1c;
+  --color-card: #262626;
+  --color-pink: #f2a0b5;
+
+  /* Text links (pink is reserved for buttons, labels and accents). Clears
+     ~6.5:1 on charcoal. */
+  --color-sky: #03a9f4;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--color-pink);
+  color: var(--color-charcoal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-pink);
+  outline-offset: 2px;
+}
+
+/* Marquee for the logo strip — paused for reduced motion via the block above */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee 32s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Scroll-reveal — JS toggles [data-revealed]; no-JS/reduced-motion always shows content */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-reveal][data-revealed='true'] {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+html:not(.js) [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+/* "Find your fit" tabs — the selected tab is a solid pink pill. */
+[data-fit-tab] {
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.18);
+  border-width: 1px;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+[data-fit-tab]:hover {
+  color: #fff;
+  border-color: var(--color-pink);
+}
+[data-fit-tab][aria-selected='true'] {
+  background-color: var(--color-pink);
+  color: var(--color-charcoal);
+  border-color: var(--color-pink);
+}
+
+/* ── Hamburger menu ─────────────────────────────────────────────────── */
+#menu-panel {
+  transform-origin: top right;
+  opacity: 0;
+  transform: scale(0.96) translateY(-4px);
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+#menu-panel[data-open='true'] {
+  opacity: 1;
+  transform: none;
+}
+.menu-line {
+  transition: transform 0.2s ease-out, opacity 0.15s ease-out;
+}
+[aria-expanded='true'] .menu-line:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+[aria-expanded='true'] .menu-line:nth-child(2) { opacity: 0; }
+[aria-expanded='true'] .menu-line:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ── The infinite canvas ────────────────────────────────────────────────
+   Mobile-first: #canvas-grid is ordinary block flow, so below 901px this
+   is just the normal scrolling page. From 901px up the page stops
+   scrolling; #canvas-viewport is a fixed window onto #canvas-grid, every
+   panel is an invisible container placed on it, and nav links zoom out over the whole field
+   and back in on the panel (see Layout.astro). */
+#canvas-grid {
+  display: block;
+}
+/* Column wrappers only exist for the canvas; on the scrolling page they
+   dissolve so the sections flow exactly as before. */
+.canvas-col {
+  display: contents;
+}
+#zoom-controls {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  body:has(#canvas-viewport) {
+    height: 100vh;
+    overflow: hidden;
+  }
+  #canvas-viewport {
+    position: fixed;
+    inset: 0;
+    top: 68px; /* below the fixed header */
+    overflow: hidden;
+    cursor: grab;
+  }
+  #canvas-viewport:active {
+    cursor: grabbing;
+  }
+  #main {
+    padding-top: 0;
+    height: 100%;
+  }
+  #canvas-grid {
+    /* Three independent columns: panels stack down each column and the
+       columns sit side by side, with the same gap everywhere. Invisible
+       panels only look evenly spaced if each is exactly as tall as its
+       content, which a row-based grid can't do once one panel is much
+       taller than its neighbours. */
+    --canvas-gap: 240px;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--canvas-gap);
+    position: relative; /* the offsetParent, so tile offsets are canvas-local */
+    width: max-content;
+  }
+  .canvas-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--canvas-gap);
+    width: 1000px;
+  }
+  #canvas-grid .tile {
+    position: relative;
+    z-index: 1;
+    /* Real containers (fixed width, padding, equal gaps) that read as
+       open space: no border, no fill. */
+    border: 0;
+    background: transparent;
+    padding: 56px;
+  }
+  /* Panels replace the page's full-width sections: drop their page-level
+     rules and paddings and the inner centred container. */
+  #canvas-grid .tile > .tile-inner {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Real buttons, not just gestures, so the canvas stays operable by keyboard. */
+  #zoom-controls {
+    display: flex;
+    position: fixed;
+    left: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 40;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-card);
+  }
+  #zoom-controls button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+    color: #fff;
+    transition: background-color 0.15s ease;
+  }
+  #zoom-controls button:hover {
+    background: rgba(242, 160, 181, 0.2);
+  }
+  #zoom-controls button + button {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
 }
