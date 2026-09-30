@@ -992,13 +992,14 @@ html.cases-unlocked .case-gate {
     justify-content: center;
     padding: 60px;
     text-align: center;
-    /* Same pink glow as the counter and eyebrows. */
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: 170px;
-    line-height: 1;
-    color: #ff9cb8;
-    text-shadow: 0 0 18px rgba(255, 110, 150, 0.65), 0 0 60px rgba(255, 90, 140, 0.3);
+    /* Marker on masking tape, the hero title's treatment, set at a small
+       angle against the slide's own tilt. */
+    font-family: 'Permanent Marker', cursive;
+    font-weight: 400;
+    font-size: 150px;
+    line-height: 1.4;
+    letter-spacing: -0.035em;
+    color: #1c1c1c;
     opacity: var(--zo, 0);
     pointer-events: none;
     z-index: 2;
@@ -1010,9 +1011,14 @@ html.cases-unlocked .case-gate {
   #canvas-grid.is-overview .ghost-num {
     pointer-events: none;
   }
-  #canvas-grid.is-overview .tile:hover .slide-title {
-    color: #fff;
-    text-shadow: 0 0 18px rgba(255, 255, 255, 0.5), 0 0 60px rgba(255, 140, 180, 0.35);
+  .slide-title .tape {
+    display: inline-block;
+    rotate: calc(var(--tilt, 0deg) * -2);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+    transition: scale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #canvas-grid.is-overview .tile:hover .slide-title .tape {
+    scale: 1.06;
   }
 }
 

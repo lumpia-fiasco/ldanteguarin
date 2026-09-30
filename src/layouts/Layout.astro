@@ -435,7 +435,11 @@ const jsonLd = {
           const label = document.createElement('span');
           label.className = 'slide-title';
           label.setAttribute('aria-hidden', 'true');
-          label.textContent = t.dataset.label;
+          // Marker on a strip of masking tape, like the hero title.
+          const strip = document.createElement('span');
+          strip.className = 'tape';
+          strip.textContent = t.dataset.label;
+          label.appendChild(strip);
           t.appendChild(label);
         });
 
