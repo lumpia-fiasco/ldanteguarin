@@ -69,7 +69,7 @@ const jsonLd = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Golos+Text:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Permanent+Marker&family=Golos+Text:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -90,11 +90,18 @@ const jsonLd = {
       Skip to content
     </a>
     <slot />
+    <div id="grain" aria-hidden="true"></div>
+    {/* Zoom keys are parked for now (their styles and handlers are kept; the
+       handlers skip missing buttons). Scroll, pinch and the M key still work.
     <div id="zoom-controls">
       <button type="button" id="zoom-in" aria-label="Zoom in">+</button>
       <button type="button" id="zoom-out" aria-label="Zoom out">−</button>
+      <button type="button" id="zoom-map" aria-label="Show the whole map (M)">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
       <button type="button" id="zoom-reset" aria-label="Back to the top panel">⌂</button>
     </div>
+    */}
     <script>
       import Panzoom from '@panzoom/panzoom';
 
@@ -151,16 +158,39 @@ const jsonLd = {
         const H = canvasGrid.offsetHeight;
         return { x: (v.w / 2 - W / 2) / s + W / 2 - tx, y: (v.h / 2 - H / 2) / s + H / 2 - ty };
       }
-      // Where a panel lands: at full size (only shrunk if it's wider than
-      // the window), centred if it fits, otherwise with its top edge just
-      // below the header so it reads from the start — scroll to see the rest.
-      // Where a slide lands: centred and scaled so the whole slide fills the
-      // window (a little breathing room at the edges).
+      // Where a slide lands: centred and scaled so the slide fills the window.
+      // Slides take the window's proportions (1440 wide, height to match), so
+      // a landed slide fills the screen edge to edge without cropping.
+      const SLIDE_W = 1440;
+      function matchSlideAspect() {
+        const v = vpSize();
+        // No upper limit: capping the height made squarer windows crop the
+        // slide's sides. Only ultra-wide windows (past ~2.5:1) bottom out.
+        const h = Math.round(Math.max(560, (SLIDE_W * v.h) / v.w));
+        canvasGrid.style.setProperty('--slide-h', `${h}px`);
+      }
+      // Cover-fit, so the sheet always reaches every edge of the window.
       function frameFor(t) {
         const v = vpSize();
-        const m = 20;
-        const s = Math.min(1.35, Math.max(0.3, Math.min((v.w - 2 * m) / t.offsetWidth, (v.h - 2 * m) / t.offsetHeight)));
+        const s = Math.min(3, Math.max(0.3, Math.max(v.w / t.offsetWidth, v.h / t.offsetHeight)));
         return { s, c: { x: t.offsetLeft + t.offsetWidth / 2, y: t.offsetTop + t.offsetHeight / 2 } };
+      }
+
+      // Every slide, fitted to the window — the map view.
+      function overview() {
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        tileOrder.forEach((t) => {
+          minX = Math.min(minX, t.offsetLeft);
+          minY = Math.min(minY, t.offsetTop);
+          maxX = Math.max(maxX, t.offsetLeft + t.offsetWidth);
+          maxY = Math.max(maxY, t.offsetTop + t.offsetHeight);
+        });
+        const v = vpSize();
+        const m = 60;
+        return {
+          s: Math.min((v.w - 2 * m) / (maxX - minX), (v.h - 2 * m) / (maxY - minY)),
+          c: { x: (minX + maxX) / 2, y: (minY + maxY) / 2 },
+        };
       }
 
       // Slides are a fixed size; if a slide's content runs taller than the
@@ -212,11 +242,21 @@ const jsonLd = {
       }
 
       function animateTo(tile, instant) {
-        cancelAnim();
-        stopZoom();
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
+        animateView(g1, s1, instant, true);
+      }
+
+      function showMap() {
+        const { s: s1, c: g1 } = overview();
+        animateView(g1, s1, false, false);
+      }
+      // Glide the view to canvas point g1 at scale s1. withTilt adds the
+      // arrival swing used for slide-to-slide jumps.
+      function animateView(g1, s1, instant, withTilt) {
+        cancelAnim();
+        stopZoom();
         const end = stateFor(g1, s1);
         if (instant || reduceMotion) {
           commit(end);
@@ -234,7 +274,9 @@ const jsonLd = {
         // — rotating the grid would pivot about the whole canvas.
         const dist = Math.hypot(g1.x - c0.x, g1.y - c0.y);
         const dip = 0.12 + 0.1 * Math.min(1, dist / 5000);
-        const lean = (g1.x >= c0.x ? 1 : -1) * 2.4;
+        const lean = withTilt ? (g1.x >= c0.x ? 1 : -1) * 2.4 : 0;
+        // Zooming out to the map shouldn't dip further first.
+        const dipAmt = s1 < s0 ? 0 : dip;
         const duration = 1150;
         const t0 = performance.now();
         anim = { raf: 0, last: null };
@@ -243,7 +285,7 @@ const jsonLd = {
           const u = Math.min(1, (now - t0) / duration);
           const e = easeInOut(u);
           const b = Math.sin(Math.PI * u);
-          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dip * b);
+          const s = Math.exp(Math.log(s0) + (Math.log(s1) - Math.log(s0)) * e - dipAmt * b);
           const c = { x: c0.x + (g1.x - c0.x) * e, y: c0.y + (g1.y - c0.y) * e };
           const st = stateFor(c, s);
           // Arrival tilt: one smooth swing in the second half — eases in from
@@ -365,6 +407,13 @@ const jsonLd = {
         });
         canvasGrid.prepend(lineLayer);
         layoutConnectors();
+        tileOrder.forEach((t) => {
+          const label = document.createElement('span');
+          label.className = 'slide-title';
+          label.setAttribute('aria-hidden', 'true');
+          label.textContent = t.dataset.label;
+          t.appendChild(label);
+        });
 
         overlay = document.createElement('div');
         overlay.id = 'canvas-overlay';
@@ -398,6 +447,11 @@ const jsonLd = {
         cancelAnimationFrame(overlayRaf);
         overlay?.remove();
         lineLayer?.remove();
+        document.querySelectorAll('.slide-title').forEach((el) => el.remove());
+        canvasGrid.classList.remove('is-overview');
+        canvasGrid.style.removeProperty('--zo');
+        lastZo = -1;
+        counterTile = null;
         overlay = null;
         lineLayer = null;
         hotTile = null;
@@ -464,6 +518,21 @@ const jsonLd = {
       // bottom). Its arrow still points toward the panel, snapped to eight
       // directions.
       const KICKER_ORDER = { 'Case study': 1, Next: 2, Back: 3 };
+      let lastZo = -1;
+      let counterTile = null;
+      const counterNum = document.querySelector('[data-counter-num]');
+      const counterLabel = document.querySelector('[data-counter-label]');
+      function updateCounter(t) {
+        if (!counterNum) return;
+        const cases = tileOrder.filter((x) => x.dataset.branch === 'cases');
+        const pad = (n) => String(n).padStart(2, '0');
+        if (t.dataset.branch === 'cases') {
+          counterNum.textContent = `CS ${cases.indexOf(t) + 1}/${cases.length}`;
+        } else {
+          counterNum.textContent = `${pad(mainChain.indexOf(t) + 1)}/${pad(mainChain.length)}`;
+        }
+        counterLabel.textContent = t.dataset.label.toUpperCase();
+      }
       function drawOverlay() {
         overlayRaf = requestAnimationFrame(drawOverlay);
         if (!overlay) return;
@@ -478,6 +547,40 @@ const jsonLd = {
         );
         const visible = new Map(tileOrder.map((t) => [t, clipRect(rects.get(t), W, H)]));
         const wanted = new Map();
+
+        // How far zoomed out we are (0 at reading zoom, 1 at map zoom). Slides
+        // gain a surface and big titles as you pull back.
+        const sNow = anim && anim.last ? anim.last.s : panzoom.getScale();
+        const zo = Math.min(1, Math.max(0, (0.6 - sNow) / (0.6 - 0.3)));
+        if (Math.abs(zo - lastZo) > 0.005 || (zo === 0) !== (lastZo === 0)) {
+          canvasGrid.style.setProperty('--zo', zo.toFixed(3));
+          lastZo = zo;
+        }
+        const overviewNow = sNow < 0.45;
+        if (overviewNow !== canvasGrid.classList.contains('is-overview')) canvasGrid.classList.toggle('is-overview', overviewNow);
+
+        // Slide counter: the slide nearest the middle of the window.
+        let nearest = null;
+        let best = Infinity;
+        rects.forEach((r, t) => {
+          const d = Math.hypot(r.x + r.w / 2 - W / 2, r.y + r.h / 2 - H / 2);
+          if (d < best) {
+            best = d;
+            nearest = t;
+          }
+        });
+        const counterKey = overviewNow ? 'map' : nearest;
+        if (counterKey && counterKey !== counterTile) {
+          counterTile = counterKey;
+          if (!counterNum) {
+            // no counter on the page
+          } else if (overviewNow) {
+            counterNum.textContent = 'MAP';
+            counterLabel.textContent = `${tileOrder.length} SLIDES`;
+          } else {
+            updateCounter(nearest);
+          }
+        }
 
         pairs.forEach(([a, b]) => {
           const va = visible.get(a);
@@ -538,6 +641,7 @@ const jsonLd = {
           duration: 300,
           easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
         });
+        matchSlideAspect();
         buildOverlay();
         document.fonts.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(() => {
           if (canvasOn()) {
@@ -558,6 +662,7 @@ const jsonLd = {
         canvasGrid.style.transition = '';
         canvasMain.style.transform = '';
         canvasMain.style.cursor = '';
+        canvasGrid.style.removeProperty('--slide-h');
         unfitSlides();
       }
       if (canvasViewport && canvasGrid) {
@@ -629,6 +734,27 @@ const jsonLd = {
         document.getElementById('zoom-in')?.addEventListener('click', () => canvasOn() && zoomAtCenter(1.3));
         document.getElementById('zoom-out')?.addEventListener('click', () => canvasOn() && zoomAtCenter(1 / 1.3));
         document.getElementById('zoom-reset')?.addEventListener('click', () => canvasOn() && animateTo(heroTile, false));
+        document.getElementById('zoom-map')?.addEventListener('click', () => canvasOn() && showMap());
+        document.addEventListener('keydown', (e) => {
+          if (!canvasOn() || e.metaKey || e.ctrlKey || e.altKey) return;
+          const typing = e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable]');
+          if ((e.key === 'm' || e.key === 'M') && !typing) {
+            e.preventDefault();
+            showMap();
+          }
+        });
+
+        // In the map view, a click (not a drag) on a slide dives into it.
+        let downAt = null;
+        canvasViewport.addEventListener('pointerdown', (e) => { downAt = { x: e.clientX, y: e.clientY }; }, true);
+        canvasViewport.addEventListener('pointerup', (e) => {
+          if (!canvasOn() || !downAt || !canvasGrid.classList.contains('is-overview')) return;
+          const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+          downAt = null;
+          if (moved > 5) return;
+          const tile = document.elementsFromPoint(e.clientX, e.clientY).map((el) => el.closest('[data-tile]')).find(Boolean);
+          if (tile) animateTo(tile, false);
+        });
 
         // Keyboard focus landing in another panel travels there; inside the
         // current one it just nudges the element into view. Mouse clicks are
@@ -665,6 +791,7 @@ const jsonLd = {
           clearTimeout(resizeTimer);
           resizeTimer = setTimeout(() => {
             if (!canvasOn()) return;
+            matchSlideAspect();
             fitSlides();
             layoutConnectors();
             animateTo(tileOrder[currentIndex], true);

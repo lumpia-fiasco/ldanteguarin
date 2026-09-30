@@ -1,75 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import cases from '../data/cases.json';
 
-// The avatar is the same image the live ldanteguarin.com serves from Framer's CDN.
-const AVATAR = 'https://framerusercontent.com/images/vALSaYwJFYN4P5QpqMFZc4vMlM.png?scale-down-to=512&width=2799&height=2799';
-
+// Stripped back to the landing slide (the hero) and How I work while the
+// site is rebuilt.
 const BOOK_URL = 'https://tidycal.com/ldante';
-
-// Every number is sourced from the verified case studies on ldante.com.
-const PORTFOLIO_URL = 'https://www.ldante.com';
-
-const stats = [
-  { value: '$3.1M+', label: 'saved through a payroll analytics redesign at Teamshares' },
-  { value: '6x', label: "increase in design-system adoption after migrating Marketo to Adobe's Sky system" },
-  { value: '33%', label: "faster time-to-resource after redesigning Meroxa's core workflow, measured in usability testing" },
-  { value: '~60%', label: 'production-ready fidelity reached out of the gate with an AI-assisted workflow at Vye Health' },
-];
-
-// The full case studies from ldante.com (exported from the portfolio's
-// case data), each shown as its own panel on the canvas.
-const caseStudies = cases;
-
-const offer = [
-  {
-    title: 'Lead',
-    body: 'Set design direction, establish priorities, mentor designers, and give Product and Engineering a strong design partner.',
-    icon: '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
-  },
-  {
-    title: 'Build',
-    body: 'Create the systems, processes, rituals, and governance that allow design to scale without becoming bureaucracy.',
-    icon: '<rect x="4" y="3" width="10" height="18" rx="1"/><path d="M14 9h5a1 1 0 0 1 1 1v11H14"/><path d="M8 7h2M8 11h2M8 15h2"/>',
-  },
-  {
-    title: 'Design',
-    body: 'Stay close to the product. Research, flows, prototypes, interaction design, and production-ready UI when the work calls for it.',
-    icon: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
-  },
-  {
-    title: 'Scale',
-    body: "Help you hire, structure, and mature your design organization—or bridge the gap until you're ready for your next full-time leader.",
-    icon: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
-  },
-];
-
-const painPoints = [
-  {
-    title: 'You have designers, but no real direction.',
-    body: 'I can provide the direction, mentorship, and decision-making your team is missing.',
-  },
-  {
-    title: 'Your product has outgrown the way you design it.',
-    body: "I'll help establish the systems and processes needed to handle the next stage.",
-  },
-  {
-    title: 'Product and Engineering are carrying too much of the design burden.',
-    body: 'Especially in this age of AI and the velocity that comes with it, design needs to be in the conversation earlier and help make better design decisions together.',
-  },
-  {
-    title: 'You need senior design help, but not five days a week.',
-    body: 'Exactly what fractional leadership is made for.',
-  },
-  {
-    title: "You're building your first real design organization.",
-    body: "I'll help define the roles, processes, expectations, and systems you need before they become problems.",
-  },
-  {
-    title: "You're between design leaders.",
-    body: "I'll keep the team moving while you figure out the permanent structure.",
-  },
-];
 
 const ways = [
   { title: 'Design leadership', body: 'Direction, critique, team mentorship, hiring, and organizational structure.' },
@@ -79,430 +13,82 @@ const ways = [
   { title: 'Interim leadership', body: "Keeping the team moving when you're between design leaders or building your team." },
 ];
 
-const process = [
-  { n: '01', title: 'Understand', body: 'I start with the product, the business, the customers, and the people doing the work.' },
-  { n: '02', title: 'Align', body: "We identify what's actually worth solving and get Product, Engineering, and Design working from the same understanding." },
-  { n: '03', title: 'Build', body: 'We establish the workflows, systems, and design direction needed to move faster without creating more chaos.' },
-  { n: '04', title: 'Ship', body: 'I stay close to the work and help turn decisions into products your team can actually build.' },
-  { n: '05', title: 'Scale', body: "The goal isn't to make you dependent on me. It's to leave your team more capable than when I arrived." },
-];
-
-const navLinks = [
-  { href: '#what-i-do', label: 'What I do' },
-  { href: '#how-i-work', label: 'How I work' },
-  { href: '#who-i-help', label: 'Who I help' },
-];
-
-const eyebrow = 'text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-4';
-const h2 = 'font-display font-normal text-[clamp(2rem,4vw,2.75rem)] leading-[1.02] tracking-[-0.02em] text-white';
+const eyebrow = 'led-eyebrow mb-4';
+// Section titles: Permanent Marker, off-white. Only the hero h1 sits on tape.
+const h2 = 'tape-title';
 const section = 'border-t border-white/10 py-20 md:py-28';
-const pill = 'inline-flex items-center justify-center bg-pink text-charcoal font-semibold rounded-full transition hover:brightness-110 active:scale-95';
+// Buttons share the brushed-metal finish of the signposts: silver for
+// primary actions, gunmetal for secondary ones.
+const pill = 'btn-metal';
+const pillSecondary = 'btn-metal btn-metal--dark';
 ---
 
 <Layout>
-  <header class="fixed top-0 inset-x-0 z-50 h-[68px] border-b border-white/10 bg-charcoal/90 backdrop-blur-md">
-    <div class="max-w-6xl mx-auto px-6 md:px-8 h-full flex items-center justify-between">
-      <a href="#main" aria-label="L Dante Guarin — top">
-        <img src={AVATAR} alt="" width="40" height="40" class="w-10 h-10 rounded-full object-cover" />
-      </a>
-      <div class="relative flex items-center gap-3">
-        <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-sm px-[18px] py-2.5`}>
-          Book a call
-        </a>
-        <button
-          type="button"
-          id="menu-button"
-          aria-expanded="false"
-          aria-controls="menu-panel"
-          aria-label="Menu"
-          class="w-11 h-11 rounded-full border border-white/15 flex flex-col items-center justify-center gap-1 hover:border-pink transition-colors"
-        >
-          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
-          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
-          <span class="menu-line block w-[18px] h-[2px] rounded-full bg-white"></span>
-        </button>
-        <nav id="menu-panel" aria-label="Primary" hidden class="absolute right-0 top-[calc(100%+14px)] w-72 rounded-2xl border border-white/10 bg-card p-2 shadow-2xl">
-          {navLinks.map((l) => (
-            <a href={l.href} class="block rounded-xl px-4 py-3 text-base font-semibold text-white hover:bg-white/5 focus-visible:bg-white/5 transition-colors">{l.label}</a>
-          ))}
-        </nav>
-      </div>
-    </div>
-  </header>
-
   <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
-  <main id="main" class="pt-[68px]">
-    <div id="canvas-grid">
+  <main id="main">
+    <div id="canvas-grid" style="--cols:2;--rows:1">
       <!-- HERO -->
-      <section id="hero" style="--c:1;--r:1" data-tile data-label="Intro" class="tile">
-      <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20">
+      <section id="hero" style="--c:1;--r:1" data-tile data-label="Home" class="tile">
+      <!-- Background loop: "Aerial View of Busy Los Angeles Intersection"
+           by Logan Voss, via Pexels (free licence). Muted and decorative. -->
+      <video class="hero-video" src="/videos/la-crosswalk.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1"></video>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <img src="/images/hero-crownd-phone.webp" alt="A social app's feed open on an iPhone, held in a hand" class="hero-figure hero-figure--left" width="937" height="1678" loading="eager" />
+      <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-20 md:pt-28 pb-16 md:pb-20 slide:max-w-[760px]">
         <div>
-        <p class="text-base mb-8 slide:mb-6">
-          <span class="font-semibold text-white">L Dante Guarin —</span> Fractional Design Lead · Product Design · Design Systems
+        <div>
+        <p class="text-lg text-pink mb-8 slide:mb-5">
+          <span class="font-semibold">L Dante Guarin —</span> Fractional Design Lead · Product Design · Design Systems
         </p>
-        <h1 class="font-display font-normal text-[clamp(2.75rem,7vw,5.25rem)] leading-[0.98] tracking-[-0.02em] text-white max-w-4xl mb-8">
-          I get in where I fit in.
-        </h1>
-        <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-10 slide:mb-8">
-          I help growing product teams make better decisions, build better products, and establish the design systems and practices they need to scale. I lead where you need leadership, stay hands-on where it matters, and work directly with Product, Engineering, and company leadership.
+        <h1 class="tape-title tape-title--hero max-w-4xl mb-10 slide:mb-7"><span class="tape">Let's Work!</span></h1>
+        <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-10 slide:mb-6 slide:max-w-[680px]">
+          I help growing product teams decide better, build better, and put the design systems in place to scale. Leadership where you need it, hands-on where it counts, and a direct line to Product, Engineering, and your leadership team.
         </p>
         <div class="flex flex-col sm:flex-row gap-3">
           <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-base px-6 py-3.5`}>
             Book an intro call
           </a>
-          <a
-            href="#how-i-work"
-            class="inline-flex items-center justify-center border border-white/15 text-white font-semibold rounded-full px-6 py-3.5 text-base hover:border-pink hover:text-pink transition-colors"
-          >
-            See services
+          <a href="mailto:hello@ldante.com" class={`${pillSecondary} text-base px-6 py-3.5`}>
+            Get in touch
           </a>
         </div>
         </div>
-        <div id="experience" class="mt-16 pt-16 border-t border-white/10 slide:mt-12 slide:pt-10">
-          <p class={eyebrow}>20+ years of leading design across web, branding and product</p>
-          <h2 class={`${h2} max-w-3xl mb-6 slide:text-[30px] slide:mb-3`}>Experience across startups, enterprise, and everything in between.</h2>
-          <p class="text-lg leading-relaxed max-w-3xl mb-12 slide:text-base slide:mb-0">
-            I've worked inside large organizations, helped build early-stage products, and led design through the muddy parts where teams, products, and processes have to catch up with growth.
-          </p>
+        <div id="experience" class="mt-16 pt-16 border-t border-white/10 slide:mt-6 slide:pt-5">
+          <p class={`${eyebrow} led-eyebrow--lg slide:mb-0`}>20+ years of leading design across web, branding and product</p>
+        </div>
         </div>
       </div>
       </section>
 
-      <!-- TRACK RECORD -->
-      <section id="track-record" style="--c:2;--r:1" data-tile data-label="Track record" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>Track record</p>
-          <h2 class={`${h2} mb-12`}>Real numbers, not vibes.</h2>
-          <div class="grid grid-cols-2 gap-4 max-w-4xl">
-            {stats.map((s) => (
-              <div class="rounded-2xl border border-white/10 bg-card p-6">
-                <p class="font-display text-4xl md:text-5xl text-white tracking-[-0.02em] mb-3">{s.value}</p>
-                <p class="text-sm leading-snug">{s.label}</p>
-              </div>
-            ))}
-          </div>
-          <p class="mt-8">
-            <a href="#case-studies" class="text-sky underline underline-offset-4 hover:text-white transition-colors">
-              See the case studies →
-            </a>
-          </p>
-        </div>
-      </section>
-
-      <!-- CASE STUDIES -->
-      <section id="case-studies" style="--c:3;--r:1" data-tile data-label="Case studies" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>Case studies</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>The work behind the numbers.</h2>
-          <p class="text-lg leading-relaxed max-w-3xl mb-12">
-            Five write-ups, from the brief to what shipped. Pick one to read it here.
-          </p>
-          <ul class="grid sm:grid-cols-2 slide:grid-cols-5 gap-4">
-            {caseStudies.map((c, i) => (
-              <li class:list={[i === caseStudies.length - 1 && caseStudies.length % 2 === 1 && 'sm:col-span-2 slide:col-span-1']}>
-                <a
-                  href={`#${c.id}`}
-                  class="group flex h-full flex-col gap-6 rounded-2xl border border-white/10 bg-card p-6 transition-colors hover:border-pink"
-                >
-                  <img src={c.logo} alt="" class="h-9 w-auto self-start object-contain brightness-0 invert opacity-80 transition-opacity group-hover:opacity-100" />
-                  <span>
-                    <span class="block text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-2">{c.company}</span>
-                    <span class="block font-display text-xl slide:text-lg leading-snug tracking-[-0.01em] text-white">{c.headline}</span>
-                  </span>
-                  <span class="mt-auto text-sm font-semibold text-sky">Read the case →</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <!-- WHAT I DO -->
-      <section id="what-i-do" style="--c:3;--r:2" data-tile data-label="What I do" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>What I do</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>You don't always need a full-time Head of Design.</h2>
-          <p class="text-lg leading-relaxed max-w-3xl mb-12">
-            Sometimes you need someone senior enough to lead the function, experienced enough to see what's wrong, and hands-on enough to actually fix it. That's where I come in.
-          </p>
-          <div class="grid md:grid-cols-2 slide:grid-cols-4 gap-4">
-            {offer.map((o) => (
-              <div class="rounded-2xl border border-white/10 bg-card p-6">
-                <div class="w-10 h-10 rounded-lg bg-pink/15 text-pink flex items-center justify-center mb-6">
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={o.icon} />
-                </div>
-                <h3 class="font-display font-normal text-[22px] tracking-[-0.01em] text-white mb-3">{o.title}</h3>
-                <p class="text-lg slide:text-base leading-relaxed">{o.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <!-- WHO I HELP -->
-      <section id="who-i-help" style="--c:2;--r:2" data-tile data-label="Who I help" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>Who I help</p>
-          <h2 class={`${h2} max-w-3xl mb-12`}>Maybe you don't need more designers. You might need more design leadership.</h2>
-          <div class="grid md:grid-cols-2 slide:grid-cols-3 gap-x-12">
-            {painPoints.map((p) => (
-              <div class="border-t border-white/10 py-6">
-                <h3 class="font-display font-normal text-xl tracking-[-0.01em] text-white mb-2">{p.title}</h3>
-                <p class="text-base leading-relaxed">{p.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <!-- HOW I WORK -->
-      <section id="how-i-work" style="--c:1;--r:2" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
+      <section id="how-i-work" style="--c:2;--r:1" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>How I work</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>Part-time leadership. Full-time commitment to the work.</h2>
-          <p class="text-lg leading-relaxed max-w-3xl mb-12">
+          <h2 class={`${h2} max-w-3xl mb-6`}>Short-term leadership. Full-time commitment to the work.</h2>
+          <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-12 slide:mb-10">
             I embed with your team rather than operating from the sidelines. I work directly with founders, Product, Engineering, and Design to understand what's getting in the way, establish priorities, and move the work forward.
           </p>
 
-          <ul class="grid sm:grid-cols-2 slide:grid-cols-5 gap-4">
+          <ul class="grid sm:grid-cols-2 slide:grid-cols-3 gap-4 slide:gap-5">
             {ways.map((w) => (
-              <li class="rounded-2xl border border-white/10 bg-card p-6">
-                <h3 class="font-display font-normal text-[22px] leading-tight tracking-[-0.01em] text-white mb-3">{w.title}</h3>
-                <p class="text-base leading-relaxed">{w.body}</p>
+              <li class="rounded-2xl border border-white/10 bg-card p-6 slide:p-7">
+                <h3 class="font-display font-normal text-[22px] slide:text-[26px] leading-tight tracking-[-0.01em] text-white mb-3">{w.title}</h3>
+                <p class="text-base slide:text-lg leading-relaxed">{w.body}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
-
-      <!-- THE PROCESS -->
-      <section id="the-process" style="--c:1;--r:3" data-tile data-label="The process" class={`tile ${section}`} data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>The process</p>
-          <h2 class={`${h2} max-w-3xl mb-12`}>The process is a "we" thing.</h2>
-          <ol class="grid sm:grid-cols-2 lg:grid-cols-5 gap-8">
-            {process.map((step) => (
-              <li>
-                <p class="text-[13px] font-semibold tracking-[0.08em] text-pink mb-3">{step.n}</p>
-                <h4 class="font-display font-normal text-[22px] tracking-[-0.01em] text-white mb-2">{step.title}</h4>
-                <p class="text-base leading-relaxed">{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <!-- CTA -->
-      <section id="contact" style="--c:2;--r:3" data-tile data-label="Let's talk" class="tile border-t border-white/10 py-20 md:py-28" data-reveal>
-        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <div class="rounded-3xl border border-white/10 bg-card px-6 py-16 md:py-20 text-center">
-            <p class={eyebrow}>Let's work together</p>
-            <h2 class={`${h2} max-w-2xl mx-auto mb-6`}>Need design leadership? Let's talk.</h2>
-            <p class="text-lg leading-relaxed max-w-xl mx-auto mb-10">
-              Tell me where your team is today, what's getting in the way, and where you're trying to go. If I can help, we'll figure out what that looks like.
-            </p>
-            <a href={BOOK_URL} target="_blank" rel="noopener noreferrer" class={`${pill} text-base px-8 py-4`}>
-              Start a conversation
-            </a>
-          </div>
-        <footer class="mt-12 pt-8 border-t border-white/10 text-sm">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span>© {new Date().getFullYear()} L Dante Guarin</span>
-            <span>Product &amp; Fractional Design · Los Angeles</span>
-            <div class="flex gap-6">
-              <a href="https://linkedin.com/in/ldanteguarin" target="_blank" rel="noopener noreferrer" class="text-sky underline underline-offset-4 hover:text-white transition-colors">LinkedIn</a>
-              <a href="mailto:hello@ldante.com" class="text-sky underline underline-offset-4 hover:text-white transition-colors">hello@ldante.com</a>
-            </div>
-          </div>
-        </footer>
-        </div>
-      </section>
-
-    <!-- CASE STUDIES, one panel each. A branch off the Case studies panel:
-         on the canvas they sit in a row beneath everything else; on phones
-         they come after the main page. -->
-      {caseStudies.map((c, i) => (
-        <section id={c.id} style={`--c:${i + 4};--r:1`} data-tile data-branch="cases" data-label={c.label} class={`tile case-tile ${section}`}>
-          <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 slide:grid slide:grid-cols-[440px_1fr] slide:gap-x-14 slide:h-full">
-            <div class="slide:flex slide:flex-col slide:justify-center">
-              <p class={eyebrow}>Case study · {c.company}</p>
-              <h2 class={`${h2} max-w-3xl mb-6 slide:text-[34px] slide:leading-[1.08]`}>{c.headline}</h2>
-              <p class="text-lg leading-relaxed max-w-3xl mb-10 slide:text-base slide:mb-8" set:html={c.intro} />
-              <a href="#case-studies" class="hidden slide:inline text-sky underline underline-offset-4 hover:text-white transition-colors">← All case studies</a>
-            </div>
-            <div class="case-scroll panzoom-exclude">
-            <div class="case-gate-wrap">
-              <div class="case-locked-content" data-case-locked>
-              {c.metrics.length > 0 && (
-                <ul class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-10">
-                  {c.metrics.map((m) => (
-                    <li class="rounded-2xl border border-white/10 bg-card p-5">
-                      <span class="block font-display text-3xl text-white tracking-[-0.02em] mb-2">{m.value}</span>
-                      <span class="block text-sm leading-snug">{m.label}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div class="case-body" set:html={c.html} />
-              <p class="mt-12 pt-8 border-t border-white/10">
-                <a href="#case-studies" class="text-sky underline underline-offset-4 hover:text-white transition-colors">← All case studies</a>
-              </p>
-              </div>
-              <div class="case-gate panzoom-exclude">
-                <form class="case-gate-card" data-case-gate novalidate>
-                  <p class="text-[13px] font-semibold tracking-[0.08em] uppercase text-pink mb-3">Case studies</p>
-                  <h3 class="font-display text-2xl leading-tight tracking-[-0.01em] text-white mb-2">Read the full case studies</h3>
-                  <p class="text-base leading-relaxed mb-6">Tell me who you are and all five open up.</p>
-                  <label class="block text-sm font-semibold text-white mb-1.5" for={`${c.id}-name`}>Name</label>
-                  <input id={`${c.id}-name`} name="name" type="text" autocomplete="name" required maxlength="100" class="case-gate-input mb-4" />
-                  <label class="block text-sm font-semibold text-white mb-1.5" for={`${c.id}-email`}>Work email</label>
-                  <input id={`${c.id}-email`} name="email" type="email" autocomplete="email" required maxlength="254" class="case-gate-input mb-2" />
-                  <div class="case-gate-honeypot" aria-hidden="true">
-                    <label>Company <input name="company" type="text" tabindex="-1" autocomplete="off" /></label>
-                  </div>
-                  <p class="case-gate-error text-sm mb-2" role="alert" data-case-gate-error></p>
-                  <button type="submit" class={`${pill} w-full text-base px-6 py-3.5 mt-2`}>Unlock case studies</button>
-                  <input type="hidden" name="case" value={c.id} />
-                </form>
-              </div>
-            </div>
-            </div>
-          </div>
-        </section>
-      ))}
     </div>
   </main>
   </div>
 
   <script>
-    // Hamburger menu. Links inside it are ordinary #anchors, so the canvas
-    // (or the mobile scroll fallback) in the layout script handles the travel.
-    const menuButton = document.getElementById('menu-button');
-    const menuPanel = document.getElementById('menu-panel');
-    const menuLinks = Array.from(menuPanel.querySelectorAll('a'));
-    let menuTimer = 0;
-
-    function openMenu() {
-      clearTimeout(menuTimer);
-      menuPanel.hidden = false;
-      menuButton.setAttribute('aria-expanded', 'true');
-      requestAnimationFrame(() => requestAnimationFrame(() => { menuPanel.dataset.open = 'true'; }));
-      menuLinks[0].focus();
+    // Respect reduced motion: hold the street loop on a single frame.
+    const heroVideo = document.querySelector('.hero-video');
+    if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
     }
-    function closeMenu(returnFocus) {
-      if (menuButton.getAttribute('aria-expanded') !== 'true') return;
-      menuButton.setAttribute('aria-expanded', 'false');
-      delete menuPanel.dataset.open;
-      menuTimer = window.setTimeout(() => { menuPanel.hidden = true; }, 160);
-      if (returnFocus) menuButton.focus();
-    }
-
-    menuButton.addEventListener('click', () => {
-      if (menuButton.getAttribute('aria-expanded') === 'true') closeMenu(false);
-      else openMenu();
-    });
-    menuLinks.forEach((link, i) => {
-      link.addEventListener('click', () => closeMenu(false));
-      link.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown') { e.preventDefault(); menuLinks[(i + 1) % menuLinks.length].focus(); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); menuLinks[(i - 1 + menuLinks.length) % menuLinks.length].focus(); }
-      });
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeMenu(true);
-    });
-    document.addEventListener('pointerdown', (e) => {
-      if (!menuPanel.contains(e.target) && !menuButton.contains(e.target)) closeMenu(false);
-    });
-    menuPanel.addEventListener('focusout', (e) => {
-      if (e.relatedTarget && !menuPanel.contains(e.relatedTarget) && e.relatedTarget !== menuButton) closeMenu(false);
-    });
-
-    // Case-study gate. One submission unlocks all five cases and is
-    // remembered on this browser. While locked, the blurred content is inert
-    // so it can't be tabbed into or read out.
-    const UNLOCK_KEY = 'ldg-cases-unlocked';
-    const lockedRegions = Array.from(document.querySelectorAll('[data-case-locked]'));
-
-    function setCasesLocked(locked) {
-      document.documentElement.classList.toggle('cases-unlocked', !locked);
-      lockedRegions.forEach((el) => {
-        el.inert = locked;
-        if (locked) el.setAttribute('aria-hidden', 'true');
-        else el.removeAttribute('aria-hidden');
-      });
-    }
-    setCasesLocked(!document.documentElement.classList.contains('cases-unlocked'));
-
-    const GATE_ERRORS = {
-      invalid_name: 'Add your name so I know who you are.',
-      invalid_email: "That email doesn't look deliverable. Double-check it?",
-    };
-
-    document.querySelectorAll('[data-case-gate]').forEach((form) => {
-      const nameInput = form.elements.namedItem('name');
-      const emailInput = form.elements.namedItem('email');
-      const error = form.querySelector('[data-case-gate-error]');
-      const button = form.querySelector('button[type="submit"]');
-
-      const fail = (input, message) => {
-        error.textContent = message;
-        if (input) {
-          input.setAttribute('aria-invalid', 'true');
-          input.focus();
-        }
-      };
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        error.textContent = '';
-        nameInput.removeAttribute('aria-invalid');
-        emailInput.removeAttribute('aria-invalid');
-
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
-        if (!name) return fail(nameInput, GATE_ERRORS.invalid_name);
-        if (!email || !emailInput.checkValidity() || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-          return fail(emailInput, 'Enter a valid email address.');
-        }
-
-        button.disabled = true;
-        const label = button.textContent;
-        button.textContent = 'Unlocking…';
-        try {
-          const res = await fetch('/api/unlock', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name,
-              email,
-              company: form.elements.namedItem('company').value,
-              case: form.elements.namedItem('case').value,
-            }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.ok) {
-            const field = data.error === 'invalid_name' ? nameInput : data.error === 'invalid_email' ? emailInput : null;
-            return fail(field, GATE_ERRORS[data.error] || "Couldn't unlock right now. Try again, or email hello@ldante.com.");
-          }
-          try {
-            localStorage.setItem(UNLOCK_KEY, '1');
-          } catch {}
-          setCasesLocked(false);
-          // The cases just grew; let the canvas re-measure and re-frame.
-          window.dispatchEvent(new Event('resize'));
-          const heading = form.closest('section')?.querySelector('h2');
-          if (heading) {
-            heading.tabIndex = -1;
-            heading.focus({ preventScroll: true });
-          }
-        } catch {
-          fail(null, "Couldn't unlock right now. Try again, or email hello@ldante.com.");
-        } finally {
-          button.disabled = false;
-          button.textContent = label;
-        }
-      });
-    });
   </script>
 </Layout>
