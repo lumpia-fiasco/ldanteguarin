@@ -130,7 +130,8 @@ html:not(.js) [data-reveal] {
        then forward again) so each slide sits next to the one before it.
        The five case studies extend in a row to the right of the Case
        studies slide. Positions come from --c / --r on each section. */
-    --canvas-gap: 200px;
+    /* Generous gaps so there's room to draw between slides. */
+    --canvas-gap: 560px;
     --slide-w: 1440px;
     --slide-h: 810px;
     display: grid;
@@ -147,11 +148,18 @@ html:not(.js) [data-reveal] {
     z-index: 1;
     width: var(--slide-w);
     height: var(--slide-h);
+    /* Stuck on the board by hand: nudged off the grid and tilted a touch.
+       Offsets use left/top so the framing maths (offsetLeft/Top) sees them;
+       the tilt scales with --tz, 0 on a landed slide. */
+    left: var(--dx, 0px);
+    top: var(--dy, 0px);
+    rotate: calc(var(--tilt, 0deg) * var(--tz, 0));
     border: 0;
     background: transparent;
     /* Extra room up top so content clears the hanging logo. */
     padding: 140px 72px 48px;
-    overflow: hidden;
+    /* Visible so the tape can overhang; clipping lives on .tile-clip. */
+    overflow: visible;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -228,24 +236,32 @@ html:not(.js) [data-reveal] {
     pointer-events: none;
     z-index: 0;
   }
+  /* Connectors are red whiteboard marker: they scale with the board like
+     real ink, end blunt rather than rounded, carry a few dry streaks, and
+     finish in an arrowhead (see buildOverlay). */
   .connector {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.28);
-    stroke-width: 3;
-    stroke-linecap: round;
-    stroke-dasharray: 0.01 13;
-    vector-effect: non-scaling-stroke;
-    transition: stroke 0.25s ease;
+    color: #c3282c;
+    stroke: currentColor;
+    stroke-width: 11;
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+    opacity: 0.92;
+    transition: color 0.25s ease;
   }
   .connector.is-hot {
-    stroke: var(--color-pink);
-    animation: connector-flow 0.9s linear infinite;
+    color: var(--color-pink);
   }
-  @keyframes connector-flow {
-    to { stroke-dashoffset: -13; }
+  .connector-streak {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.22);
+    stroke-width: 2.5;
+    stroke-linecap: butt;
+    stroke-dasharray: 60 22 18 40 90 26;
+    pointer-events: none;
   }
   .connector-end {
-    fill: rgba(255, 255, 255, 0.35);
+    display: none;
   }
 
   #canvas-overlay {
@@ -435,6 +451,188 @@ html.cases-unlocked .case-gate {
   overflow: hidden;
 }
 
+/* ── Photography ──────────────────────────────────────────────────────
+   Desktop canvas only: prints taped loosely to the whiteboard under the
+   slides, with a marker title; the caption card (#photo-viewer) appears
+   when you glide into one. Hidden on phones (and, being lazy-loaded, the
+   images aren't downloaded there). */
+.board-photos {
+  display: none;
+}
+.board-title {
+  font-family: 'Permanent Marker', cursive;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 1.1;
+  color: #f2f2f2;
+  margin-bottom: 2rem;
+}
+.board-photo-list {
+  display: grid;
+  gap: 2rem;
+}
+@media (min-width: 640px) {
+  .board-photo-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.board-photo {
+  display: block;
+}
+.board-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.board-photo-caption {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.board-photo-caption strong {
+  color: #fff;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+.print-tape {
+  display: none;
+}
+.board-heading {
+  display: none;
+}
+#photo-viewer {
+  display: none;
+}
+@media (min-width: 901px) {
+  #canvas-grid .board-photos {
+    display: block;
+    position: absolute;
+    left: calc(50% - 1120px);
+    top: calc(var(--slide-h) + 440px);
+    width: 2240px;
+    height: 1400px;
+    padding: 0;
+    border: 0;
+  }
+  #canvas-grid .board-title {
+    position: absolute;
+    left: 40px;
+    top: -30px;
+    margin: 0;
+    font-size: 150px;
+    color: #1f2533;
+    rotate: -2deg;
+  }
+  /* A red marker underline under the title. */
+  #canvas-grid .board-title::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    right: -30px;
+    bottom: -18px;
+    height: 34px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 34' preserveAspectRatio='none'><path d='M4 22 C 80 12, 150 26, 230 16 S 350 10, 396 18' fill='none' stroke='%23c3282c' stroke-width='9' stroke-linecap='butt'/></svg>") no-repeat center / 100% 100%;
+  }
+  /* "Product & Design", written above the slides. */
+  #canvas-grid .board-heading {
+    display: block;
+    left: 40px;
+    top: -420px;
+    white-space: nowrap;
+  }
+  #canvas-grid .board-photo-list {
+    display: block;
+  }
+  #canvas-grid .board-print {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    rotate: var(--r);
+    transition: rotate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #canvas-grid .board-print.is-focused {
+    rotate: 0deg;
+  }
+  /* The print: photo on white paper with a soft shadow on the board. */
+  #canvas-grid .board-photo {
+    position: relative;
+    padding: 14px;
+    background: #fbfbf8;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22), 0 1px 2px rgba(0, 0, 0, 0.2);
+    cursor: zoom-in;
+    transition: translate 0.2s ease, box-shadow 0.2s ease;
+  }
+  #canvas-grid .board-photo:hover {
+    translate: 0 -6px;
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.26), 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+  #canvas-grid .board-photo:focus-visible {
+    outline: 6px solid var(--color-pink);
+    outline-offset: 8px;
+  }
+  #canvas-grid .board-photo img {
+    border-radius: 0;
+  }
+  #canvas-grid .print-tape {
+    display: block;
+    position: absolute;
+    z-index: 2;
+    top: -22px;
+    left: 50%;
+    width: 150px;
+    height: 44px;
+    padding: 0;
+    font-size: 40px;
+    translate: -50% 0;
+    rotate: calc(var(--r) * -0.8);
+    opacity: 0.95;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+  }
+  #canvas-grid .board-photo-caption {
+    display: none;
+  }
+  /* The caption card for an open print. */
+  #photo-viewer:not([hidden]) {
+    display: block;
+    position: fixed;
+    left: 32px;
+    bottom: 32px;
+    z-index: 70;
+    max-width: 520px;
+    padding: 22px 24px 20px;
+    border-radius: 16px;
+    background: rgba(28, 28, 28, 0.94);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  }
+  .photo-viewer-count {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-pink);
+    margin-bottom: 6px;
+  }
+  .photo-viewer-title {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 32px;
+    line-height: 1.15;
+    color: #f2f2f2;
+    margin-bottom: 6px;
+  }
+  .photo-viewer-caption {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .photo-viewer-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
 /* ── How I work blueprint ───────────────────────────────────────────
    A weathered greyscale rocket blueprint behind the slide (painted by a
    script on the site's charcoal, so it sits in the same dark tones). The
@@ -469,7 +667,12 @@ html.cases-unlocked .case-gate {
   width: 100%;
   height: auto;
   fill: var(--color-pink);
+  transition: fill 0.35s ease;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+}
+/* Dark charcoal while pulled back over the whiteboard; pink again on a slide. */
+.on-board #site-logo svg {
+  fill: #232323;
 }
 #site-logo:focus-visible {
   outline: 3px solid var(--color-pink);
@@ -486,7 +689,7 @@ html.cases-unlocked .case-gate {
   overflow: visible;
 }
 #logo-strings line {
-  stroke: rgba(236, 230, 212, 0.55);
+  stroke: rgba(170, 164, 148, 0.75);
   stroke-width: 1;
 }
 @media (min-width: 901px) {
@@ -495,6 +698,24 @@ html.cases-unlocked .case-gate {
     left: 60px;
     width: 112px;
   }
+}
+
+/* Tape only exists on the desktop canvas. */
+.tile-tape {
+  display: none;
+}
+/* Clips a slide's full-bleed layers (video, photo) to the slide, so the
+   slide itself can stay unclipped for its tape. */
+.tile-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+/* The slide's content always sits above those layers. */
+#hero > .tile-inner {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Hero street loop ───────────────────────────────────────────────
@@ -721,16 +942,44 @@ html.cases-unlocked .case-gate {
     z-index: 1;
   }
 
+  /* The whiteboard: a seamless board tile under the whole canvas, kept in
+     step with the canvas by syncBoard() in Layout.astro, with a soft sheen. */
+  #canvas-viewport {
+    background-color: #eeeeec;
+    background-image:
+      radial-gradient(ellipse at 35% 25%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 55%),
+      radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.07) 100%),
+      url('/images/whiteboard.webp');
+    background-size: 100% 100%, 100% 100%, var(--board-size, 1024px) var(--board-size, 1024px);
+    background-position: 0 0, 0 0, var(--board-x, 0) var(--board-y, 0);
+    background-repeat: no-repeat, no-repeat, repeat;
+  }
+  /* One strip of masking tape at the top middle of each slide. */
+  #canvas-grid .tile > .tile-tape {
+    display: block;
+    position: absolute;
+    z-index: 40;
+    top: -30px;
+    left: 50%;
+    height: 62px;
+    padding: 0;
+    font-size: 56px;
+    translate: -50% 0;
+    rotate: var(--tape-r, 0deg);
+    opacity: 0.95;
+    pointer-events: none;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
+  }
   /* Pulling back turns the slides into objects on a table: a faint surface,
      a soft shadow and a big title fade in with --zo (0 at reading zoom, 1 at
      map zoom), while the slide's own content steps back. At reading zoom the
      slides stay container-less. */
   #canvas-grid .tile {
-    /* Square at reading zoom (a slide fills the window), rounding off as
-       you pull back to the map. */
-    border-radius: calc(var(--zo, 0) * 36px);
-    background: rgba(255, 255, 255, calc(var(--zo, 0) * 0.045));
-    box-shadow: 0 40px 120px rgba(0, 0, 0, calc(var(--zo, 0) * 0.7)), 0 0 0 calc(var(--zo, 0) * 2px) rgba(255, 255, 255, 0.06);
+    /* Slides are sheets taped to the board: square, opaque, with a shadow
+       that deepens as you pull back to the map. */
+    border-radius: 0;
+    background: var(--color-charcoal);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 40px 120px rgba(0, 0, 0, calc(var(--zo, 0) * 0.6));
   }
   #canvas-grid .tile > .tile-inner {
     opacity: calc(1 - var(--zo, 0) * 0.8);
