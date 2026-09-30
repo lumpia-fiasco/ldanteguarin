@@ -435,6 +435,23 @@ html.cases-unlocked .case-gate {
   overflow: hidden;
 }
 
+/* ── How I work blueprint ───────────────────────────────────────────
+   A weathered greyscale rocket blueprint behind the slide (painted by a
+   script on the site's charcoal, so it sits in the same dark tones). The
+   doubled id beats the canvas's own slide-surface rule. */
+#how-i-work,
+#canvas-grid #how-i-work {
+  background-color: var(--color-charcoal);
+  background-image: url('/images/rocket-blueprint.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* Cards go slightly see-through so the drawing reads behind them. */
+#how-i-work li {
+  background-color: rgba(38, 38, 38, 0.78);
+}
+
 /* ── Hanging logo ───────────────────────────────────────────────────
    Fixed top-left over everything but the grain; its transform and the two
    strings are driven by the physics loop in Layout.astro. */
