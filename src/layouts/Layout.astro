@@ -91,6 +91,16 @@ const jsonLd = {
     </a>
     <slot />
     <div id="grain" aria-hidden="true"></div>
+    <!-- The LDG mark, hung top-left on two strings (tied to the L and the G).
+         Positioned by the physics loop at the end of the script below. -->
+    <svg id="logo-strings" aria-hidden="true"><line /><line /></svg>
+    <a id="site-logo" href="#main" aria-label="L Dante Guarin, home">
+      <svg viewBox="0 0 400 200" aria-hidden="true">
+        <path d="M0 0 L100 200 L0 200 Z" />
+        <path d="M100 0 A100 100 0 0 1 100 200 Z" />
+        <path d="M300 100 L300 0 A100 100 0 1 0 400 100 Z" />
+      </svg>
+    </a>
     {/* Zoom keys are parked for now (their styles and handlers are kept; the
        handlers skip missing buttons). Scroll, pinch and the M key still work.
     <div id="zoom-controls">
@@ -797,6 +807,113 @@ const jsonLd = {
             animateTo(tileOrder[currentIndex], true);
           }, 150);
         });
+      }
+
+      // ── Hanging logo ──
+      // The mark hangs from two strings, one tied to the tip of the L and one
+      // to the top of the G, anchored above the top of the screen. Three damped
+      // springs drive it: sideways sway, vertical bounce (the strings stretch)
+      // and tilt, which rests a few degrees to the left. It drops in from off
+      // screen, top-left, on load. After that, whatever moves the content (a
+      // canvas glide, a drag, a zoom, or page scroll on phones) pushes on it:
+      // speed reads like wind, changes in speed like inertia, so it trails
+      // the movement and swings back when things settle.
+      const logo = document.getElementById('site-logo');
+      const strings = document.getElementById('logo-strings');
+      if (logo && strings) {
+        const [lineL, lineG] = strings.querySelectorAll('line');
+        const deg = Math.PI / 180;
+        const REST_TILT = -4; // degrees; negative leans left
+        // Spring constants per axis: [stiffness, damping].
+        const K = { x: [55, 5.5], y: [120, 8.5], t: [80, 6] };
+        const st = { x: -140, y: -230, t: -24, vx: 0, vy: 0, vt: 0 };
+        if (reduceMotion) Object.assign(st, { x: 0, y: 0, t: REST_TILT });
+        let geo = null;
+        const measure = () => {
+          // Rest geometry in screen px: pivot midway between the two ties.
+          const w = logo.offsetWidth;
+          const left = parseFloat(getComputedStyle(logo).left);
+          const top = parseFloat(getComputedStyle(logo).top);
+          const tieL = w * 0.004, tieG = w * 0.75; // tip of the L, top of the G
+          geo = { left, top, pivot: (tieL + tieG) / 2, half: (tieG - tieL) / 2, tieL, tieG };
+          logo.style.transformOrigin = `${geo.pivot}px 0`;
+        };
+        measure();
+        window.addEventListener('resize', measure);
+
+        // Where the content is on screen, so its velocity can drive the logo.
+        const contentPos = () => {
+          if (canvasOn()) {
+            // Read the live transform: glides write it directly and only
+            // hand the final state to Panzoom when they land.
+            const m = /scale\(([-\d.e]+)\)\s*translate\(([-\d.e]+)px,\s*([-\d.e]+)px\)/.exec(canvasGrid.style.transform);
+            const s = m ? +m[1] : panzoom.getScale();
+            const p = m ? { x: +m[2], y: +m[3] } : panzoom.getPan();
+            const c = centerOf(s, p.x, p.y);
+            return { x: -c.x * s, y: -c.y * s, s };
+          }
+          return { x: 0, y: -window.scrollY, s: 1 };
+        };
+        let lastMode = canvasOn();
+        let prev = contentPos();
+        let pv = { x: 0, y: 0, s: 0 };
+        let last = performance.now();
+        const tick = (now) => {
+          requestAnimationFrame(tick);
+          const dt = Math.min(0.033, (now - last) / 1000);
+          last = now;
+          if (!dt) return;
+          const cur = contentPos();
+          // Content velocity (px/s) and acceleration. The canvas switching on
+          // or off, or a jump in scale, resets the reference instead of
+          // reading as a shove.
+          const mode = canvasOn();
+          if (mode !== lastMode) {
+            lastMode = mode;
+            prev = cur;
+            pv = { x: 0, y: 0, s: 0 };
+          }
+          const scaleJump = Math.abs(cur.s - prev.s) / prev.s > 0.25;
+          const v = scaleJump ? pv : { x: (cur.x - prev.x) / dt, y: (cur.y - prev.y) / dt, s: (cur.s - prev.s) / dt };
+          const a = { x: (v.x - pv.x) / dt, y: (v.y - pv.y) / dt };
+          prev = cur;
+          pv = v;
+          if (reduceMotion) return;
+          const clamp = (n, m) => Math.max(-m, Math.min(m, n));
+          const vx = clamp(v.x, 4000), vy = clamp(v.y, 4000);
+          const ax = clamp(a.x, 20000), ay = clamp(a.y, 20000);
+          // Inertia (swings the way the content surges) + wind (leans with
+          // the content's speed), so the logo trails each move and settles.
+          const fx = 0.24 * ax + 0.045 * vx;
+          const fy = 0.12 * ay - 90 * clamp(v.s, 3);
+          const ft = 0.11 * ax + 0.17 * vx - 0.5 * st.vx;
+          st.vx += (-K.x[0] * st.x - K.x[1] * st.vx + fx) * dt;
+          st.vy += (-K.y[0] * st.y - K.y[1] * st.vy + fy) * dt;
+          st.vt += (-K.t[0] * (st.t - REST_TILT) - K.t[1] * st.vt + ft) * dt;
+          st.x = clamp(st.x + st.vx * dt, 400);
+          st.y = clamp(st.y + st.vy * dt, 400);
+          st.t = clamp(st.t + st.vt * dt, 35);
+          render();
+        };
+        const render = () => {
+          logo.style.transform = `translate(${st.x.toFixed(2)}px, ${st.y.toFixed(2)}px) rotate(${st.t.toFixed(2)}deg)`;
+          // Strings run from the ties straight up to fixed anchors off screen.
+          const px = geo.left + geo.pivot + st.x;
+          const py = geo.top + st.y;
+          const cos = Math.cos(st.t * deg), sin = Math.sin(st.t * deg);
+          const ends = [
+            [lineL, px - geo.half * cos, py - geo.half * sin, geo.left + geo.tieL],
+            [lineG, px + geo.half * cos, py + geo.half * sin, geo.left + geo.tieG],
+          ];
+          ends.forEach(([ln, x, y, ax]) => {
+            ln.setAttribute('x1', String(ax));
+            ln.setAttribute('y1', '-40');
+            ln.setAttribute('x2', x.toFixed(2));
+            ln.setAttribute('y2', y.toFixed(2));
+          });
+        };
+        render();
+        requestAnimationFrame(tick);
       }
 
       // In-page links: on the canvas, zoom out and back in on the panel; on
