@@ -508,10 +508,10 @@ html.cases-unlocked .case-gate {
   #canvas-grid .board-photos {
     display: block;
     position: absolute;
-    left: calc(50% - 1120px);
+    left: calc(50% - 1340px);
     top: calc(var(--slide-h) + 440px);
-    width: 2240px;
-    height: 1400px;
+    width: 2680px;
+    height: 1960px;
     padding: 0;
     border: 0;
   }
@@ -648,6 +648,77 @@ html.cases-unlocked .case-gate {
 /* Cards go slightly see-through so the drawing reads behind them. */
 #how-i-work li {
   background-color: rgba(38, 38, 38, 0.78);
+}
+
+/* ── Why me ───────────────────────────────────────────────────────────
+   Dark ultramarine, with Dante's cutout photo anchored bottom right behind
+   the copy. The doubled id beats the canvas's own slide-surface rule. */
+#why-me,
+#canvas-grid #why-me {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: #141a62;
+  background-image:
+    radial-gradient(ellipse at 85% 95%, rgba(52, 66, 190, 0.55) 0%, rgba(52, 66, 190, 0) 60%),
+    linear-gradient(160deg, #1a2075 0%, #10144f 100%);
+  /* Room under the copy on phones, where the photo sits. */
+  padding-bottom: 450px;
+}
+#why-me > .tile-inner {
+  position: relative;
+  z-index: 1;
+}
+.why-figure {
+  position: absolute;
+  right: -10px;
+  bottom: 0;
+  height: 420px;
+  width: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.why-copy {
+  color: #cfd3f2;
+}
+.why-clients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+.why-clients .why-clients-more {
+  font-weight: 400;
+  color: #cfd3f2;
+}
+@media (min-width: 901px) {
+  #canvas-grid #why-me {
+    overflow: visible;
+    padding-bottom: 48px;
+  }
+  .why-figure {
+    right: 0;
+    height: 100%;
+  }
+  /* Type at the same scale as How I work. */
+  #why-me .why-copy {
+    font-size: 22px;
+  }
+  #canvas-grid #why-me > .tile-inner {
+    width: 600px;
+    max-width: 600px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+  #why-me .tape-title {
+    font-size: 64px;
+    max-width: 600px;
+  }
+  .why-clients {
+    font-size: 22px;
+  }
 }
 
 /* ── Hanging logo ───────────────────────────────────────────────────

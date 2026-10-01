@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Stripped back to the landing slide (the hero) and How I work while the
-// site is rebuilt.
+// Three slides for now (Home, How I work, Why me) plus the photo wall,
+// while the site is rebuilt.
 const BOOK_URL = 'https://tidycal.com/ldante';
 
 const ways = [
@@ -20,9 +20,16 @@ const photos = [
   { src: '/photos/junkyard-stack.webp', iw: 1600, ih: 1066, title: 'Nashville, TN', caption: 'All journeys end.', alt: 'Crushed cars stacked high in a scrapyard under a grey sky, a Dodge truck grille at the bottom.', x: 520, y: 210, w: 580, r: 3 },
   { src: '/photos/pinstripe-dash.webp', iw: 1600, ih: 1066, title: 'San Diego, CA', caption: 'A Sunday at Balboa Park.', alt: 'The candy-red dashboard of a classic hot rod with pinstriping, round gauges and a wooden steering wheel.', x: 1180, y: 300, w: 540, r: -2.5 },
   { src: '/photos/flower-wall.webp', iw: 1200, ih: 1600, title: 'Toronto, Canada', caption: 'A bed of roses.', alt: 'A dense wall of pink, white, purple and yellow roses and hydrangeas.', x: 1800, y: 190, w: 380, r: 5 },
-  { src: '/photos/reflection.webp', iw: 1600, ih: 1066, title: 'Palm Springs, CA', caption: 'Cooling down in the car from 100+ degree heat.', alt: 'A smiling woman with long braids seen through a car window, the street reflected across the glass.', x: 330, y: 850, w: 560, r: -3.5 },
-  { src: '/photos/gel-light.webp', iw: 1066, ih: 1600, title: 'Lighting Test Shot', caption: 'This is my son as a test subject while testing a new light setup.', alt: 'My son, with curly hair, looking upward, lit blue from one side and red from the other.', x: 1000, y: 780, w: 360, r: 3 },
+  { src: '/photos/reflection.webp', iw: 1600, ih: 1066, title: 'Palm Springs, CA', caption: 'Cooling down in the car from 100+ degree heat.', alt: 'A smiling woman with long braids seen through a car window, the street reflected across the glass.', x: 60, y: 860, w: 560, r: -3.5 },
+  { src: '/photos/gel-light.webp', iw: 1066, ih: 1600, title: 'Lighting Test Shot', caption: 'This is my son as a test subject while testing a new light setup.', alt: 'My son, with curly hair, looking upward, lit blue from one side and red from the other.', x: 700, y: 800, w: 360, r: 3 },
+  { src: '/photos/sean-obryan-smith.webp', iw: 1600, ih: 1066, title: "Sean O'Bryan Smith", caption: 'Jazz bassist. Nashville, TN', alt: "Sean O'Bryan Smith seated among rows of wooden theater seats, holding a five-string bass.", x: 1160, y: 830, w: 560, r: -2 },
+  { src: '/photos/john-gray.webp', iw: 1600, ih: 1066, title: 'John Gray', caption: 'Pastor and speaker, John Gray. Nashville, TN', alt: 'John Gray in a leather jacket against a brick wall, wiping his face with a white towel.', x: 380, y: 1330, w: 540, r: 2 },
+  { src: '/photos/kortney-wilson.webp', iw: 1000, ih: 1500, title: 'Kortney Wilson', caption: 'Musician & TV Personality. Nashville, TN', alt: 'Kortney Wilson in a pink feather headpiece and tall brown boots, leaning against a peeling teal wall.', x: 2300, y: 240, w: 360, r: -3 },
+  { src: '/photos/beat-kangz.webp', iw: 1600, ih: 1280, title: 'The Beat Kangz', caption: 'Producers & Entrepreneurs', alt: 'The three members of The Beat Kangz in sunglasses on a gravel lot, the Nashville skyline behind them.', x: 1820, y: 820, w: 520, r: 2.5 },
+  { src: '/photos/union-jordan-2.webp', iw: 1280, ih: 1600, title: 'Union Jordan 2', caption: 'Light experiments with projectors', alt: 'Union Jordan 2 sneakers and trousers covered in a projected geometric light pattern.', x: 1060, y: 1440, w: 380, r: -4 },
 ];
+
+const clients = ['Adobe', 'Teamshares', 'Upwork', 'T-Mobile', 'Microsoft', 'Greenpeace International'];
 
 const eyebrow = 'led-eyebrow mb-4';
 // Section titles: Permanent Marker, off-white. Only the hero h1 sits on tape.
@@ -37,7 +44,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
 <Layout>
   <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
   <main id="main">
-    <div id="canvas-grid" style="--cols:2;--rows:1">
+    <div id="canvas-grid" style="--cols:3;--rows:1">
       <!-- HERO -->
       <section id="hero" style="--c:1;--r:1;--dx:-30px;--dy:70px;--tilt:-1.3deg" data-tile data-label="Home" class="tile">
       <span class="tape tile-tape" style="--tape-r:-3deg;width:250px" aria-hidden="true"></span>
@@ -95,7 +102,30 @@ const pillSecondary = 'btn-metal btn-metal--dark';
         </div>
       </section>
 
-      <!-- Marker title over the two slides on the whiteboard (desktop canvas only). -->
+      <!-- WHY ME -->
+      <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="Why me" class={`tile ${section}`} data-reveal>
+        <span class="tape tile-tape" style="--tape-r:-1.5deg;width:240px" aria-hidden="true"></span>
+        <div class="tile-clip">
+          <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
+        </div>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>About me</p>
+          <h2 class={`${h2} mb-6`}>Why you should work with me</h2>
+          <p class="why-copy text-lg md:text-xl leading-relaxed mb-5">
+            I started as a web designer, designing and coding sites for the music industry, professional and consumer brands, and government agencies.
+          </p>
+          <p class="why-copy text-lg md:text-xl leading-relaxed mb-10 slide:mb-8">
+            From there I moved into product design: med-tech, marketing tech, data, and B2B enterprise software.
+          </p>
+          <p class={`${eyebrow} mb-3`}>Trusted by</p>
+          <ul class="why-clients">
+            {clients.map((name) => <li>{name}</li>)}
+            <li class="why-clients-more">and many more</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Marker title over the slides on the whiteboard (desktop canvas only). -->
       <h2 class="board-title board-heading">Product &amp; Design</h2>
 
       <!-- PHOTOGRAPHY: prints taped to the board (not a slide, no connectors).
