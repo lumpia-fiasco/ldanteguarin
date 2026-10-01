@@ -107,6 +107,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
         <span class="tape tile-tape" style="--tape-r:-1.5deg;width:240px" aria-hidden="true"></span>
         <div class="tile-clip">
           <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
+          <img src="/images/dante-portrait.webp" alt="" class="why-figure why-figure--lit" width="879" height="1000" loading="eager" decoding="async" aria-hidden="true" />
         </div>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>About me</p>
@@ -162,6 +163,23 @@ const pillSecondary = 'btn-metal btn-metal--dark';
   </div>
 
   <script>
+    // Why me: the photo sits at half strength; a spotlight follows the
+    // pointer and lights it up to full, only on the photo's own pixels. The
+    // position is set in percentages of the photo, so it lines up at any
+    // canvas zoom.
+    const whyMe = document.getElementById('why-me');
+    const whyLit = whyMe?.querySelector('.why-figure--lit');
+    if (whyMe && whyLit) {
+      const pct = (v, start, size) => `${(((v - start) / size) * 100).toFixed(2)}%`;
+      whyMe.addEventListener('pointermove', (e) => {
+        const r = whyLit.getBoundingClientRect();
+        whyLit.style.setProperty('--mx', pct(e.clientX, r.left, r.width));
+        whyLit.style.setProperty('--my', pct(e.clientY, r.top, r.height));
+        whyMe.classList.add('is-lit');
+      });
+      whyMe.addEventListener('pointerleave', () => whyMe.classList.remove('is-lit'));
+    }
+
     // Respect reduced motion: hold the street loop on a single frame.
     const heroVideo = document.querySelector('.hero-video');
     if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
