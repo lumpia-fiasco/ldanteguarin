@@ -796,6 +796,79 @@ html.cases-unlocked .case-gate {
   }
 }
 
+/* ── Board hint ───────────────────────────────────────────────────────
+   A small pill, bottom centre, shown once on load (desktop canvas). */
+#board-hint {
+  display: none;
+}
+@media (min-width: 901px) {
+  #board-hint:not([hidden]) {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    z-index: 65;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 999px;
+    background: rgba(28, 28, 28, 0.92);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    color: #f2f2f2;
+    font-size: 15px;
+    font-weight: 500;
+    translate: -50% 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease, translate 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #board-hint.is-in {
+    translate: -50% 0;
+    opacity: 1;
+  }
+  .board-hint-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-pink);
+    flex: none;
+  }
+  .board-hint-alt {
+    color: #a3a3a3;
+    margin-left: 4px;
+  }
+  #board-hint kbd {
+    display: inline-block;
+    min-width: 22px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    color: #fff;
+  }
+  .board-hint-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    color: #a3a3a3;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .board-hint-close:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .board-hint-close:focus-visible {
+    outline: 2px solid var(--color-pink);
+    outline-offset: 2px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #board-hint:not([hidden]) {
+    transition: none;
+  }
+}
+
 /* ── Hanging logo ───────────────────────────────────────────────────
    Fixed top-left over everything but the grain; its transform and the two
    strings are driven by the physics loop in Layout.astro. */

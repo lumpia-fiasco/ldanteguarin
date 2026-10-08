@@ -93,6 +93,14 @@ const jsonLd = {
     <div id="grain" aria-hidden="true"></div>
     <!-- The LDG mark, hung top-left on two strings (tied to the L and the G).
          Positioned by the physics loop at the end of the script below. -->
+    <!-- First-visit hint: pinch to zoom around the whiteboard (desktop canvas). -->
+    <div id="board-hint" role="status" hidden>
+      <svg class="board-hint-icon" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M5 27 L13 19 M5 27 h6 M5 27 v-6 M27 5 L19 13 M27 5 h-6 M27 5 v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span>Pinch to zoom in and out <span class="board-hint-alt">· press <kbd>M</kbd> for the whole board</span></span>
+      <button type="button" class="board-hint-close" aria-label="Dismiss hint">×</button>
+    </div>
     <svg id="logo-strings" aria-hidden="true"><line /><line /></svg>
     <a id="site-logo" href="#main" aria-label="L Dante Guarin, home">
       <svg viewBox="0 0 400 200" aria-hidden="true">
@@ -262,6 +270,7 @@ const jsonLd = {
       }
 
       function showMap() {
+        dismissHint(true);
         if (photoIndex !== -1) closePhoto(false);
         const { s: s1, c: g1 } = overview();
         animateView(g1, s1, false, false);
@@ -338,6 +347,7 @@ const jsonLd = {
         zoomSpring = null;
       }
       function zoomBy(factor, clientX, clientY) {
+        dismissHint(true);
         cancelAnim();
         const from = zoomSpring ? zoomSpring.target : panzoom.getScale();
         const target = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, from * factor));
@@ -774,6 +784,46 @@ const jsonLd = {
         photoDown = null;
       });
 
+      // ── Board hint ──
+      // On load, a small pill tells first-timers they can pinch to zoom in
+      // and out (and press M for the whole whiteboard). It leaves when they pinch,
+      // zoom, open the map, dismiss it, or after a few seconds; once they've
+      // actually used it, it stays away on later visits.
+      const hint = document.getElementById('board-hint');
+      const HINT_KEY = 'ldg-board-hint-done';
+      let hintTimer = 0;
+      const hintDone = () => {
+        try {
+          return localStorage.getItem(HINT_KEY) === '1';
+        } catch {
+          return false;
+        }
+      };
+      function showHintSoon() {
+        if (!hint || hintDone()) return;
+        clearTimeout(hintTimer);
+        hintTimer = setTimeout(() => {
+          if (!canvasOn() || hintDone()) return;
+          hint.hidden = false;
+          requestAnimationFrame(() => hint.classList.add('is-in'));
+          hintTimer = setTimeout(() => dismissHint(false), 7000);
+        }, 2200);
+      }
+      function dismissHint(remember) {
+        if (remember) {
+          try {
+            localStorage.setItem(HINT_KEY, '1');
+          } catch {}
+        }
+        clearTimeout(hintTimer);
+        if (!hint || hint.hidden) return;
+        hint.classList.remove('is-in');
+        setTimeout(() => { hint.hidden = true; }, reduceMotion ? 0 : 300);
+      }
+      hint?.querySelector('.board-hint-close').addEventListener('click', () => dismissHint(true));
+      // Safari reports trackpad pinches as gesture events.
+      window.addEventListener('gesturestart', () => dismissHint(true));
+
       // ── Switching the canvas on and off ──
       function enableCanvas() {
         if (canvasOn() || !canvasGrid) return;
@@ -797,6 +847,7 @@ const jsonLd = {
             fitSlides();
             layoutConnectors();
             animateTo(tileOrder[currentIndex] || heroTile, true);
+            showHintSoon();
           }
         })));
       }
@@ -807,6 +858,7 @@ const jsonLd = {
         destroyOverlay();
         cancelAnimationFrame(boardRaf);
         canvasGrid.style.removeProperty('--tz');
+        dismissHint(false);
         document.documentElement.classList.remove('on-board');
         closePhoto(false);
         panzoom.destroy();
