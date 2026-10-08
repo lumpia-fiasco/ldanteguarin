@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Home, How I work, Work with me and Work (with its three branch slides),
+// Home, How I work, About me and Work (with its four branch slides),
 // plus the photo wall, while the site is rebuilt.
 const BOOK_URL = 'https://tidycal.com/ldante';
 
@@ -64,6 +64,9 @@ const pillSecondary = 'btn-metal btn-metal--dark';
         <div class="hero-scrim" aria-hidden="true"></div>
         <img src="/images/hero-crownd-phone.webp" alt="A social app's feed open on an iPhone, held in a hand" class="hero-figure hero-figure--left" width="937" height="1678" loading="eager" />
       </div>
+      <!-- Marker note over the phone (desktop canvas only). -->
+      <p class="phone-note">My latest<br />tinkerings</p>
+      <a class="phone-tape" href="https://www.crownd.app" target="_blank" rel="noopener noreferrer"><span class="tape">crownd.app</span><span class="sr-only"> (opens in a new tab)</span></a>
       <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8 pt-28 pb-16 md:pb-20 slide:max-w-[760px]">
         <div>
         <div>
@@ -112,7 +115,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
       </section>
 
       <!-- WHY ME -->
-      <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="Work with me" class={`tile ${section}`} data-reveal>
+      <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="About me" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-1.5deg;width:240px" aria-hidden="true"></span>
         <div class="tile-clip">
           <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
@@ -120,7 +123,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
         </div>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>About me</p>
-          <h2 class={`${h2} mb-6`}>Why you should work with me</h2>
+          <h2 class={`${h2} mb-6`}>20+ years in design</h2>
           <p class="why-copy text-lg md:text-xl leading-relaxed mb-5">
             I started as a web designer, designing and coding sites for the music industry, professional and consumer brands, and government agencies.
           </p>
@@ -218,6 +221,19 @@ const pillSecondary = 'btn-metal btn-metal--dark';
       });
       whyMe.addEventListener('pointerleave', () => whyMe.classList.remove('is-lit'));
     }
+
+    // Links that leave the site (marked target="_blank") open in a new
+    // tab explicitly, so they do even where a browser would otherwise
+    // reuse the current one.
+    document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const opened = window.open(link.href, '_blank');
+        if (!opened) return; // blocked: fall back to the link's own target
+        opened.opener = null; // same protection as rel="noopener"
+        e.preventDefault();
+      });
+    });
 
     // Respect reduced motion: hold the street loop on a single frame.
     const heroVideo = document.querySelector('.hero-video');

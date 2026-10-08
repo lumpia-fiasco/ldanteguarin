@@ -705,6 +705,67 @@ html.cases-unlocked .case-gate {
   }
 }
 
+/* ── Phone note ───────────────────────────────────────────────────────
+   Marker handwriting over the top of the hero's phone, and a strip of tape
+   on its screen carrying the crownd.app link. Both are pinned to the phone
+   image: it's h = min(slide height, 900px) tall and 0.558h wide, sits 40px
+   from the left and 60px below the slide's bottom edge; the phone's top is
+   ~11.5% down it and its screen is centred ~51% across. */
+.phone-note,
+.phone-tape {
+  display: none;
+}
+@media (min-width: 901px) {
+  .phone-note {
+    display: block;
+    position: absolute;
+    z-index: 3;
+    /* Overlapping the phone's top edge, circled in white marker. */
+    left: 96px;
+    bottom: calc(min(var(--slide-h, 900px), 900px) * 0.885 - 96px);
+    padding: 18px 30px 22px;
+    rotate: -5deg;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 34px;
+    line-height: 1.05;
+    color: #f4f1e8;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+  }
+  /* A loose, hand-drawn marker loop around the note: it overshoots where
+     it starts, like a real circle drawn in one go. */
+  .phone-note::after {
+    content: '';
+    position: absolute;
+    inset: -4px -10px -6px -12px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 140' preserveAspectRatio='none'><path d='M44 24 C120 4 256 8 286 50 C306 92 222 134 132 131 C52 128 8 104 11 70 C14 36 64 15 152 13 C204 12 244 20 266 33' fill='none' stroke='%23f4f1e8' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / 100% 100%;
+    pointer-events: none;
+  }
+  .phone-tape {
+    display: block;
+    position: absolute;
+    z-index: 3;
+    left: calc(40px + min(var(--slide-h, 900px), 900px) * 0.558 * 0.512);
+    bottom: calc(min(var(--slide-h, 900px), 900px) * 0.74 - 160px);
+    translate: -50% 0;
+    rotate: 3deg;
+    font-family: 'Permanent Marker', cursive;
+    font-size: 26px;
+    line-height: 1.6;
+    color: #1c1c1c;
+    white-space: nowrap;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .phone-tape:hover {
+    scale: 1.06;
+  }
+  .phone-tape:focus-visible {
+    outline: 3px solid var(--color-pink);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+}
+
 /* ── Why me ───────────────────────────────────────────────────────────
    Dark ultramarine, with Dante's cutout photo anchored bottom right behind
    the copy. The doubled id beats the canvas's own slide-surface rule. */
