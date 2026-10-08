@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Three slides for now (Home, How I work, Why me) plus the photo wall,
-// while the site is rebuilt.
+// Home, How I work, Work with me and Work (with its three branch slides),
+// plus the photo wall, while the site is rebuilt.
 const BOOK_URL = 'https://tidycal.com/ldante';
 
 const ways = [
@@ -31,6 +31,15 @@ const photos = [
 
 const clients = ['Adobe', 'Teamshares', 'Upwork', 'T-Mobile', 'Microsoft', 'Greenpeace International'];
 
+// Work's branch slides. Copy is still to come, so each is a title for now.
+// Work sits nudged right so it's centred over all four.
+const workAreas = [
+  { id: 'work-strategy', title: 'Strategy', pos: '--c:3;--r:2;--dx:120px;--dy:40px;--tilt:-1deg', tape: '--tape-r:2deg;width:230px' },
+  { id: 'work-product-systems', title: 'Product & Systems', pos: '--c:4;--r:2;--dx:30px;--dy:130px;--tilt:0.8deg', tape: '--tape-r:-2.5deg;width:250px' },
+  { id: 'work-design-systems', title: 'Design Systems', pos: '--c:5;--r:2;--dx:-60px;--dy:20px;--tilt:-1.4deg', tape: '--tape-r:1.5deg;width:220px' },
+  { id: 'work-web', title: 'Web & Mobile', pos: '--c:6;--r:2;--dx:-140px;--dy:110px;--tilt:1.2deg', tape: '--tape-r:-1.5deg;width:240px' },
+];
+
 const eyebrow = 'led-eyebrow mb-4';
 // Section titles: Permanent Marker, off-white. Only the hero h1 sits on tape.
 const h2 = 'tape-title';
@@ -44,7 +53,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
 <Layout>
   <div id="canvas-viewport" tabindex="0" aria-label="Canvas. Drag to pan, scroll to move between panels, plus and minus to zoom, 0 for the top panel.">
   <main id="main">
-    <div id="canvas-grid" style="--cols:3;--rows:1">
+    <div id="canvas-grid" style="--cols:6;--rows:2">
       <!-- HERO -->
       <section id="hero" style="--c:1;--r:1;--dx:-30px;--dy:70px;--tilt:-1.3deg" data-tile data-label="Home" class="tile">
       <span class="tape tile-tape" style="--tape-r:-3deg;width:250px" aria-hidden="true"></span>
@@ -103,7 +112,7 @@ const pillSecondary = 'btn-metal btn-metal--dark';
       </section>
 
       <!-- WHY ME -->
-      <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="Why me" class={`tile ${section}`} data-reveal>
+      <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="Work with me" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-1.5deg;width:240px" aria-hidden="true"></span>
         <div class="tile-clip">
           <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
@@ -125,6 +134,36 @@ const pillSecondary = 'btn-metal btn-metal--dark';
           </ul>
         </div>
       </section>
+
+      <!-- WORK, with its three areas branching below it -->
+      <section id="work" style="--c:4;--r:1;--dx:960px;--dy:-60px;--tilt:1.1deg" data-tile data-label="Work" class={`tile ${section}`} data-reveal>
+        <span class="tape tile-tape" style="--tape-r:-2deg;width:240px" aria-hidden="true"></span>
+        <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+          <p class={eyebrow}>Selected work</p>
+          <h2 class={`${h2} work-title mb-10`}>Work</h2>
+          <ul class="grid sm:grid-cols-2 slide:grid-cols-4 gap-4 slide:gap-5">
+            {workAreas.map((a) => (
+              <li>
+                <a href={`#${a.id}`} class="work-card">
+                  <span class="work-card-title">{a.title}</span>
+                  <span class="work-card-arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {workAreas.map((a) => (
+        <section id={a.id} style={a.pos} data-tile data-branch="work" data-label={a.title} class={`tile ${section}`} data-reveal>
+          <span class="tape tile-tape" style={a.tape} aria-hidden="true"></span>
+          <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
+            <p class={eyebrow}>Work</p>
+            <h2 class={`${h2} work-area-title mb-6`}>{a.title}</h2>
+            <p class="text-lg md:text-xl leading-relaxed">Case studies coming soon.</p>
+          </div>
+        </section>
+      ))}
 
       <!-- Marker title over the slides on the whiteboard (desktop canvas only). -->
       <h2 class="board-title board-heading">Product &amp; Design</h2>

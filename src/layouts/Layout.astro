@@ -390,13 +390,17 @@ const jsonLd = {
       // signpost pill sits on the screen edge in the direction of that panel.
       const SVG_NS = 'http://www.w3.org/2000/svg';
       const MARKER_RED = '#c3282c';
-      // Two chains: the main site in reading order, and the case-study branch
-      // hanging off the Case studies panel.
+      // The main site in reading order, plus branch slides hanging off
+      // their parent panel.
       const chain = (list) => list.slice(1).map((t, i) => [list[i], t]);
       const mainChain = tileOrder.filter((t) => !t.dataset.branch);
-      const caseHub = document.getElementById('case-studies');
-      const caseChain = [caseHub, ...tileOrder.filter((t) => t.dataset.branch === 'cases')].filter(Boolean);
-      const pairs = [...chain(mainChain), ...(caseChain.length > 1 ? chain(caseChain) : [])];
+      // Branch slides (data-branch="<parent id>") each get their own line
+      // straight from their parent, fanning out, rather than a chain.
+      const branchPairs = tileOrder
+        .filter((t) => t.dataset.branch)
+        .map((t) => [document.getElementById(t.dataset.branch), t])
+        .filter(([hub]) => hub);
+      const pairs = [...chain(mainChain), ...branchPairs];
       let overlay = null;
       let lineLayer = null;
       let links = [];
@@ -563,7 +567,7 @@ const jsonLd = {
       // stack in the bottom-right corner (Case study / Next / Back, top to
       // bottom). Its arrow still points toward the panel, snapped to eight
       // directions.
-      const KICKER_ORDER = { 'Case study': 1, Next: 2, Back: 3 };
+      const KICKER_ORDER = { Explore: 1, Next: 2, Back: 3 };
       let lastZo = -1;
       let lastTz = -1;
       let counterTile = null;
@@ -652,7 +656,7 @@ const jsonLd = {
           const dy = fr.y + fr.h / 2 - (nr.y + nr.h / 2);
           const angle = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * 45;
           const forward = tileOrder.indexOf(far) > tileOrder.indexOf(near);
-          const kicker = !forward ? 'Back' : far.dataset.branch ? 'Case study' : 'Next';
+          const kicker = !forward ? 'Back' : far.dataset.branch ? 'Explore' : 'Next';
           wanted.set(far, { angle, kicker, near });
         });
 

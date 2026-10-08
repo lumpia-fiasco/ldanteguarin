@@ -508,8 +508,9 @@ html.cases-unlocked .case-gate {
   #canvas-grid .board-photos {
     display: block;
     position: absolute;
-    left: calc(50% - 1340px);
-    top: calc(var(--slide-h) + 440px);
+    /* In the open space under Home and How I work (row 2, left). */
+    left: 220px;
+    top: calc(var(--slide-h) + 640px);
     width: 2680px;
     height: 1960px;
     padding: 0;
@@ -648,6 +649,60 @@ html.cases-unlocked .case-gate {
 /* Cards go slightly see-through so the drawing reads behind them. */
 #how-i-work li {
   background-color: rgba(38, 38, 38, 0.78);
+}
+
+/* ── Work ─────────────────────────────────────────────────────────────
+   The Work slide links to its three areas, which branch below it on the
+   board. */
+.work-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-card);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.2;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.work-card:hover {
+  border-color: var(--color-pink);
+  background: #2c2c2c;
+}
+.work-card:focus-visible {
+  outline: 3px solid var(--color-pink);
+  outline-offset: 3px;
+}
+.work-card-arrow {
+  color: var(--color-pink);
+  transition: translate 0.2s ease;
+}
+.work-card:hover .work-card-arrow {
+  translate: 4px 0;
+}
+@media (min-width: 901px) {
+  #work .work-title {
+    font-size: 120px;
+    line-height: 1;
+  }
+  /* Keep the cards clear of the signpost stack in the bottom-right corner. */
+  #canvas-grid #work > .tile-inner {
+    max-width: 1100px;
+    margin-left: 0;
+  }
+  #canvas-grid [data-branch='work'] .work-area-title {
+    font-size: 96px;
+    line-height: 1.05;
+  }
+  .work-card {
+    min-height: 200px;
+    align-items: flex-end;
+    font-size: 30px;
+  }
 }
 
 /* ── Why me ───────────────────────────────────────────────────────────
