@@ -818,8 +818,18 @@ const jsonLd = {
         if (desktop.matches) enableCanvas();
         desktop.addEventListener('change', (e) => (e.matches ? enableCanvas() : disableCanvas()));
 
-        // Scroll / two-finger swipe pans the canvas freely; Ctrl/Cmd+wheel
-        // (also how browsers report a trackpad pinch) zooms at the pointer.
+        // Scroll steps between panels: one gesture (a wheel flick or a
+        // trackpad swipe, down/right for next, up/left for back) makes one
+        // animated jump. A gesture only counts once, so a trackpad's
+        // momentum tail can't skip ahead: it has to go quiet before the next
+        // one arms. With a photo open, scrolling steps through the photos;
+        // in the map view it dives back into the panel you came from.
+        // Ctrl/Cmd+wheel (also how browsers report a trackpad pinch) still
+        // zooms at the pointer, and dragging still pans freely.
+        let wheelAcc = 0;
+        let wheelLastAt = 0;
+        let wheelArmed = true;
+        let wheelLockUntil = 0;
         canvasViewport.addEventListener(
           'wheel',
           (e) => {
@@ -841,10 +851,32 @@ const jsonLd = {
               zoomBy(Math.exp(-d * 0.008), e.clientX, e.clientY);
               return;
             }
-            cancelAnim();
+            const now = performance.now();
+            if (now - wheelLastAt > 220) {
+              // A fresh gesture after a quiet gap.
+              wheelArmed = true;
+              wheelAcc = 0;
+            }
+            wheelLastAt = now;
+            if (!wheelArmed || now < wheelLockUntil) return;
             const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? vpSize().h : 1;
-            const scale = panzoom.getScale();
-            panzoom.pan((-e.deltaX * unit) / scale, (-e.deltaY * unit) / scale, { relative: true, animate: false });
+            const d = (Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX) * unit;
+            wheelAcc += d;
+            if (Math.abs(wheelAcc) < 40) return;
+            const dir = Math.sign(wheelAcc);
+            wheelAcc = 0;
+            wheelArmed = false;
+            wheelLockUntil = now + 900;
+            if (photoIndex !== -1) {
+              openPhoto(photoIndex + dir);
+              return;
+            }
+            if (canvasGrid.classList.contains('is-overview')) {
+              animateTo(tileOrder[currentIndex] || heroTile, false);
+              return;
+            }
+            const next = tileOrder[currentIndex + dir];
+            if (next) animateTo(next, false);
           },
           { passive: false }
         );
