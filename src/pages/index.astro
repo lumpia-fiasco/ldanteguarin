@@ -33,21 +33,24 @@ const clients = ['Adobe', 'Teamshares', 'Upwork', 'T-Mobile', 'Microsoft', 'Gree
 
 // Work's branch slides. Copy is still to come, so each is a title for now.
 // Work sits nudged right so it's centred over all four.
+// The area slides share one strip of tape, so cutting between them (they
+// swap in place, see animateTo) doesn't show the tape jump.
+const CASE_TAPE = '--tape-r:-1.5deg;width:240px';
 const workAreas = [
-  { id: 'expertise-strategy', title: 'Strategy', pos: '--c:3;--r:2;--dx:120px;--dy:40px;--tilt:-1deg', tape: '--tape-r:2deg;width:230px',
+  { id: 'expertise-strategy', title: 'Strategy', pos: '--c:3;--r:2;--dx:120px;--dy:40px;--tilt:-1deg', tape: CASE_TAPE,
     body: [
       "Most briefs describe a symptom, so my first job is finding the problem underneath it. At Meroxa, growth had stalled and the instinct was better onboarding. My research showed we'd built the right product for the wrong person, and it led a pivot from a builder tool to a data observability platform that expanded our addressable market 10x.",
       "At Marketo, the new Sky experience had been ready for years, but fewer than 600 users had opted in. Nobody had designed the transition, so we did: a phased hybrid that brought Sky features into the Classic interface first and moved navigation last, so users got the improvements without the disruption. Opt-ins grew from under 600 to more than 5,000.",
       "It starts close to the work. Site visits at MedHost's partner hospitals surfaced a scheduling gap that led them to adopt an in-house tool over third-party calendars. At Sixup, bringing in qualitative research shifted the roadmap's priorities.",
     ],
   },
-  { id: 'expertise-systems-thinking', title: 'Systems Thinking', pos: '--c:4;--r:2;--dx:30px;--dy:130px;--tilt:0.8deg', tape: '--tape-r:-2.5deg;width:250px',
+  { id: 'expertise-systems-thinking', title: 'Systems Thinking', pos: '--c:4;--r:2;--dx:30px;--dy:130px;--tilt:0.8deg', tape: CASE_TAPE,
     body: [
       "I think in systems first, then UI. A screen is the last step of a chain of decisions about data, ownership and flow, and that chain is usually where the real problem lives. At Teamshares, the ask was \"build an ATS.\" The real problem was a hiring model running on spreadsheets while the company acquired businesses faster than it could place leaders to run them. Designing the system instead of the tool gave the team one source of truth across 80+ acquired companies and placed 20+ leaders.",
       "The same lens shaped the payroll dashboard there. Integration was the expensive part, so we built it once for the whole platform to inherit, and cut the analysis time of the company's financial leads in half. At Marketo, I went after the org model rather than the components, and ran internal workshops on systems thinking. At the healthtech startup I'm with now, every prototype feeds what it learns back into the design system, so each new one starts from more of the product than the last.",
     ],
   },
-  { id: 'expertise-design-systems', title: 'Design Systems', pos: '--c:5;--r:2;--dx:-60px;--dy:20px;--tilt:-1.4deg', tape: '--tape-r:1.5deg;width:220px',
+  { id: 'expertise-design-systems', title: 'Design Systems', pos: '--c:5;--r:2;--dx:-60px;--dy:20px;--tilt:-1.4deg', tape: CASE_TAPE,
     body: [
       "I founded Marketo's Sky Design System, built the team behind it, and led its evangelism across Marketo's product squads. At Meroxa, I used Tailwind CSS as a solid baseline for the Yoshi Design System. I contributed to the design system at Teamshares, and helped retrofit T-Mobile's Arrow Design System for B2B use in T-Mobile for Business.",
       "Lately I've been making Figma design system libraries AI-ready, and using AI to learn a system's guardrails and build out its assets with far greater efficiency.",
@@ -58,7 +61,7 @@ const workAreas = [
       { src: '/work/design-systems-sceptre.webp', w: 1600, h: 1138, alt: "A design system documentation site: a sidebar of foundations and components beside a page of brand, background and border colour swatches." },
     ],
   },
-  { id: 'expertise-product', title: 'Product', pos: '--c:6;--r:2;--dx:-140px;--dy:110px;--tilt:1.2deg', tape: '--tape-r:-1.5deg;width:240px',
+  { id: 'expertise-product', title: 'Product', pos: '--c:6;--r:2;--dx:-140px;--dy:110px;--tilt:1.2deg', tape: CASE_TAPE,
     body: [
       "I started my career writing front-end code, and I still design with how it will be built in mind. At Upwork, I designed collaboration tools for freelancers and clients and shipped the Upwork Teams app on desktop and mobile. At T-Mobile for Business, I led end-to-end design for promotion, trade-in and quote-to-order flows across its B2B surfaces.",
       "At a healthtech startup, I extended the design system to mobile with the same token and component logic as desktop rather than a separate mobile system, so one foundation serves both and nothing drifts between them.",
@@ -200,6 +203,13 @@ const pillSecondary = 'btn btn--dark';
                 </div>
               </div>
             </div>
+            <!-- Folder tabs to move between the areas without going back to
+                 Expertise (canvas only; they swap the case in place). -->
+            <nav class="case-tabs" aria-label="Expertise areas">
+              {workAreas.map((b) => (
+                <a href={`#${b.id}`} class="case-tab" aria-current={b.id === a.id ? 'true' : undefined}>{b.title}</a>
+              ))}
+            </nav>
             {a.shots && (
               <div class="work-gallery" data-gallery>
                 {a.shots.map((s, k) => (

@@ -156,6 +156,10 @@ const jsonLd = {
       const tileOrder = canvasGrid ? Array.from(canvasGrid.querySelectorAll('[data-tile]')) : [];
       const heroTile = document.getElementById('hero');
       let currentIndex = 0;
+      // Set when the view cuts instantly between two open-briefcase slides,
+      // so the hanging logo doesn't read the cut as a shove.
+      let viewCut = false;
+      let caseSwapTimer = 0;
 
       // ── Geometry ──
       // Panzoom's transform is `scale(s) translate(tx, ty)` about the grid's
@@ -265,6 +269,7 @@ const jsonLd = {
       const easeInOut = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
 
       function cancelAnim() {
+        clearTimeout(caseSwapTimer);
         if (!anim) return;
         cancelAnimationFrame(anim.raf);
         const last = anim.last;
@@ -276,18 +281,65 @@ const jsonLd = {
 
       function animateTo(tile, instant) {
         if (photoIndex !== -1) closePhoto(false);
+        clearTimeout(caseSwapTimer);
+        const prev = tileOrder[currentIndex];
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
-        animateView(g1, s1, instant, true);
         // Open-briefcase slides: the index card, the paper and the samples
-        // are laid in as the case arrives (keyframes in global.css). Instant
-        // moves (resizes, first load) just show them.
-        if (!instant && !reduceMotion && tile.querySelector(':scope > .case-open')) {
-          tile.classList.remove('case-enter');
-          void tile.offsetWidth; // restart the keyframes
-          tile.classList.add('case-enter');
+        // are cleared off as you leave and laid in as the case arrives
+        // (keyframes in global.css). Instant moves (resizes, first load)
+        // just show them.
+        const animate = !instant && !reduceMotion;
+        if (animate && prev !== tile && isCase(prev) && isCase(tile) && landedOn(prev)) {
+          // Case to case is the same open briefcase, so there's no glide:
+          // clear the pieces off, cut to the next slide and lay its in.
+          caseLeave(prev);
+          caseSwapTimer = setTimeout(() => {
+            viewCut = true;
+            animateView(g1, s1, true, false);
+            caseEnter(tile, true);
+            // Keep keyboard focus on the folder tabs, now on the new slide.
+            const focused = document.activeElement;
+            if (focused && focused.classList.contains('case-tab') && prev.contains(focused)) {
+              tile.querySelector(`.case-tab[href="${focused.getAttribute('href')}"]`)?.focus({ preventScroll: true });
+            }
+          }, 420);
+          return;
         }
+        animateView(g1, s1, instant, true);
+        if (!animate) return;
+        if (prev !== tile && isCase(prev)) caseLeave(prev);
+        if (isCase(tile)) caseEnter(tile, false);
+      }
+      const isCase = (t) => !!(t && t.querySelector(':scope > .case-open'));
+      // Is the view sitting on this slide (not the map, not mid-glide)?
+      function landedOn(t) {
+        if (anim || canvasGrid.classList.contains('is-overview')) return false;
+        const f = frameFor(t);
+        const sc = panzoom.getScale();
+        const p = panzoom.getPan();
+        const c = centerOf(sc, p.x, p.y);
+        return Math.abs(sc - f.s) / f.s < 0.05 && Math.hypot(c.x - f.c.x, c.y - f.c.y) < 60;
+      }
+      // After a glide, the pieces wait for the slide to arrive; after a cut
+      // they come straight in (case-swap shortens the delays).
+      function caseEnter(tile, swap) {
+        clearTimeout(caseResetTimers.get(tile));
+        tile.classList.remove('case-leave', 'case-enter', 'case-swap');
+        void tile.offsetWidth; // restart the keyframes
+        tile.classList.add('case-enter');
+        if (swap) tile.classList.add('case-swap');
+      }
+      // Once a cleared case is off screen, put its pieces back so it's whole
+      // again on the map and ready to animate next time.
+      const caseResetTimers = new WeakMap();
+      function caseLeave(tile) {
+        clearTimeout(caseResetTimers.get(tile));
+        tile.classList.remove('case-enter', 'case-leave', 'case-swap');
+        void tile.offsetWidth;
+        tile.classList.add('case-leave');
+        caseResetTimers.set(tile, setTimeout(() => tile.classList.remove('case-leave'), 1300));
       }
 
       function showMap() {
@@ -1133,7 +1185,8 @@ const jsonLd = {
           // or off, or a jump in scale, resets the reference instead of
           // reading as a shove.
           const mode = canvasOn();
-          if (mode !== lastMode) {
+          if (mode !== lastMode || viewCut) {
+            viewCut = false;
             lastMode = mode;
             prev = cur;
             pv = { x: 0, y: 0, s: 0 };

@@ -741,6 +741,11 @@ html.cases-unlocked .case-gate {
   margin: 0 0 10px;
 }
 
+/* Folder tabs between the areas (canvas only). */
+.case-tabs {
+  display: none;
+}
+
 /* Gallery: prints with a white border. On phones the images stack under
    the sheet; on the canvas they sit in one frame and scrolling flips
    between them (see the wheel handler in Layout.astro). */
@@ -830,8 +835,46 @@ html.cases-unlocked .case-gate {
     position: absolute;
     left: 60px;
     top: 170px;
-    bottom: 40px;
+    bottom: 96px;
     width: 560px;
+  }
+  /* Manila folder tabs rising from the bottom edge of the lid, the current
+     area's pulled up and lighter. They're the same on every area slide, so
+     they hold still through the swap; only the highlight moves. */
+  .case-tabs {
+    display: flex;
+    gap: 6px;
+    position: absolute;
+    left: 60px;
+    bottom: 0;
+    filter: drop-shadow(0 -3px 6px rgba(0, 0, 0, 0.35));
+  }
+  .case-tab {
+    padding: 10px 20px 22px;
+    background: linear-gradient(180deg, #d9c18b, #c9ad72);
+    clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+    font-family: 'Permanent Marker', cursive;
+    font-size: 18px;
+    line-height: 1.1;
+    white-space: nowrap;
+    color: #3a2c1c;
+    translate: 0 10px;
+    transition: translate 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+  }
+  .case-tab:hover {
+    translate: 0 4px;
+  }
+  .case-tab[aria-current] {
+    translate: 0 0;
+    background: linear-gradient(180deg, #f3e6c4, #e4d2a4);
+    color: #1f1d1a;
+  }
+  /* The clip-path would cut an outline's corners, so focus underlines. */
+  .case-tab:focus-visible {
+    outline: none;
+    translate: 0 0;
+    text-decoration: underline 3px var(--color-pink);
+    text-underline-offset: 5px;
   }
   #canvas-grid [data-branch='expertise'] .work-area-title {
     font-size: 56px;
@@ -886,17 +929,36 @@ html.cases-unlocked .case-gate {
 /* Laying out the open case: when a glide heads for an area slide, the
    index card drops in from above, the paper slides in from below and the
    samples come in from the right, landing one after another as the slide
-   settles (the glide takes ~1.15s; see animateTo). The keyframes only use
+   settles (the glide takes ~1.15s; see animateTo). Leaving clears them off
+   the same way in reverse. The keyframes only use
    transform, so each piece keeps its own resting tilt. */
 @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
   .case-enter .case-card {
-    animation: case-card-in 0.75s cubic-bezier(0.22, 1.25, 0.36, 1) 0.45s both;
+    animation: case-card-in 0.75s cubic-bezier(0.22, 1.25, 0.36, 1) var(--case-d0, 0.45s) both;
   }
   .case-enter .case-sheet {
-    animation: case-sheet-in 0.8s cubic-bezier(0.22, 1.15, 0.36, 1) 0.62s both;
+    animation: case-sheet-in 0.8s cubic-bezier(0.22, 1.15, 0.36, 1) var(--case-d1, 0.62s) both;
   }
   .case-enter .work-gallery {
-    animation: case-shots-in 0.85s cubic-bezier(0.22, 1.15, 0.36, 1) 0.8s both;
+    animation: case-shots-in 0.85s cubic-bezier(0.22, 1.15, 0.36, 1) var(--case-d2, 0.8s) both;
+  }
+  /* Arriving from another area (an instant cut, no glide): straight in. */
+  .case-swap {
+    --case-d0: 0.02s;
+    --case-d1: 0.14s;
+    --case-d2: 0.26s;
+  }
+  /* Leaving: the same moves played backwards and quicker, samples first,
+     card last. The easing applies after the reversal, so an ease-out curve
+     here makes the pieces accelerate away. */
+  .case-leave .work-gallery {
+    animation: case-shots-in 0.45s cubic-bezier(0.2, 0.8, 0.45, 1) reverse both;
+  }
+  .case-leave .case-sheet {
+    animation: case-sheet-in 0.45s cubic-bezier(0.2, 0.8, 0.45, 1) 0.06s reverse both;
+  }
+  .case-leave .case-card {
+    animation: case-card-in 0.45s cubic-bezier(0.2, 0.8, 0.45, 1) 0.12s reverse both;
   }
 }
 @keyframes case-card-in {
