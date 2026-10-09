@@ -883,6 +883,38 @@ html.cases-unlocked .case-gate {
   }
 }
 
+/* Laying out the open case: when a glide heads for an area slide, the
+   index card drops in from above, the paper slides in from below and the
+   samples come in from the right, landing one after another as the slide
+   settles (the glide takes ~1.15s; see animateTo). The keyframes only use
+   transform, so each piece keeps its own resting tilt. */
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .case-enter .case-card {
+    animation: case-card-in 0.75s cubic-bezier(0.22, 1.25, 0.36, 1) 0.45s both;
+  }
+  .case-enter .case-sheet {
+    animation: case-sheet-in 0.8s cubic-bezier(0.22, 1.15, 0.36, 1) 0.62s both;
+  }
+  .case-enter .work-gallery {
+    animation: case-shots-in 0.85s cubic-bezier(0.22, 1.15, 0.36, 1) 0.8s both;
+  }
+}
+@keyframes case-card-in {
+  from { opacity: 0; transform: translate(-90px, -240px) rotate(-14deg); }
+  25% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes case-sheet-in {
+  from { opacity: 0; transform: translate(-50px, 380px) rotate(9deg); }
+  25% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes case-shots-in {
+  from { opacity: 0; transform: translate(340px, 60px) rotate(12deg); }
+  25% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
 /* ── Why me ───────────────────────────────────────────────────────────
    Site charcoal, with Dante's cutout photo anchored bottom right behind
    the copy. The doubled id beats the canvas's own slide-surface rule. */

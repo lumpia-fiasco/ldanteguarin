@@ -280,6 +280,14 @@ const jsonLd = {
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
         animateView(g1, s1, instant, true);
+        // Open-briefcase slides: the index card, the paper and the samples
+        // are laid in as the case arrives (keyframes in global.css). Instant
+        // moves (resizes, first load) just show them.
+        if (!instant && !reduceMotion && tile.querySelector(':scope > .case-open')) {
+          tile.classList.remove('case-enter');
+          void tile.offsetWidth; // restart the keyframes
+          tile.classList.add('case-enter');
+        }
       }
 
       function showMap() {
