@@ -218,9 +218,18 @@ const jsonLd = {
       function fitSlides() {
         tileOrder.forEach((t) => {
           const inner = t.querySelector(':scope > .tile-inner');
-          // Briefcase slides lay their content out against the photo, so they
-          // are never zoomed (that would pull it off the pocket and the case).
-          if (!inner || t.classList.contains('case-tile') || inner.classList.contains('case-open')) return;
+          if (!inner || t.classList.contains('case-tile')) return;
+          // Briefcase slides lay their content out against the photo, so the
+          // slide itself is never zoomed; only the card-and-paper column
+          // shrinks if it runs past the bottom (short, wide windows).
+          if (inner.classList.contains('case-open')) {
+            const col = inner.querySelector('.case-left');
+            const stack = col && col.firstElementChild;
+            if (!stack) return;
+            stack.style.zoom = '';
+            if (stack.scrollHeight > col.clientHeight) stack.style.zoom = String(Math.max(0.6, col.clientHeight / stack.scrollHeight));
+            return;
+          }
           inner.style.zoom = '';
           const cs = getComputedStyle(t);
           const avail = t.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
@@ -232,6 +241,8 @@ const jsonLd = {
         tileOrder.forEach((t) => {
           const inner = t.querySelector(':scope > .tile-inner');
           if (inner) inner.style.zoom = '';
+          const stack = t.querySelector('.case-left-inner');
+          if (stack) stack.style.zoom = '';
         });
       }
       // Force the DOM transform to match Panzoom's logical state (Panzoom
@@ -668,7 +679,10 @@ const jsonLd = {
           const dy = fr.y + fr.h / 2 - (nr.y + nr.h / 2);
           const angle = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * 45;
           const forward = tileOrder.indexOf(far) > tileOrder.indexOf(near);
-          const kicker = !forward ? 'Back' : far.dataset.branch ? 'Explore' : 'Next';
+          // A hub's branches already have their own links on the slide (the
+          // Expertise tags), so they get no Explore signposts.
+          if (forward && far.dataset.branch) return;
+          const kicker = !forward ? 'Back' : 'Next';
           wanted.set(far, { angle, kicker, near });
         });
 

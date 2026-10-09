@@ -182,19 +182,23 @@ const pillSecondary = 'btn btn--dark';
       {workAreas.map((a) => (
         <section id={a.id} style={a.pos} data-tile data-branch="expertise" data-label={a.title} class={`tile ${section}`} data-reveal>
           <span class="tape tile-tape" style={a.tape} aria-hidden="true"></span>
-          <!-- The briefcase, open: the title is marked on the lid's file
-               pocket, the story is a sheet of paper lying in the case. -->
+          <!-- The briefcase, open: an index card with the title and the
+               story on a sheet of paper (top left), samples on the right. -->
           <div class={`tile-inner case-open max-w-6xl mx-auto px-6 md:px-8${a.shots ? ' has-shots' : ''}`}>
-            <div class="work-copy">
-              <p class={eyebrow}>Expertise</p>
-              <h2 class={`${h2} work-area-title`}>{a.title}</h2>
-            </div>
-            <div class="case-sheet">
-              {a.body ? (
-                a.body.map((para) => <p class="work-body">{para}</p>)
-              ) : (
-                <p class="work-body">Case studies coming soon.</p>
-              )}
+            <div class="case-left">
+              <div class="case-left-inner">
+                <div class="work-copy case-card">
+                  <p class={eyebrow}>Expertise</p>
+                  <h2 class={`${h2} work-area-title`}>{a.title}</h2>
+                </div>
+                <div class="case-sheet">
+                  {a.body ? (
+                    a.body.map((para) => <p class="work-body">{para}</p>)
+                  ) : (
+                    <p class="work-body">Case studies coming soon.</p>
+                  )}
+                </div>
+              </div>
             </div>
             {a.shots && (
               <div class="work-gallery" data-gallery>

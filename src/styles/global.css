@@ -685,14 +685,35 @@ html.cases-unlocked .case-gate {
   display: none;
 }
 
-/* Area slides: the story on a sheet of aged paper with a paper clip. */
+/* Area slides: the title on a ruled index card, the story on a sheet of
+   aged paper with a paper clip tucked under it. */
+.case-card {
+  position: relative;
+  z-index: 1;
+  padding: 18px 24px 16px;
+  background-color: #fbf8ef;
+  /* A red header rule under the label, then pale blue lines below it. */
+  background-image:
+    linear-gradient(rgba(205, 60, 60, 0.55), rgba(205, 60, 60, 0.55)),
+    repeating-linear-gradient(transparent 0 27px, rgba(90, 140, 200, 0.32) 27px 28px);
+  background-size: 100% 2px, 100% calc(100% - 50px);
+  background-position: 0 46px, 0 50px;
+  background-repeat: no-repeat;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 12px 26px rgba(0, 0, 0, 0.45);
+  rotate: -1.2deg;
+}
+.case-card .led-eyebrow {
+  margin-bottom: 14px;
+  color: #b3263a;
+}
 .case-open .work-area-title {
   margin-bottom: 0;
+  color: #1f1d1a;
 }
 .case-sheet {
   position: relative;
-  margin-top: 28px;
-  padding: 30px 28px 18px;
+  margin-top: -6px;
+  padding: 30px 26px 16px;
   color: #2e2820;
   background-color: #ebe1ca;
   background-image:
@@ -715,9 +736,9 @@ html.cases-unlocked .case-gate {
 }
 .case-sheet .work-body {
   color: #2e2820;
-  font-size: 16px;
-  line-height: 1.6;
-  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  margin: 0 0 10px;
 }
 
 /* Gallery: prints with a white border. On phones the images stack under
@@ -803,43 +824,35 @@ html.cases-unlocked .case-gate {
     margin: 0;
     padding: 0;
   }
-  /* Title marked on the lid's leather file pocket (left half). */
-  .case-open .work-copy {
+  /* Card and paper stack in the top left, just under the hanging logo,
+     over the lid; the column ends above the bottom edge (see fitSlides). */
+  .case-open .case-left {
     position: absolute;
-    left: calc(var(--ox) + 0.075 * var(--wi));
-    top: calc(var(--oy) + 0.41 * var(--hi));
-    width: calc(0.36 * var(--wi));
+    left: 60px;
+    top: 170px;
+    bottom: 40px;
+    width: 560px;
   }
   #canvas-grid [data-branch='expertise'] .work-area-title {
-    font-size: 64px;
+    font-size: 56px;
     line-height: 1.05;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5));
   }
-  /* The sheet lies in the base of the case (right half), centred top to
-     bottom; its type steps down a little in short windows. */
   .case-open .case-sheet {
-    position: absolute;
-    left: calc(var(--ox) + 0.575 * var(--wi));
-    top: 50%;
-    translate: 0 -50%;
-    width: calc(0.34 * var(--wi));
-    margin: 0;
-    padding: 34px 32px 20px;
+    margin: -6px 0 0 18px;
+    padding: 30px 28px 16px;
   }
-  .case-open .case-sheet .work-body {
-    font-size: clamp(14px, calc(var(--slide-h) * 0.0185), 16.5px);
-  }
-  /* Images: a print tucked under the title on the pocket. */
+  /* Samples: prints in the base of the case (right half), centred top to
+     bottom, sized down in short windows so they never run off the slide. */
   .case-open .work-gallery {
     position: absolute;
     display: block;
-    left: calc(var(--ox) + 0.07 * var(--wi));
-    top: calc(var(--oy) + 0.525 * var(--hi));
-    /* Shrinks in very wide (short) windows so it never runs off the slide. */
-    width: min(calc(0.34 * var(--wi)), calc((var(--slide-h) - var(--oy) - 0.525 * var(--hi) - 40px) * 1.406));
+    left: calc(var(--ox) + 0.565 * var(--wi));
+    top: 50%;
+    translate: 0 -50%;
+    width: min(calc(0.37 * var(--wi)), calc((var(--slide-h) - 120px) * 1.406));
     margin: 0;
     aspect-ratio: 1600 / 1138;
-    rotate: -1.5deg;
+    rotate: 1.2deg;
   }
   .work-shot {
     position: absolute;
