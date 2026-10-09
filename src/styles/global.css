@@ -190,7 +190,7 @@ html:not(.js) [data-reveal] {
   }
 
   /* Real buttons, not just gestures, so the canvas stays operable by keyboard.
-     Styled as a brushed-silver key stack to match the signposts. */
+     Flat white keys to match the signposts. */
   #zoom-controls {
     display: flex;
     position: fixed;
@@ -210,17 +210,15 @@ html:not(.js) [data-reveal] {
     font-size: 1.15rem;
     font-weight: 700;
     color: #1c1c1c;
-    /* Spun metal: a conic sweep with its seam at nine o'clock. */
-    background: conic-gradient(from 270deg, #c3c3c3 0deg, #cbcbcb 70deg, #d6d6d6 120deg, #dcdcdc 175deg, #d2d2d2 235deg, #dadada 300deg, #e3e3e3 360deg);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 1px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.45), 0 8px 16px rgba(0, 0, 0, 0.55);
-    transition: filter 0.15s ease, translate 0.08s ease;
+    background: #f4f4f4;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.15s ease, translate 0.08s ease;
   }
   #zoom-controls button:hover {
-    filter: brightness(1.07);
+    background: #fff;
   }
   #zoom-controls button:active {
     translate: 0 1px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -281,9 +279,7 @@ html:not(.js) [data-reveal] {
     align-items: flex-end;
     gap: 12px;
   }
-  /* Brushed silver, like the transport buttons on an '80s stereo: fine
-     horizontal grain over a metal gradient, a dark rim, a bevel, and a
-     press-in on click. */
+  /* Clean white pill with a soft shadow. */
   .signpost {
     display: inline-flex;
     align-items: center;
@@ -291,26 +287,15 @@ html:not(.js) [data-reveal] {
     padding: 7px 20px 7px 7px;
     border-radius: 999px;
     color: #1c1c1c;
-    background-color: #cfcfcf;
-    background-image:
-      var(--brushed),
-      linear-gradient(90deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.35) 32%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.18) 78%, rgba(255, 255, 255, 0) 95%),
-      linear-gradient(180deg, #f2f2f2 0%, #d9d9d9 38%, #c2c2c2 52%, #d2d2d2 78%, #e8e8e8 100%);
-    background-size: 320px 80px, auto, auto;
-    background-blend-mode: overlay, normal, normal;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-      0 0 0 1px #5d5d5d,
-      0 0 0 5px rgba(20, 20, 20, 0.6),
-      0 10px 26px rgba(0, 0, 0, 0.6);
+    background: #f4f4f4;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
     text-align: left;
     white-space: nowrap;
     pointer-events: auto;
     cursor: pointer;
     /* Grow and hover-scale from the pill's right edge, where the stack is anchored. */
     transform-origin: 100% 50%;
-    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, translate 0.08s ease;
+    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, translate 0.08s ease;
   }
   .signpost[hidden] {
     display: none;
@@ -318,22 +303,16 @@ html:not(.js) [data-reveal] {
   .signpost:hover,
   .signpost:focus-visible {
     scale: 1.04;
-    filter: brightness(1.06);
+    background: #fff;
   }
   .signpost:active {
     translate: 0 1px;
-    box-shadow:
-      inset 0 2px 4px rgba(0, 0, 0, 0.3),
-      0 0 0 1px #5d5d5d,
-      0 0 0 5px rgba(20, 20, 20, 0.6),
-      0 4px 10px rgba(0, 0, 0, 0.5);
   }
   .signpost:focus-visible {
     outline: 3px solid var(--color-pink);
     outline-offset: 4px;
   }
-  /* A dark spun-metal knob with a pink arrow, the gunmetal twin of the
-     zoom keys (conic sweep, seam at nine o'clock). */
+  /* A flat dark circle with a pink arrow. */
   .signpost-icon {
     display: flex;
     align-items: center;
@@ -341,8 +320,7 @@ html:not(.js) [data-reveal] {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: conic-gradient(from 270deg, #161616 0deg, #1f1f1f 70deg, #2b2b2b 120deg, #333 175deg, #272727 235deg, #2f2f2f 300deg, #3a3a3a 360deg);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.4);
+    background: #1c1c1c;
     color: var(--color-pink);
   }
   .signpost-icon svg {
@@ -359,20 +337,17 @@ html:not(.js) [data-reveal] {
     flex-direction: column;
     line-height: 1.15;
   }
-  /* Engraved caps, like the labels stamped on a faceplate. */
   .signpost-kicker {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #4a4a4a;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    color: #6a6a6a;
   }
   .signpost-label {
     font-family: var(--font-display);
     font-size: 17px;
     color: #161616;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
   }
   @media (prefers-reduced-motion: reduce) {
     .connector.is-hot {
@@ -651,9 +626,9 @@ html.cases-unlocked .case-gate {
   background-color: rgba(38, 38, 38, 0.78);
 }
 
-/* ── Work ─────────────────────────────────────────────────────────────
-   The Work slide links to its three areas, which branch below it on the
-   board. */
+/* ── Expertise ────────────────────────────────────────────────────────
+   The Expertise slide links to its four areas, which branch below it on
+   the board. */
 .work-card {
   display: flex;
   align-items: center;
@@ -685,16 +660,16 @@ html.cases-unlocked .case-gate {
   translate: 4px 0;
 }
 @media (min-width: 901px) {
-  #work .work-title {
+  #expertise .work-title {
     font-size: 120px;
     line-height: 1;
   }
   /* Keep the cards clear of the signpost stack in the bottom-right corner. */
-  #canvas-grid #work > .tile-inner {
+  #canvas-grid #expertise > .tile-inner {
     max-width: 1100px;
     margin-left: 0;
   }
-  #canvas-grid [data-branch='work'] .work-area-title {
+  #canvas-grid [data-branch='expertise'] .work-area-title {
     font-size: 96px;
     line-height: 1.05;
   }
@@ -705,64 +680,79 @@ html.cases-unlocked .case-gate {
   }
 }
 
-/* ── Phone note ───────────────────────────────────────────────────────
-   Marker handwriting over the top of the hero's phone, and a strip of tape
-   on its screen carrying the crownd.app link. Both are pinned to the phone
-   image: it's h = min(slide height, 900px) tall and 0.558h wide, sits 40px
-   from the left and 60px below the slide's bottom edge; the phone's top is
-   ~11.5% down it and its screen is centred ~51% across. */
-.phone-note,
-.phone-tape {
+/* ── Work area slides with copy + images ──────────────────────────────
+   Copy on the left, an image gallery on the right. On phones the images
+   simply stack under the copy; on the canvas they sit in one frame and
+   scrolling flips between them (see the wheel handler in Layout.astro). */
+.work-body {
+  color: #c9c9c9;
+}
+.work-gallery {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.work-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.work-gallery-count {
   display: none;
 }
 @media (min-width: 901px) {
-  .phone-note {
+  #canvas-grid .tile > .work-split {
+    display: grid;
+    grid-template-columns: 520px 1fr;
+    gap: 56px;
+    align-items: center;
+    max-width: none;
+    width: 100%;
+  }
+  #canvas-grid [data-branch='expertise'] .work-split .work-area-title {
+    font-size: 84px;
+  }
+  .work-body {
+    font-size: 19px;
+  }
+  /* Story-only slides (no images) keep the copy to a readable measure. */
+  #canvas-grid [data-branch='expertise'] .tile-inner:not(.work-split) .work-copy {
+    max-width: 860px;
+  }
+  .work-gallery {
+    position: relative;
+    display: block;
+    margin-top: 0;
+    aspect-ratio: 1600 / 1138;
+  }
+  .work-shot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    translate: 0 14px;
+    transition: opacity 0.45s ease, translate 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .work-shot.is-active {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .work-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+  }
+  .work-gallery-count {
     display: block;
     position: absolute;
-    z-index: 3;
-    /* Overlapping the phone's top edge, circled in white marker. */
-    left: 96px;
-    bottom: calc(min(var(--slide-h, 900px), 900px) * 0.885 - 96px);
-    padding: 18px 30px 22px;
-    rotate: -5deg;
-    font-family: 'Permanent Marker', cursive;
-    font-size: 34px;
-    line-height: 1.05;
-    color: #f4f1e8;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
-  }
-  /* A loose, hand-drawn marker loop around the note: it overshoots where
-     it starts, like a real circle drawn in one go. */
-  .phone-note::after {
-    content: '';
-    position: absolute;
-    inset: -4px -10px -6px -12px;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 140' preserveAspectRatio='none'><path d='M44 24 C120 4 256 8 286 50 C306 92 222 134 132 131 C52 128 8 104 11 70 C14 36 64 15 152 13 C204 12 244 20 266 33' fill='none' stroke='%23f4f1e8' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / 100% 100%;
-    pointer-events: none;
-  }
-  .phone-tape {
-    display: block;
-    position: absolute;
-    z-index: 3;
-    left: calc(40px + min(var(--slide-h, 900px), 900px) * 0.558 * 0.512);
-    bottom: calc(min(var(--slide-h, 900px), 900px) * 0.74 - 160px);
-    translate: -50% 0;
-    rotate: 3deg;
-    font-family: 'Permanent Marker', cursive;
-    font-size: 26px;
-    line-height: 1.6;
-    color: #1c1c1c;
-    white-space: nowrap;
-    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
-    transition: scale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .phone-tape:hover {
-    scale: 1.06;
-  }
-  .phone-tape:focus-visible {
-    outline: 3px solid var(--color-pink);
-    outline-offset: 4px;
-    border-radius: 4px;
+    right: 12px;
+    bottom: -32px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #a3a3a3;
   }
 }
 
@@ -1180,31 +1170,9 @@ html.cases-unlocked .case-gate {
     pointer-events: none;
     user-select: none;
   }
-  /* Phone-in-hand on the left of the slide; the text column moves to the
-     right to make room. */
-  .hero-figure--left {
-    right: auto;
-    left: 40px;
-    bottom: -60px; /* drops the phone clear of the hanging logo */
-    /* In tall windows the slide gets taller; keep the phone at its
-       designed size, anchored to the bottom, so it never runs into the
-       text column. */
-    max-height: 900px;
-  }
   #hero > .tile-inner {
     position: relative;
     z-index: 1;
-  }
-  /* In the narrower right-hand column the title drops a size so it stays
-     on one strip of tape. */
-  #hero:has(.hero-figure--left) .tape-title--hero {
-    font-size: 104px;
-  }
-  #hero:has(.hero-figure--left) > .tile-inner {
-    width: 820px;
-    max-width: 820px;
-    margin-left: auto;
-    margin-right: 0;
   }
   .ghost-num--case {
     right: 40px;
@@ -1302,14 +1270,10 @@ html.cases-unlocked .case-gate {
   }
 }
 
-/* Brushed-metal grain: noise stretched along x, soft-light blended over the
-   metal gradient on buttons and signposts. */
-:root {
-  --brushed: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='80'%3E%3Cfilter id='b' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035 0.9' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='320' height='80' filter='url%28%23b%29'/%3E%3C/svg%3E");
-}
-
-/* ── Buttons: brushed metal, like the signposts ──────────────────────── */
-.btn-metal {
+/* ── Buttons ─────────────────────────────────────────────────────────
+   Clean, flat pills: off-white for primary actions, dark grey with a
+   hairline for secondary ones. */
+.btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1317,56 +1281,31 @@ html.cases-unlocked .case-gate {
   font-weight: 600;
   line-height: 1.2;
   color: #161616;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
-  background-color: #cfcfcf;
-  background-image:
-    var(--brushed),
-    linear-gradient(90deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.35) 32%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.18) 78%, rgba(255, 255, 255, 0) 95%),
-    linear-gradient(180deg, #f2f2f2 0%, #d9d9d9 38%, #c2c2c2 52%, #d2d2d2 78%, #e8e8e8 100%);
-  background-size: 320px 80px, auto, auto;
-  background-blend-mode: overlay, normal, normal;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    0 0 0 1px #5d5d5d,
-    0 6px 16px rgba(0, 0, 0, 0.5);
-  transition: filter 0.15s ease, translate 0.08s ease, box-shadow 0.08s ease;
+  background: #f4f4f4;
+  transition: background-color 0.15s ease, translate 0.08s ease;
   cursor: pointer;
 }
-.btn-metal:hover {
-  filter: brightness(1.07);
+.btn:hover {
+  background: #fff;
 }
-.btn-metal:active {
+.btn:active {
   translate: 0 1px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 0 1px #5d5d5d, 0 2px 6px rgba(0, 0, 0, 0.45);
 }
-.btn-metal:focus-visible {
+.btn:focus-visible {
   outline: 3px solid var(--color-pink);
   outline-offset: 3px;
 }
-.btn-metal:disabled {
+.btn:disabled {
   cursor: progress;
-  filter: saturate(0.6) brightness(0.92);
+  opacity: 0.7;
 }
-/* Secondary: gunmetal, same bevel. */
-.btn-metal--dark {
+.btn--dark {
   color: #f4f4f4;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6);
-  background-color: #383838;
-  background-image:
-    var(--brushed),
-    linear-gradient(90deg, rgba(255, 255, 255, 0) 8%, rgba(255, 255, 255, 0.09) 32%, rgba(255, 255, 255, 0) 55%, rgba(255, 255, 255, 0.05) 78%, rgba(255, 255, 255, 0) 95%),
-    linear-gradient(180deg, #555 0%, #3c3c3c 45%, #2e2e2e 55%, #373737 80%, #484848 100%);
-  background-size: 320px 80px, auto, auto;
-  background-blend-mode: soft-light, normal, normal;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
-    0 0 0 1px #111,
-    0 6px 16px rgba(0, 0, 0, 0.5);
+  background: #2a2a2a;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
-.btn-metal--dark:active {
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.55), 0 0 0 1px #111, 0 2px 6px rgba(0, 0, 0, 0.45);
+.btn--dark:hover {
+  background: #353535;
 }
 
 /* ── Titles: Permanent Marker ───────────────────────────────────────

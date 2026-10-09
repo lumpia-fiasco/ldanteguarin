@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title = 'L Dante Guarin — Product & Fractional Design for Startups',
-  description = 'L Dante Guarin is a fractional design lead — design leadership, design systems and AI-assisted workflows for growing product teams. 20+ years in enterprise SaaS. $3.1M+ saved, 6x adoption shipped.',
+  description = 'L Dante Guarin is a fractional design lead — design leadership, design systems and AI-assisted workflows for growing product teams. 20+ years in design. $3.1M+ saved, 10x market expansion.',
 } = Astro.props;
 
 const siteUrl = 'https://ldanteguarin.com';
@@ -878,7 +878,8 @@ const jsonLd = {
         // trackpad swipe, down/right for next, up/left for back) makes one
         // animated jump. A gesture only counts once, so a trackpad's
         // momentum tail can't skip ahead: it has to go quiet before the next
-        // one arms. With a photo open, scrolling steps through the photos;
+        // one arms. A slide with an image gallery flips through its images
+        // before moving on. With a photo open, scrolling steps through photos;
         // in the map view it dives back into the panel you came from.
         // Ctrl/Cmd+wheel (also how browsers report a trackpad pinch) still
         // zooms at the pointer, and dragging still pans freely.
@@ -930,6 +931,19 @@ const jsonLd = {
             if (canvasGrid.classList.contains('is-overview')) {
               animateTo(tileOrder[currentIndex] || heroTile, false);
               return;
+            }
+            // A slide with an image gallery flips through its images first.
+            const gallery = tileOrder[currentIndex]?.querySelector('[data-gallery]');
+            if (gallery) {
+              const shots = Array.from(gallery.querySelectorAll('.work-shot'));
+              const at = shots.findIndex((s) => s.classList.contains('is-active'));
+              const to = at + dir;
+              if (at !== -1 && to >= 0 && to < shots.length) {
+                shots.forEach((s, k) => s.classList.toggle('is-active', k === to));
+                const count = gallery.querySelector('[data-gallery-index]');
+                if (count) count.textContent = String(to + 1);
+                return;
+              }
             }
             const next = tileOrder[currentIndex + dir];
             if (next) animateTo(next, false);
