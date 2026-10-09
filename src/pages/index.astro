@@ -162,15 +162,16 @@ const pillSecondary = 'btn btn--dark';
       <!-- EXPERTISE, with its four areas branching below it -->
       <section id="expertise" style="--c:4;--r:1;--dx:960px;--dy:-60px;--tilt:1.1deg" data-tile data-label="Expertise" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-2deg;width:240px" aria-hidden="true"></span>
+        <!-- The closed briefcase: an owner's card in its brass nameplate. -->
+        <span class="case-nameplate" aria-hidden="true">L. Dante Guarin</span>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>What I'm known for</p>
           <h2 class={`${h2} work-title mb-10`}>Expertise</h2>
-          <ul class="grid sm:grid-cols-2 slide:grid-cols-4 gap-4 slide:gap-5">
+          <ul class="case-tags grid sm:grid-cols-2 slide:grid-cols-4 gap-4 slide:gap-7">
             {workAreas.map((a) => (
               <li>
                 <a href={`#${a.id}`} class="work-card">
                   <span class="work-card-title">{a.title}</span>
-                  <span class="work-card-arrow" aria-hidden="true">→</span>
                 </a>
               </li>
             ))}
@@ -181,14 +182,18 @@ const pillSecondary = 'btn btn--dark';
       {workAreas.map((a) => (
         <section id={a.id} style={a.pos} data-tile data-branch="expertise" data-label={a.title} class={`tile ${section}`} data-reveal>
           <span class="tape tile-tape" style={a.tape} aria-hidden="true"></span>
-          <div class={`tile-inner max-w-6xl mx-auto px-6 md:px-8${a.shots ? ' work-split' : ''}`}>
+          <!-- The briefcase, open: the title is marked on the lid's file
+               pocket, the story is a sheet of paper lying in the case. -->
+          <div class={`tile-inner case-open max-w-6xl mx-auto px-6 md:px-8${a.shots ? ' has-shots' : ''}`}>
             <div class="work-copy">
               <p class={eyebrow}>Expertise</p>
-              <h2 class={`${h2} work-area-title mb-6`}>{a.title}</h2>
+              <h2 class={`${h2} work-area-title`}>{a.title}</h2>
+            </div>
+            <div class="case-sheet">
               {a.body ? (
-                a.body.map((para) => <p class="work-body text-lg leading-relaxed mb-4">{para}</p>)
+                a.body.map((para) => <p class="work-body">{para}</p>)
               ) : (
-                <p class="text-lg md:text-xl leading-relaxed">Case studies coming soon.</p>
+                <p class="work-body">Case studies coming soon.</p>
               )}
             </div>
             {a.shots && (

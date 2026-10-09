@@ -627,67 +627,102 @@ html.cases-unlocked .case-gate {
   border-color: rgba(214, 230, 248, 0.18);
 }
 
-/* ── Expertise ────────────────────────────────────────────────────────
-   The Expertise slide links to its four areas, which branch below it on
-   the board. */
+/* ── Expertise: the briefcase ───────────────────────────────────────
+   The Expertise slide is the outside of a worn 70s leather briefcase; its
+   four areas are the case opened up. Content is laid out against the
+   photo: the owner's card sits in the brass nameplate, area titles are
+   marked on the lid's file pocket, and each story is a sheet of paper
+   lying in the case.
+
+   On the canvas the photos are cover-fitted and centred, so every slide
+   can work out where a spot in the photo lands: --wi/--hi are the photo's
+   drawn size and --ox/--oy its offset. A point at (fx, fy) of the photo
+   is at (--ox + fx * --wi, --oy + fy * --hi). Both photos are 3:2. */
+#expertise,
+.tile[data-branch='expertise'] {
+  background: #3b2416 url('/images/briefcase-outside.webp') center / cover no-repeat;
+}
+
+/* Hub cards: manila luggage tags with a punched, reinforced hole. */
+.case-tags > li {
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45));
+}
 .work-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 28px;
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: var(--color-card);
-  color: #fff;
-  font-family: var(--font-display);
+  min-height: 96px;
+  padding: 22px 22px 22px 60px;
+  border-radius: 3px;
+  color: #2a1f15;
+  background:
+    radial-gradient(circle at 30px 50%, #24150c 0 6px, #b99c63 6.5px 12px, transparent 12.5px),
+    radial-gradient(ellipse at 80% 0%, rgba(255, 255, 255, 0.28), transparent 60%),
+    linear-gradient(170deg, #e6d3a7 0%, #dcc592 100%);
+  clip-path: polygon(24px 0, 100% 0, 100% 100%, 24px 100%, 0 calc(100% - 24px), 0 24px);
+  font-family: 'Permanent Marker', cursive;
   font-size: 24px;
-  line-height: 1.2;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  line-height: 1.15;
+  transition: rotate 0.25s cubic-bezier(0.16, 1, 0.3, 1), translate 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.work-card:hover {
-  border-color: var(--color-pink);
-  background: #2c2c2c;
+.case-tags > li:nth-child(1) .work-card { rotate: -2deg; }
+.case-tags > li:nth-child(2) .work-card { rotate: 1.5deg; }
+.case-tags > li:nth-child(3) .work-card { rotate: -1deg; }
+.case-tags > li:nth-child(4) .work-card { rotate: 2.2deg; }
+.case-tags > li .work-card:hover,
+.case-tags > li .work-card:focus-visible {
+  rotate: 0deg;
+  translate: 0 -4px;
 }
 .work-card:focus-visible {
   outline: 3px solid var(--color-pink);
   outline-offset: 3px;
 }
-.work-card-arrow {
-  color: var(--color-pink);
-  transition: translate 0.2s ease;
-}
-.work-card:hover .work-card-arrow {
-  translate: 4px 0;
-}
-@media (min-width: 901px) {
-  #expertise .work-title {
-    font-size: 120px;
-    line-height: 1;
-  }
-  /* Keep the cards clear of the signpost stack in the bottom-right corner. */
-  #canvas-grid #expertise > .tile-inner {
-    max-width: 1100px;
-    margin-left: 0;
-  }
-  #canvas-grid [data-branch='expertise'] .work-area-title {
-    font-size: 96px;
-    line-height: 1.05;
-  }
-  .work-card {
-    min-height: 200px;
-    align-items: flex-end;
-    font-size: 30px;
-  }
+
+/* The owner's card in the nameplate (canvas only). */
+.case-nameplate {
+  display: none;
 }
 
-/* ── Work area slides with copy + images ──────────────────────────────
-   Copy on the left, an image gallery on the right. On phones the images
-   simply stack under the copy; on the canvas they sit in one frame and
-   scrolling flips between them (see the wheel handler in Layout.astro). */
-.work-body {
-  color: #c9c9c9;
+/* Area slides: the story on a sheet of aged paper with a paper clip. */
+.case-open .work-area-title {
+  margin-bottom: 0;
 }
+.case-sheet {
+  position: relative;
+  margin-top: 28px;
+  padding: 30px 28px 18px;
+  color: #2e2820;
+  background-color: #ebe1ca;
+  background-image:
+    radial-gradient(ellipse at 15% 8%, rgba(255, 255, 255, 0.4), transparent 55%),
+    radial-gradient(ellipse at 95% 100%, rgba(120, 88, 40, 0.22), transparent 55%),
+    radial-gradient(ellipse at 0% 100%, rgba(120, 88, 40, 0.14), transparent 45%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 34px rgba(0, 0, 0, 0.5);
+  rotate: 0.6deg;
+}
+.case-sheet::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  right: 44px;
+  width: 18px;
+  height: 58px;
+  rotate: 5deg;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 58'><path d='M5 18 V46 a4 4 0 0 0 8 0 V7 a3 3 0 0 0 -6 0 V42' fill='none' stroke='%23a9a9a4' stroke-width='1.8' stroke-linecap='round'/><path d='M5 18 V46 a4 4 0 0 0 8 0 V7 a3 3 0 0 0 -6 0 V42' fill='none' stroke='%23ffffff' stroke-opacity='.45' stroke-width='.6' stroke-linecap='round' transform='translate(-.5 -.5)'/></svg>") no-repeat center / contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+.case-sheet .work-body {
+  color: #2e2820;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+/* Gallery: prints with a white border. On phones the images stack under
+   the sheet; on the canvas they sit in one frame and scrolling flips
+   between them (see the wheel handler in Layout.astro). */
 .work-gallery {
   display: grid;
   gap: 1rem;
@@ -697,36 +732,114 @@ html.cases-unlocked .case-gate {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 12px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  border: 8px solid #f2eee4;
+  border-radius: 2px;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5);
 }
 .work-gallery-count {
   display: none;
 }
+
 @media (min-width: 901px) {
-  #canvas-grid .tile > .work-split {
-    display: grid;
-    grid-template-columns: 520px 1fr;
-    gap: 56px;
+  #canvas-grid #expertise,
+  #canvas-grid .tile[data-branch='expertise'] {
+    --wi: max(var(--slide-w), calc(var(--slide-h) * 1.5));
+    --hi: max(calc(var(--slide-w) / 1.5), var(--slide-h));
+    --ox: calc((var(--slide-w) - var(--wi)) / 2);
+    --oy: calc((var(--slide-h) - var(--hi)) / 2);
+    background: #3b2416 url('/images/briefcase-outside.webp') center / cover no-repeat;
+  }
+
+  /* Hub: name card in the plate, then the title and the tags, kept left
+     of the signpost stack in the bottom-right corner. */
+  .case-nameplate {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 1;
+    left: calc(var(--ox) + 0.4388 * var(--wi));
+    top: calc(var(--oy) + 0.2344 * var(--hi));
+    width: calc(0.1217 * var(--wi));
+    height: calc(0.0645 * var(--hi));
+    background: linear-gradient(175deg, #efe6cf, #ddd0b0);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #2e2820;
+  }
+  #canvas-grid #expertise > .tile-inner {
+    max-width: 880px;
+    margin: 120px auto 0;
+    text-align: center;
+  }
+  #expertise .work-title {
+    font-size: 120px;
+    line-height: 1;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5));
+  }
+  .case-tags {
+    text-align: left;
+  }
+  .work-card {
+    min-height: 150px;
+    font-size: 26px;
+  }
+
+  /* Area slides: the open case. */
+  #canvas-grid .tile[data-branch='expertise'] {
+    background-image: url('/images/briefcase-inside.webp');
+    padding: 0;
+  }
+  #canvas-grid .tile[data-branch='expertise'] > .case-open {
+    position: absolute;
+    inset: 0;
+    width: auto;
     max-width: none;
-    width: 100%;
+    margin: 0;
+    padding: 0;
   }
-  #canvas-grid [data-branch='expertise'] .work-split .work-area-title {
-    font-size: 84px;
+  /* Title marked on the lid's leather file pocket (left half). */
+  .case-open .work-copy {
+    position: absolute;
+    left: calc(var(--ox) + 0.075 * var(--wi));
+    top: calc(var(--oy) + 0.41 * var(--hi));
+    width: calc(0.36 * var(--wi));
   }
-  .work-body {
-    font-size: 19px;
+  #canvas-grid [data-branch='expertise'] .work-area-title {
+    font-size: 64px;
+    line-height: 1.05;
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.5));
   }
-  /* Story-only slides (no images) keep the copy to a readable measure. */
-  #canvas-grid [data-branch='expertise'] .tile-inner:not(.work-split) .work-copy {
-    max-width: 860px;
+  /* The sheet lies in the base of the case (right half), centred top to
+     bottom; its type steps down a little in short windows. */
+  .case-open .case-sheet {
+    position: absolute;
+    left: calc(var(--ox) + 0.575 * var(--wi));
+    top: 50%;
+    translate: 0 -50%;
+    width: calc(0.34 * var(--wi));
+    margin: 0;
+    padding: 34px 32px 20px;
   }
-  .work-gallery {
-    position: relative;
+  .case-open .case-sheet .work-body {
+    font-size: clamp(14px, calc(var(--slide-h) * 0.0185), 16.5px);
+  }
+  /* Images: a print tucked under the title on the pocket. */
+  .case-open .work-gallery {
+    position: absolute;
     display: block;
-    margin-top: 0;
+    left: calc(var(--ox) + 0.07 * var(--wi));
+    top: calc(var(--oy) + 0.525 * var(--hi));
+    /* Shrinks in very wide (short) windows so it never runs off the slide. */
+    width: min(calc(0.34 * var(--wi)), calc((var(--slide-h) - var(--oy) - 0.525 * var(--hi) - 40px) * 1.406));
+    margin: 0;
     aspect-ratio: 1600 / 1138;
+    rotate: -1.5deg;
   }
   .work-shot {
     position: absolute;
@@ -748,12 +861,12 @@ html.cases-unlocked .case-gate {
   .work-gallery-count {
     display: block;
     position: absolute;
-    right: 12px;
-    bottom: -32px;
+    right: 4px;
+    bottom: -28px;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.08em;
-    color: #a3a3a3;
+    color: #e6d9bd;
   }
 }
 

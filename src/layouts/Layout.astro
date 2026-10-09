@@ -69,7 +69,7 @@ const jsonLd = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Permanent+Marker&family=Golos+Text:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Courier+Prime:wght@400;700&family=Permanent+Marker&family=Golos+Text:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -218,7 +218,9 @@ const jsonLd = {
       function fitSlides() {
         tileOrder.forEach((t) => {
           const inner = t.querySelector(':scope > .tile-inner');
-          if (!inner || t.classList.contains('case-tile')) return;
+          // Briefcase slides lay their content out against the photo, so they
+          // are never zoomed (that would pull it off the pocket and the case).
+          if (!inner || t.classList.contains('case-tile') || inner.classList.contains('case-open')) return;
           inner.style.zoom = '';
           const cs = getComputedStyle(t);
           const avail = t.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
