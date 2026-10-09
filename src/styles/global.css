@@ -610,20 +610,21 @@ html.cases-unlocked .case-gate {
 }
 
 /* ── How I work blueprint ───────────────────────────────────────────
-   A weathered greyscale rocket blueprint behind the slide (painted by a
-   script on the site's charcoal, so it sits in the same dark tones). The
-   doubled id beats the canvas's own slide-surface rule. */
+   A weathered rocket blueprint behind the slide: pale lines on blueprint
+   blue. The doubled id beats the canvas's own slide-surface rule. */
 #how-i-work,
 #canvas-grid #how-i-work {
-  background-color: var(--color-charcoal);
-  background-image: url('/images/rocket-blueprint.webp');
+  background-color: #18488a;
+  background-image: url('/images/rocket-blueprint-blue.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
-/* Cards go slightly see-through so the drawing reads behind them. */
+/* Cards are deep blue and slightly see-through so the drawing reads
+   behind them. */
 #how-i-work li {
-  background-color: rgba(38, 38, 38, 0.78);
+  background-color: rgba(12, 38, 78, 0.82);
+  border-color: rgba(214, 230, 248, 0.18);
 }
 
 /* ── Expertise ────────────────────────────────────────────────────────
@@ -757,17 +758,14 @@ html.cases-unlocked .case-gate {
 }
 
 /* ── Why me ───────────────────────────────────────────────────────────
-   Dark ultramarine, with Dante's cutout photo anchored bottom right behind
+   Site charcoal, with Dante's cutout photo anchored bottom right behind
    the copy. The doubled id beats the canvas's own slide-surface rule. */
 #why-me,
 #canvas-grid #why-me {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background-color: #141a62;
-  background-image:
-    radial-gradient(ellipse at 85% 95%, rgba(52, 66, 190, 0.55) 0%, rgba(52, 66, 190, 0) 60%),
-    linear-gradient(160deg, #1a2075 0%, #10144f 100%);
+  background-color: var(--color-charcoal);
   /* Room under the copy on phones, where the photo sits. */
   padding-bottom: 450px;
 }
@@ -802,7 +800,7 @@ html.cases-unlocked .case-gate {
   opacity: 1;
 }
 .why-copy {
-  color: #cfd3f2;
+  color: #c9c9c9;
 }
 .why-clients {
   display: flex;
@@ -814,7 +812,7 @@ html.cases-unlocked .case-gate {
 }
 .why-clients .why-clients-more {
   font-weight: 400;
-  color: #cfd3f2;
+  color: #c9c9c9;
 }
 @media (min-width: 901px) {
   #canvas-grid #why-me {
@@ -1021,9 +1019,9 @@ html.cases-unlocked .case-gate {
   }
 }
 
-/* ── Visual layer: glowing readouts, hero figure, numerals, map view ── */
+/* ── Visual layer: readouts, hero figure, numerals, map view ── */
 
-/* Pink glowing readouts (Golos Text) in recessed dark displays. */
+/* Pink readouts (Golos Text) in recessed dark displays. */
 .led-panel {
   display: inline-flex;
   align-items: center;
@@ -1036,7 +1034,6 @@ html.cases-unlocked .case-gate {
   font-family: var(--font-sans);
   font-weight: 700;
   color: #ff9cb8;
-  text-shadow: 0 0 6px rgba(255, 110, 150, 0.75), 0 0 18px rgba(255, 90, 140, 0.35);
   white-space: nowrap;
 }
 .led-panel--readout {
@@ -1056,7 +1053,7 @@ html.cases-unlocked .case-gate {
   }
 }
 /* The slide counter only makes sense on the canvas (desktop). */
-/* Eyebrow labels: small pink caps with a faint glow. */
+/* Eyebrow labels: small pink caps. */
 .led-eyebrow {
   font-family: var(--font-sans);
   font-weight: 600;
@@ -1065,7 +1062,6 @@ html.cases-unlocked .case-gate {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ff9cb8;
-  text-shadow: 0 0 4px rgba(255, 110, 150, 0.6), 0 0 12px rgba(255, 90, 140, 0.25);
 }
 .led-eyebrow--lg {
   font-size: 22px;
@@ -1074,7 +1070,6 @@ html.cases-unlocked .case-gate {
   letter-spacing: 0;
   text-transform: none;
   color: #fff;
-  text-shadow: none;
 }
 @media (min-width: 901px) {
   .led-eyebrow--lg {
