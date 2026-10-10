@@ -602,6 +602,13 @@ html.cases-unlocked .case-gate {
     line-height: 1.1;
     color: #1f2533;
   }
+  .floppy-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 17px;
+    line-height: 1.15;
+    color: #4a4f5c;
+  }
   /* Idle: a play triangle in red marker. Playing: three bouncing bars. */
   .floppy-state {
     display: flex;

@@ -18,9 +18,12 @@ const ways = [
 // Beats on floppy disks, taped to the whiteboard under the Expertise areas.
 // Each disk plays its audio file (in public/beats/) when clicked. Disk
 // colours cycle through the list; the slots scatter them loosely in rows
-// of four beside the marker title.
+// of four beside the marker title. A note (a version, say) is written
+// smaller under the title.
 const beats = [
   { title: 'Retrospect', src: '/beats/retrospect.mp3' },
+  { title: 'Fables', src: '/beats/fables.mp3' },
+  { title: 'Mighty Healthy', note: 'Dante La Rock Remix', src: '/beats/mighty-healthy-remix.mp3' },
 ];
 const diskColors = ['#1e1f22', '#2d4f8f', '#b2392d', '#d8d0bb', '#3e6a4b', '#e0a52f'];
 const diskJitter = [
@@ -273,10 +276,13 @@ const pillSecondary = 'btn btn--dark';
             return (
               <li class="board-floppy" style={`--x:${p.x}px;--y:${p.y}px;--r:${p.r}deg;--disk:${diskColors[i % diskColors.length]}`}>
                 <span class="tape floppy-tape" aria-hidden="true"></span>
-                <button type="button" class="floppy" data-beat-src={b.src} aria-pressed="false" aria-label={`${b.title}, play beat`}>
+                <button type="button" class="floppy" data-beat-src={b.src} aria-pressed="false" aria-label={`${b.title}${b.note ? ` (${b.note})` : ''}, play beat`}>
                   <span class="floppy-shutter" aria-hidden="true"></span>
                   <span class="floppy-label" aria-hidden="true">
-                    <span class="floppy-title">{b.title}</span>
+                    <span class="floppy-title">
+                      {b.title}
+                      {b.note && <small class="floppy-note">{b.note}</small>}
+                    </span>
                     <span class="floppy-state"><i></i><i></i><i></i></span>
                   </span>
                 </button>
