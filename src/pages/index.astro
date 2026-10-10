@@ -15,6 +15,23 @@ const ways = [
 
 // Photos taped to the whiteboard below the slides. x/y/w/r place each print
 // on the board (desktop canvas); on phones they stack with their captions.
+// Beats on floppy disks, taped to the whiteboard under the Expertise areas.
+// Each disk plays its audio file (in public/beats/) when clicked. Disk
+// colours cycle through the list; the slots scatter them loosely in rows
+// of four beside the marker title.
+const beats = [
+  { title: 'Retrospect', src: '/beats/retrospect.mp3' },
+];
+const diskColors = ['#1e1f22', '#2d4f8f', '#b2392d', '#d8d0bb', '#3e6a4b', '#e0a52f'];
+const diskJitter = [
+  { dx: 0, dy: 30, r: -4 }, { dx: 30, dy: -20, r: 3 }, { dx: -10, dy: 40, r: -2 }, { dx: 20, dy: 0, r: 5 },
+  { dx: -20, dy: 10, r: 2 }, { dx: 10, dy: 50, r: -5 }, { dx: 40, dy: 0, r: 3 }, { dx: 0, dy: 30, r: -3 },
+];
+const diskSlot = (i) => {
+  const j = diskJitter[i % diskJitter.length];
+  return { x: 1080 + (i % 4) * 440 + j.dx, y: Math.floor(i / 4) * 480 + j.dy, r: j.r };
+};
+
 const photos = [
   { src: '/photos/window-518.webp', iw: 1200, ih: 1500, title: 'Nashville, TN', caption: 'Capturing wonderful textures in broken glass, steel and brick.', alt: 'A rusted steel factory window with cracked wired-glass panes and the number 518, set in red brick.', x: 40, y: 250, w: 400, r: -4 },
   { src: '/photos/junkyard-stack.webp', iw: 1600, ih: 1066, title: 'Nashville, TN', caption: 'All journeys end.', alt: 'Crushed cars stacked high in a scrapyard under a grey sky, a Dodge truck grille at the bottom.', x: 520, y: 210, w: 580, r: 3 },
@@ -165,8 +182,6 @@ const pillSecondary = 'btn btn--dark';
       <!-- EXPERTISE, with its four areas branching below it -->
       <section id="expertise" style="--c:4;--r:1;--dx:960px;--dy:-60px;--tilt:1.1deg" data-tile data-label="Expertise" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-2deg;width:240px" aria-hidden="true"></span>
-        <!-- The closed briefcase: an owner's card in its brass nameplate. -->
-        <span class="case-nameplate" aria-hidden="true">L. Dante Guarin</span>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>What I'm known for</p>
           <h2 class={`${h2} work-title mb-10`}>Expertise</h2>
@@ -245,6 +260,29 @@ const pillSecondary = 'btn btn--dark';
               <p class="board-photo-caption"><strong>{p.title}</strong> {p.caption}</p>
             </li>
           ))}
+        </ul>
+      </section>
+
+      <!-- BEATS: floppy disks taped to the board (desktop canvas only). Each
+           is a button that plays its beat; clicking it again stops it. -->
+      <section id="beats" class="board-beats" aria-labelledby="beats-title">
+        <h2 id="beats-title" class="board-title">I make beats for fun</h2>
+        <ul class="board-beat-list">
+          {beats.map((b, i) => {
+            const p = diskSlot(i);
+            return (
+              <li class="board-floppy" style={`--x:${p.x}px;--y:${p.y}px;--r:${p.r}deg;--disk:${diskColors[i % diskColors.length]}`}>
+                <span class="tape floppy-tape" aria-hidden="true"></span>
+                <button type="button" class="floppy" data-beat-src={b.src} aria-pressed="false" aria-label={`${b.title}, play beat`}>
+                  <span class="floppy-shutter" aria-hidden="true"></span>
+                  <span class="floppy-label" aria-hidden="true">
+                    <span class="floppy-title">{b.title}</span>
+                    <span class="floppy-state"><i></i><i></i><i></i></span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>

@@ -476,6 +476,172 @@ html.cases-unlocked .case-gate {
 .board-heading {
   display: none;
 }
+/* ── Beats ────────────────────────────────────────────────────────────
+   Desktop canvas only: 3.5" floppy disks taped to the whiteboard under the
+   Expertise areas, beside a marker note. Each disk is a button that plays
+   its beat; a playing disk lifts and its label shows marker level bars. */
+.board-beats {
+  display: none;
+}
+@media (min-width: 901px) {
+  #canvas-grid .board-beats {
+    display: block;
+    position: absolute;
+    /* Below the Expertise areas (row 2, columns 3 onwards). */
+    left: calc(2 * (var(--slide-w) + var(--canvas-gap)) + 200px);
+    top: calc(2 * var(--slide-h) + var(--canvas-gap) + 640px);
+    width: 2900px;
+    height: 980px;
+  }
+  #canvas-grid .board-beats .board-title {
+    left: 0;
+    top: 120px;
+    width: 900px;
+    font-size: 132px;
+    line-height: 1.05;
+    rotate: -3deg;
+  }
+  #canvas-grid .board-beat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #canvas-grid .board-floppy {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    rotate: var(--r);
+    /* The disk is clipped (its cut corner), so the shadow goes on the item. */
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.28)) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+  }
+  .floppy {
+    position: relative;
+    display: block;
+    width: 330px;
+    height: 340px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.18)),
+      var(--disk);
+    /* The chamfered corner every 3.5" disk has. */
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 0 100%);
+    cursor: pointer;
+    transition: translate 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .floppy:hover,
+  .floppy[aria-pressed='true'] {
+    translate: 0 -8px;
+  }
+  .floppy:focus-visible {
+    outline: none;
+  }
+  .board-floppy:has(.floppy:focus-visible) {
+    outline: 6px solid var(--color-pink);
+    outline-offset: 8px;
+  }
+  /* A strip of tape over the top edge (on the item, since the disk itself
+     is clipped to its cut corner). */
+  .floppy-tape {
+    position: absolute;
+    z-index: 2;
+    top: -20px;
+    left: 50%;
+    width: 140px;
+    height: 42px;
+    padding: 0;
+    font-size: 40px;
+    translate: -50% 0;
+    rotate: calc(var(--r) * -0.8);
+    opacity: 0.95;
+    pointer-events: none;
+  }
+  /* Sliding metal shutter at the top, with the window onto the disk. */
+  .floppy-shutter {
+    position: absolute;
+    top: 0;
+    left: 21%;
+    width: 58%;
+    height: 34%;
+    border-radius: 0 0 4px 4px;
+    background: linear-gradient(90deg, #8f9398, #d7dadd 35%, #b7bbbf 70%, #9ca0a5);
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+  }
+  .floppy-shutter::after {
+    content: '';
+    position: absolute;
+    left: 60%;
+    top: 16%;
+    width: 18%;
+    height: 64%;
+    border-radius: 2px;
+    background: #2a2a2c;
+  }
+  /* The paper label, lettered in marker. */
+  .floppy-label {
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    top: 42%;
+    bottom: 5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-radius: 4px 4px 2px 2px;
+    text-align: left;
+    background:
+      repeating-linear-gradient(transparent 0 33px, rgba(90, 140, 200, 0.3) 33px 34px),
+      #f4efe2;
+    background-position: 0 14px, 0 0;
+  }
+  .floppy-title {
+    font-family: 'Permanent Marker', cursive;
+    font-size: 30px;
+    line-height: 1.1;
+    color: #1f2533;
+  }
+  /* Idle: a play triangle in red marker. Playing: three bouncing bars. */
+  .floppy-state {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    align-self: flex-end;
+    height: 26px;
+  }
+  .floppy-state i {
+    display: none;
+    width: 7px;
+    border-radius: 1px;
+    background: #c3282c;
+  }
+  .floppy-state::before {
+    content: '';
+    border-style: solid;
+    border-width: 11px 0 11px 18px;
+    border-color: transparent transparent transparent #c3282c;
+  }
+  .floppy[aria-pressed='true'] .floppy-state::before {
+    display: none;
+  }
+  .floppy[aria-pressed='true'] .floppy-state i {
+    display: block;
+    height: 100%;
+    transform-origin: bottom;
+    animation: floppy-level 0.9s ease-in-out infinite;
+  }
+  .floppy[aria-pressed='true'] .floppy-state i:nth-child(2) { animation-delay: -0.3s; }
+  .floppy[aria-pressed='true'] .floppy-state i:nth-child(3) { animation-delay: -0.6s; }
+  @keyframes floppy-level {
+    0%, 100% { scale: 1 0.35; }
+    50% { scale: 1 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .floppy[aria-pressed='true'] .floppy-state i { animation: none; }
+  }
+}
+
 #photo-viewer {
   display: none;
 }
@@ -627,10 +793,8 @@ html.cases-unlocked .case-gate {
   border-color: rgba(214, 230, 248, 0.18);
 }
 
-/* ── Expertise: the briefcase ───────────────────────────────────────
-   The Expertise slide is a worn 70s leather briefcase lying on an old
-   wooden desk; its four areas are the case's contents spread out on that
-   desk. The owner's card sits in the case's brass nameplate; on the area
+/* ── Expertise: the desk ────────────────────────────────────────────
+   Expertise and its four areas sit on an old wooden desk. On the area
    slides each title is on an index card, each story on a sheet of paper,
    and the samples lie to the right.
 
@@ -640,12 +804,10 @@ html.cases-unlocked .case-gate {
    is at (--ox + fx * --wi, --oy + fy * --hi). Both photos are 3:2. */
 /* The doubled selectors beat the canvas's own slide-surface rule. */
 #expertise,
-#canvas-grid #expertise {
-  background: #3b2416 url('/images/desk-briefcase.webp') center / cover no-repeat;
-}
+#canvas-grid #expertise,
 .tile[data-branch='expertise'],
 #canvas-grid .tile[data-branch='expertise'] {
-  background: #3b2416 url('/images/desk.webp') center / cover no-repeat;
+  background: #3b2416 url('/images/desk-wood.webp') center / cover no-repeat;
 }
 
 /* Hub cards: manila luggage tags with a punched, reinforced hole. */
@@ -683,11 +845,6 @@ html.cases-unlocked .case-gate {
 .work-card:focus-visible {
   outline: 3px solid var(--color-pink);
   outline-offset: 3px;
-}
-
-/* The owner's card in the nameplate (canvas only). */
-.case-nameplate {
-  display: none;
 }
 
 /* Area slides: the title on a ruled index card, the story on a sheet of
@@ -780,31 +937,11 @@ html.cases-unlocked .case-gate {
     --oy: calc((var(--slide-h) - var(--hi)) / 2);
   }
 
-  /* Hub: name card in the plate, then the title and the tags, kept left
-     of the signpost stack in the bottom-right corner. */
-  .case-nameplate {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    z-index: 1;
-    left: calc(var(--ox) + 0.4505 * var(--wi));
-    top: calc(var(--oy) + 0.2517 * var(--hi));
-    width: calc(0.0985 * var(--wi));
-    height: calc(0.052 * var(--hi));
-    background: linear-gradient(175deg, #efe6cf, #ddd0b0);
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.25);
-    font-family: 'Courier Prime', 'Courier New', monospace;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: #2e2820;
-  }
+  /* Hub: the title and the tags, kept left of the signpost stack in the
+     bottom-right corner. */
   #canvas-grid #expertise > .tile-inner {
     max-width: 880px;
-    margin: 120px auto 0;
+    margin: 0 auto;
     text-align: center;
   }
   #expertise .work-title {

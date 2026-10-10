@@ -69,7 +69,7 @@ const jsonLd = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Courier+Prime:wght@400;700&family=Permanent+Marker&family=Golos+Text:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Permanent+Marker&family=Golos+Text:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -202,7 +202,7 @@ const jsonLd = {
       function overview() {
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         // Everything on the board: slides, the photo wall and marker titles.
-        const boardExtras = Array.from(canvasGrid.querySelectorAll('.board-photos, .board-heading'));
+        const boardExtras = Array.from(canvasGrid.querySelectorAll('.board-photos, .board-beats, .board-heading'));
         [...tileOrder, ...boardExtras].forEach((t) => {
           minX = Math.min(minX, t.offsetLeft);
           minY = Math.min(minY, t.offsetTop);
@@ -800,6 +800,37 @@ const jsonLd = {
           }
         });
       }
+
+      // ── Beats ──
+      // Floppy disks on the board. Clicking one plays its beat; clicking it
+      // again (or another disk) stops it. One shared player, loaded on
+      // demand. A drag that starts on a disk pans the board instead.
+      const disks = Array.from(document.querySelectorAll('.floppy'));
+      const beatPlayer = new Audio();
+      beatPlayer.preload = 'none';
+      let diskOn = null;
+      let diskDown = null;
+      function markDisk(disk) {
+        diskOn = disk;
+        disks.forEach((d) => d.setAttribute('aria-pressed', String(d === disk)));
+      }
+      disks.forEach((disk) => {
+        disk.addEventListener('pointerdown', (e) => { diskDown = { x: e.clientX, y: e.clientY }; });
+        disk.addEventListener('click', (e) => {
+          if (diskDown && Math.hypot(e.clientX - diskDown.x, e.clientY - diskDown.y) > 5) return;
+          const src = disk.dataset.beatSrc;
+          if (!src) return;
+          if (diskOn === disk) {
+            beatPlayer.pause();
+            markDisk(null);
+            return;
+          }
+          beatPlayer.src = src;
+          markDisk(disk);
+          beatPlayer.play().catch(() => markDisk(null));
+        });
+      });
+      beatPlayer.addEventListener('ended', () => markDisk(null));
 
       // ── Whiteboard ──
       // The canvas background is a whiteboard, synced to the canvas each
