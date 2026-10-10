@@ -156,7 +156,7 @@ const jsonLd = {
       const tileOrder = canvasGrid ? Array.from(canvasGrid.querySelectorAll('[data-tile]')) : [];
       const heroTile = document.getElementById('hero');
       let currentIndex = 0;
-      // Set when the view cuts instantly between two open-briefcase slides,
+      // Set when the view cuts instantly between two Expertise area slides,
       // so the hanging logo doesn't read the cut as a shove.
       let viewCut = false;
       let caseSwapTimer = 0;
@@ -223,7 +223,7 @@ const jsonLd = {
         tileOrder.forEach((t) => {
           const inner = t.querySelector(':scope > .tile-inner');
           if (!inner || t.classList.contains('case-tile')) return;
-          // Briefcase slides lay their content out against the photo, so the
+          // Expertise area slides lay their content out against the photo, so the
           // slide itself is never zoomed; only the card-and-paper column
           // shrinks if it runs past the bottom (short, wide windows).
           if (inner.classList.contains('case-open')) {
@@ -286,32 +286,41 @@ const jsonLd = {
         const idx = tileOrder.indexOf(tile);
         if (idx !== -1) currentIndex = idx;
         const { s: s1, c: g1 } = frameFor(tile);
-        // Open-briefcase slides: the index card, the paper and the samples
-        // are cleared off as you leave and laid in as the case arrives
+        // Expertise area slides: the index card, the paper and the samples
+        // are cleared off as you leave and laid in as the desk arrives
         // (keyframes in global.css). Instant moves (resizes, first load)
         // just show them.
         const animate = !instant && !reduceMotion;
         if (animate && prev !== tile && isCase(prev) && isCase(tile) && landedOn(prev)) {
-          // Case to case is the same open briefcase, so there's no glide:
-          // clear the pieces off, cut to the next slide and lay its in.
-          caseLeave(prev);
+          // Area to area is the same desk, so there's no glide. The pieces
+          // slide off and fade, the view cuts once they're gone (invisible:
+          // same desk), and the next area's pieces slide in from the other
+          // side, like flipping through files. Direction follows the order.
+          const dir = tileOrder.indexOf(tile) > tileOrder.indexOf(prev) ? 1 : -1;
+          prev.style.setProperty('--swap-dir', dir);
+          tile.style.setProperty('--swap-dir', dir);
+          caseSwapOut(prev);
           caseSwapTimer = setTimeout(() => {
             viewCut = true;
             animateView(g1, s1, true, false);
-            caseEnter(tile, true);
+            caseSwapIn(tile);
+            slideTabHighlight(tile, prev);
             // Keep keyboard focus on the folder tabs, now on the new slide.
             const focused = document.activeElement;
             if (focused && focused.classList.contains('case-tab') && prev.contains(focused)) {
               tile.querySelector(`.case-tab[href="${focused.getAttribute('href')}"]`)?.focus({ preventScroll: true });
             }
-          }, 420);
+          }, CASE_SWAP_OUT_MS);
           return;
         }
         animateView(g1, s1, instant, true);
         if (!animate) return;
         if (prev !== tile && isCase(prev)) caseLeave(prev);
-        if (isCase(tile)) caseEnter(tile, false);
+        if (isCase(tile)) caseEnter(tile);
       }
+      // Matches the swap-out keyframes in global.css (longest delay plus
+      // duration), so the cut lands just after the last piece has gone.
+      const CASE_SWAP_OUT_MS = 330;
       const isCase = (t) => !!(t && t.querySelector(':scope > .case-open'));
       // Is the view sitting on this slide (not the map, not mid-glide)?
       function landedOn(t) {
@@ -322,24 +331,39 @@ const jsonLd = {
         const c = centerOf(sc, p.x, p.y);
         return Math.abs(sc - f.s) / f.s < 0.05 && Math.hypot(c.x - f.c.x, c.y - f.c.y) < 60;
       }
-      // After a glide, the pieces wait for the slide to arrive; after a cut
-      // they come straight in (case-swap shortens the delays).
-      function caseEnter(tile, swap) {
+      // Each area slide carries one of these motion classes at a time:
+      // case-enter / case-leave for glides, case-in / case-out for swaps.
+      const CASE_MOTION = ['case-enter', 'case-leave', 'case-in', 'case-out'];
+      function casePlay(tile, cls) {
         clearTimeout(caseResetTimers.get(tile));
-        tile.classList.remove('case-leave', 'case-enter', 'case-swap');
+        tile.classList.remove(...CASE_MOTION);
         void tile.offsetWidth; // restart the keyframes
-        tile.classList.add('case-enter');
-        if (swap) tile.classList.add('case-swap');
+        tile.classList.add(cls);
       }
-      // Once a cleared case is off screen, put its pieces back so it's whole
+      // Once a cleared slide is off screen, put its pieces back so it's whole
       // again on the map and ready to animate next time.
       const caseResetTimers = new WeakMap();
-      function caseLeave(tile) {
-        clearTimeout(caseResetTimers.get(tile));
-        tile.classList.remove('case-enter', 'case-leave', 'case-swap');
+      function caseClear(tile, cls) {
+        casePlay(tile, cls);
+        caseResetTimers.set(tile, setTimeout(() => tile.classList.remove(cls), 1300));
+      }
+      const caseEnter = (tile) => casePlay(tile, 'case-enter');
+      const caseLeave = (tile) => caseClear(tile, 'case-leave');
+      const caseSwapIn = (tile) => casePlay(tile, 'case-in');
+      const caseSwapOut = (tile) => caseClear(tile, 'case-out');
+      // On the new slide, start the raised folder tab where it was on the
+      // old one, then let it slide over to the current area.
+      function slideTabHighlight(tile, from) {
+        const to = tile.querySelector('.case-tab.is-up');
+        const was = tile.querySelector(`.case-tab[href="#${from.id}"]`);
+        if (!to || !was || to === was) return;
+        [to, was].forEach((t) => (t.style.transition = 'none'));
+        to.classList.remove('is-up');
+        was.classList.add('is-up');
         void tile.offsetWidth;
-        tile.classList.add('case-leave');
-        caseResetTimers.set(tile, setTimeout(() => tile.classList.remove('case-leave'), 1300));
+        [to, was].forEach((t) => (t.style.transition = ''));
+        was.classList.remove('is-up');
+        to.classList.add('is-up');
       }
 
       function showMap() {

@@ -628,19 +628,24 @@ html.cases-unlocked .case-gate {
 }
 
 /* ── Expertise: the briefcase ───────────────────────────────────────
-   The Expertise slide is the outside of a worn 70s leather briefcase; its
-   four areas are the case opened up. Content is laid out against the
-   photo: the owner's card sits in the brass nameplate, area titles are
-   marked on the lid's file pocket, and each story is a sheet of paper
-   lying in the case.
+   The Expertise slide is a worn 70s leather briefcase lying on an old
+   wooden desk; its four areas are the case's contents spread out on that
+   desk. The owner's card sits in the case's brass nameplate; on the area
+   slides each title is on an index card, each story on a sheet of paper,
+   and the samples lie to the right.
 
    On the canvas the photos are cover-fitted and centred, so every slide
    can work out where a spot in the photo lands: --wi/--hi are the photo's
    drawn size and --ox/--oy its offset. A point at (fx, fy) of the photo
    is at (--ox + fx * --wi, --oy + fy * --hi). Both photos are 3:2. */
+/* The doubled selectors beat the canvas's own slide-surface rule. */
 #expertise,
-.tile[data-branch='expertise'] {
-  background: #3b2416 url('/images/briefcase-outside.webp') center / cover no-repeat;
+#canvas-grid #expertise {
+  background: #3b2416 url('/images/desk-briefcase.webp') center / cover no-repeat;
+}
+.tile[data-branch='expertise'],
+#canvas-grid .tile[data-branch='expertise'] {
+  background: #3b2416 url('/images/desk.webp') center / cover no-repeat;
 }
 
 /* Hub cards: manila luggage tags with a punched, reinforced hole. */
@@ -773,7 +778,6 @@ html.cases-unlocked .case-gate {
     --hi: max(calc(var(--slide-w) / 1.5), var(--slide-h));
     --ox: calc((var(--slide-w) - var(--wi)) / 2);
     --oy: calc((var(--slide-h) - var(--hi)) / 2);
-    background: #3b2416 url('/images/briefcase-outside.webp') center / cover no-repeat;
   }
 
   /* Hub: name card in the plate, then the title and the tags, kept left
@@ -784,16 +788,16 @@ html.cases-unlocked .case-gate {
     justify-content: center;
     position: absolute;
     z-index: 1;
-    left: calc(var(--ox) + 0.4388 * var(--wi));
-    top: calc(var(--oy) + 0.2344 * var(--hi));
-    width: calc(0.1217 * var(--wi));
-    height: calc(0.0645 * var(--hi));
+    left: calc(var(--ox) + 0.4505 * var(--wi));
+    top: calc(var(--oy) + 0.2517 * var(--hi));
+    width: calc(0.0985 * var(--wi));
+    height: calc(0.052 * var(--hi));
     background: linear-gradient(175deg, #efe6cf, #ddd0b0);
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.25);
     font-family: 'Courier Prime', 'Courier New', monospace;
     font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.06em;
+    font-size: 12px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
     color: #2e2820;
@@ -816,9 +820,8 @@ html.cases-unlocked .case-gate {
     font-size: 26px;
   }
 
-  /* Area slides: the open case. */
+  /* Area slides: the case's contents spread out on the desk. */
   #canvas-grid .tile[data-branch='expertise'] {
-    background-image: url('/images/briefcase-inside.webp');
     padding: 0;
   }
   #canvas-grid .tile[data-branch='expertise'] > .case-open {
@@ -830,7 +833,7 @@ html.cases-unlocked .case-gate {
     padding: 0;
   }
   /* Card and paper stack in the top left, just under the hanging logo,
-     over the lid; the column ends above the bottom edge (see fitSlides). */
+     on the desk; the column ends above the folder tabs (see fitSlides). */
   .case-open .case-left {
     position: absolute;
     left: 60px;
@@ -838,7 +841,7 @@ html.cases-unlocked .case-gate {
     bottom: 96px;
     width: 560px;
   }
-  /* Manila folder tabs rising from the bottom edge of the lid, the current
+  /* Manila folder tabs rising from the bottom edge of the slide, the current
      area's pulled up and lighter. They're the same on every area slide, so
      they hold still through the swap; only the highlight moves. */
   .case-tabs {
@@ -864,7 +867,7 @@ html.cases-unlocked .case-gate {
   .case-tab:hover {
     translate: 0 4px;
   }
-  .case-tab[aria-current] {
+  .case-tab.is-up {
     translate: 0 0;
     background: linear-gradient(180deg, #f3e6c4, #e4d2a4);
     color: #1f1d1a;
@@ -884,15 +887,15 @@ html.cases-unlocked .case-gate {
     margin: -6px 0 0 18px;
     padding: 30px 28px 16px;
   }
-  /* Samples: prints in the base of the case (right half), centred top to
-     bottom, sized down in short windows so they never run off the slide. */
+  /* Samples: prints on the right half of the desk, centred top to bottom,
+     sized down in short windows so they never run off the slide. */
   .case-open .work-gallery {
     position: absolute;
     display: block;
-    left: calc(var(--ox) + 0.565 * var(--wi));
+    left: calc(var(--ox) + 0.5 * var(--wi));
     top: 50%;
     translate: 0 -50%;
-    width: min(calc(0.37 * var(--wi)), calc((var(--slide-h) - 120px) * 1.406));
+    width: min(calc(0.41 * var(--wi)), calc((var(--slide-h) - 120px) * 1.406));
     margin: 0;
     aspect-ratio: 1600 / 1138;
     rotate: 1.2deg;
@@ -926,7 +929,7 @@ html.cases-unlocked .case-gate {
   }
 }
 
-/* Laying out the open case: when a glide heads for an area slide, the
+/* Laying out the desk: when a glide heads for an area slide, the
    index card drops in from above, the paper slides in from below and the
    samples come in from the right, landing one after another as the slide
    settles (the glide takes ~1.15s; see animateTo). Leaving clears them off
@@ -934,20 +937,24 @@ html.cases-unlocked .case-gate {
    transform, so each piece keeps its own resting tilt. */
 @media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
   .case-enter .case-card {
-    animation: case-card-in 0.75s cubic-bezier(0.22, 1.25, 0.36, 1) var(--case-d0, 0.45s) both;
+    animation: case-card-in 0.75s cubic-bezier(0.22, 1.25, 0.36, 1) 0.45s both;
   }
   .case-enter .case-sheet {
-    animation: case-sheet-in 0.8s cubic-bezier(0.22, 1.15, 0.36, 1) var(--case-d1, 0.62s) both;
+    animation: case-sheet-in 0.8s cubic-bezier(0.22, 1.15, 0.36, 1) 0.62s both;
   }
   .case-enter .work-gallery {
-    animation: case-shots-in 0.85s cubic-bezier(0.22, 1.15, 0.36, 1) var(--case-d2, 0.8s) both;
+    animation: case-shots-in 0.85s cubic-bezier(0.22, 1.15, 0.36, 1) 0.8s both;
   }
-  /* Arriving from another area (an instant cut, no glide): straight in. */
-  .case-swap {
-    --case-d0: 0.02s;
-    --case-d1: 0.14s;
-    --case-d2: 0.26s;
-  }
+  /* Area to area (same desk, no glide): one continuous flip. The pieces
+     slide a short way out and fade (done by ~330ms, when the view cuts;
+     see CASE_SWAP_OUT_MS), then the next area's slide in from the other
+     side and settle, no overshoot. --swap-dir is 1 going forward, -1 back. */
+  .case-out .case-card { animation: case-swap-out 0.25s cubic-bezier(0.4, 0, 1, 1) both; }
+  .case-out .case-sheet { animation: case-swap-out 0.25s cubic-bezier(0.4, 0, 1, 1) 0.04s both; }
+  .case-out .work-gallery { animation: case-swap-out 0.25s cubic-bezier(0.4, 0, 1, 1) 0.07s both; }
+  .case-in .case-card { animation: case-swap-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .case-in .case-sheet { animation: case-swap-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both; }
+  .case-in .work-gallery { animation: case-swap-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
   /* Leaving: the same moves played backwards and quicker, samples first,
      card last. The easing applies after the reversal, so an ease-out curve
      here makes the pieces accelerate away. */
@@ -970,6 +977,12 @@ html.cases-unlocked .case-gate {
   from { opacity: 0; transform: translate(-50px, 380px) rotate(9deg); }
   25% { opacity: 1; }
   to { opacity: 1; transform: none; }
+}
+@keyframes case-swap-out {
+  to { opacity: 0; transform: translateX(calc(var(--swap-dir, 1) * -60px)); }
+}
+@keyframes case-swap-in {
+  from { opacity: 0; transform: translateX(calc(var(--swap-dir, 1) * 80px)); }
 }
 @keyframes case-shots-in {
   from { opacity: 0; transform: translate(340px, 60px) rotate(12deg); }
@@ -1389,6 +1402,11 @@ html.cases-unlocked .case-gate {
     position: relative;
     z-index: 1;
   }
+  /* One left-hand column (the canvas makes slide content full width by
+     default), so the divider above the 20+ years line stops with the copy. */
+  #canvas-grid #hero > .tile-inner {
+    max-width: 820px;
+  }
   .ghost-num--case {
     right: 40px;
     bottom: -40px;
@@ -1562,7 +1580,7 @@ html.cases-unlocked .case-gate {
     font-size: 38px;
   }
   .tape-title--hero {
-    font-size: 120px;
+    font-size: 104px;
     line-height: 1.3; /* the two strips overlap a touch, like layered tape */
     translate: -60px 0; /* hangs out past the text column; its torn end meets the screen edge */
   }
