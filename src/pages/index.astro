@@ -267,16 +267,10 @@ const pillSecondary = 'btn btn--dark';
               </div>
             </div>
             <img class="case-collage" src={areaCards[a.id].corner} alt="" aria-hidden="true" width="760" height="570" loading="lazy" decoding="async" />
-            <!-- Construction-paper folder tabs strung on a length of yarn, to
-                 move between the areas without going back to Expertise
-                 (canvas only; they swap the slide in place). -->
+            <!-- Construction-paper folder tabs to move between the areas
+                 without going back to Expertise (canvas only; they swap the
+                 slide in place). -->
             <nav class="case-tabs" aria-label="Expertise areas">
-              <svg class="case-yarn" viewBox="0 0 760 40" preserveAspectRatio="none" aria-hidden="true">
-                <path class="case-yarn-base" d="M0 12 C 140 24, 260 30, 380 26 S 620 12, 760 20" />
-                <path class="case-yarn-twist" d="M0 12 C 140 24, 260 30, 380 26 S 620 12, 760 20" />
-              </svg>
-              <span class="tape case-yarn-tape case-yarn-tape--l" aria-hidden="true"></span>
-              <span class="tape case-yarn-tape case-yarn-tape--r" aria-hidden="true"></span>
               {workAreas.map((b) => (
                 <a href={`#${b.id}`} class={`case-tab${b.id === a.id ? ' is-up' : ''}`} aria-current={b.id === a.id ? 'true' : undefined}>{b.title}</a>
               ))}
