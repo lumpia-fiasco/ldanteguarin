@@ -815,9 +815,11 @@ html.cases-unlocked .case-gate {
 .hiw-note:nth-child(5n + 4) { --note: #f6b6c6; --note-r: 1.8deg; }
 .hiw-note:nth-child(5n + 5) { --note: #f6e27f; --note-r: -1.2deg; }
 .hiw-note-title {
-  font-family: 'Permanent Marker', cursive;
-  font-size: 24px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 23px;
   line-height: 1.15;
+  letter-spacing: -0.01em;
   color: #1f1a15;
 }
 .hiw-props {
@@ -913,6 +915,9 @@ html.cases-unlocked .case-gate {
 }
 .case-open .work-area-title {
   margin-bottom: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
   color: #1f1d1a;
 }
 .case-sheet {
@@ -1034,7 +1039,7 @@ html.cases-unlocked .case-gate {
   }
   #canvas-grid [data-branch='expertise'] .work-area-title {
     font-size: 56px;
-    line-height: 1.05;
+    line-height: 1.02;
   }
   .case-open .case-sheet {
     margin: 24px 0 0;
@@ -1875,7 +1880,7 @@ html.cases-unlocked .case-gate {
   /* In the open spot right of the bottom row of notes, clear of the
      signposts in the corner. */
   .hiw-note-title {
-    font-size: 27px;
+    font-size: 26px;
   }
   #how-i-work .tape-title {
     font-size: 64px;
