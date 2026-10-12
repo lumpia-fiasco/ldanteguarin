@@ -56,6 +56,40 @@ const clients = ['Adobe', 'Teamshares', 'Upwork', 'T-Mobile', 'Microsoft', 'Gree
 
 // Work's branch slides. Copy is still to come, so each is a title for now.
 // Work sits nudged right so it's centred over all four.
+// The Expertise slide's cards, one per area: a collage, a short description
+// and one stat. The same collage, cut out, decorates the area's own slide. Descriptions are kept to about the same length so the cards
+// match. Facts and figures are from the resume and case studies.
+const areaCards = {
+  'expertise-strategy': {
+    img: '/expertise/strategy-yarn.webp',
+    corner: '/expertise/strategy-corner.webp',
+    blurb: 'Finding the real problem under the brief, then shaping the roadmap and research around it.',
+    stat: '10x',
+    statLabel: 'addressable market after the Meroxa pivot',
+  },
+  'expertise-systems-thinking': {
+    img: '/expertise/systems-thinking-yarn.webp',
+    corner: '/expertise/systems-thinking-corner.webp',
+    blurb: 'Designing the model under the screens first: the data, ownership and flow everything rests on.',
+    stat: '20+',
+    statLabel: 'leaders placed with one Teamshares system',
+  },
+  'expertise-design-systems': {
+    img: '/expertise/design-systems-yarn.webp',
+    corner: '/expertise/design-systems-corner.webp',
+    blurb: 'Systems that teams actually adopt, and lately, Figma libraries AI can read and build from.',
+    stat: '100%',
+    statLabel: 'of Marketo product teams on Sky',
+  },
+  'expertise-product': {
+    img: '/expertise/product-yarn.webp',
+    corner: '/expertise/product-corner.webp',
+    blurb: 'End-to-end product design across web and mobile, shaped by how it will really ship.',
+    stat: '$3.1M',
+    statLabel: 'estimated yearly savings at Teamshares',
+  },
+};
+
 // The area slides share one strip of tape, so cutting between them (they
 // swap in place on the same desk, see animateTo) doesn't show a jump.
 const CASE_TAPE = '--tape-r:-1.5deg;width:240px';
@@ -144,8 +178,8 @@ const pillSecondary = 'btn btn--dark';
       <section id="how-i-work" style="--c:2;--r:1;--dx:110px;--dy:-140px;--tilt:0.9deg" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:2.5deg;width:220px" aria-hidden="true"></span>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
-          <p class={eyebrow}>How I work</p>
-          <h2 class={`${h2} max-w-3xl mb-6`}>Short-term leadership. Full-time commitment to the work.</h2>
+          <p class={eyebrow}>How I work.</p>
+          <h2 class={`${h2} max-w-3xl mb-6`}>Short-term leadership.<br /> Full-time commitment to the work.</h2>
           <p class="text-lg md:text-xl leading-relaxed max-w-3xl mb-12 slide:mb-10">
             I embed with your team rather than operating from the sidelines. I work directly with founders, Product, Engineering, and Design to understand what's getting in the way, establish priorities, and move the work forward.
           </p>
@@ -186,25 +220,33 @@ const pillSecondary = 'btn btn--dark';
       </section>
 
       <!-- EXPERTISE, with its four areas branching below it -->
-      <section id="expertise" style="--c:4;--r:1;--dx:960px;--dy:-60px;--tilt:1.1deg" data-tile data-label="Expertise" class={`tile ${section}`} data-reveal>
+      <section id="expertise" style="--c:4;--r:1;--dx:960px;--dy:-60px;--tilt:1.1deg" data-tile data-light data-label="Expertise" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-2deg;width:240px" aria-hidden="true"></span>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>What I'm known for</p>
           <h2 class={`${h2} work-title mb-10`}>Expertise</h2>
-          <ul class="case-tags grid sm:grid-cols-2 slide:grid-cols-4 gap-4 slide:gap-7">
-            {workAreas.map((a) => (
-              <li>
-                <a href={`#${a.id}`} class="work-card">
-                  <span class="work-card-title">{a.title}</span>
-                </a>
-              </li>
-            ))}
+          <ul class="exp-cards grid sm:grid-cols-2 slide:grid-cols-4 gap-5 slide:gap-6">
+            {workAreas.map((a) => {
+              const c = areaCards[a.id];
+              return (
+                <li>
+                  <a href={`#${a.id}`} class="exp-card">
+                    <img class="exp-card-photo" src={c.img} alt="" width="800" height="600" loading="lazy" decoding="async" />
+                    <span class="exp-card-body">
+                      <span class="exp-card-title">{a.title}</span>
+                      <span class="exp-card-blurb">{c.blurb}</span>
+                      <span class="exp-card-stat"><strong>{c.stat}</strong> <span>{c.statLabel}</span></span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
 
       {workAreas.map((a) => (
-        <section id={a.id} style={a.pos} data-tile data-branch="expertise" data-label={a.title} class={`tile ${section}`} data-reveal>
+        <section id={a.id} style={a.pos} data-tile data-light data-branch="expertise" data-label={a.title} class={`tile ${section}`} data-reveal>
           <span class="tape tile-tape" style={a.tape} aria-hidden="true"></span>
           <!-- The case's contents on the desk: an index card with the title
                and the story on a sheet of paper (top left), samples on the
@@ -225,15 +267,25 @@ const pillSecondary = 'btn btn--dark';
                 </div>
               </div>
             </div>
-            <!-- Folder tabs to move between the areas without going back to
-                 Expertise (canvas only; they swap the desk in place). -->
+            <img class="case-collage" src={areaCards[a.id].corner} alt="" aria-hidden="true" width="760" height="570" loading="lazy" decoding="async" />
+            <!-- Construction-paper folder tabs strung on a length of yarn, to
+                 move between the areas without going back to Expertise
+                 (canvas only; they swap the slide in place). -->
             <nav class="case-tabs" aria-label="Expertise areas">
+              <svg class="case-yarn" viewBox="0 0 760 40" preserveAspectRatio="none" aria-hidden="true">
+                <path class="case-yarn-base" d="M0 12 C 140 24, 260 30, 380 26 S 620 12, 760 20" />
+                <path class="case-yarn-twist" d="M0 12 C 140 24, 260 30, 380 26 S 620 12, 760 20" />
+              </svg>
+              <span class="tape case-yarn-tape case-yarn-tape--l" aria-hidden="true"></span>
+              <span class="tape case-yarn-tape case-yarn-tape--r" aria-hidden="true"></span>
               {workAreas.map((b) => (
                 <a href={`#${b.id}`} class={`case-tab${b.id === a.id ? ' is-up' : ''}`} aria-current={b.id === a.id ? 'true' : undefined}>{b.title}</a>
               ))}
             </nav>
             {a.shots && (
               <div class="work-gallery" data-gallery>
+                <span class="tape gallery-tape gallery-tape--l" aria-hidden="true"></span>
+                <span class="tape gallery-tape gallery-tape--r" aria-hidden="true"></span>
                 {a.shots.map((s, k) => (
                   <figure class={`work-shot${k === 0 ? ' is-active' : ''}`}>
                     <img src={s.src} alt={s.alt} width={s.w} height={s.h} loading="eager" decoding="async" />

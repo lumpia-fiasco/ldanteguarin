@@ -223,9 +223,9 @@ const jsonLd = {
         tileOrder.forEach((t) => {
           const inner = t.querySelector(':scope > .tile-inner');
           if (!inner || t.classList.contains('case-tile')) return;
-          // Expertise area slides lay their content out against the photo, so the
-          // slide itself is never zoomed; only the card-and-paper column
-          // shrinks if it runs past the bottom (short, wide windows).
+          // Expertise area slides place their pieces absolutely, so the slide
+          // itself is never zoomed; only the title-and-story column shrinks
+          // if it runs past the bottom (short, wide windows).
           if (inner.classList.contains('case-open')) {
             const col = inner.querySelector('.case-left');
             const stack = col && col.firstElementChild;
@@ -1230,8 +1230,21 @@ const jsonLd = {
         let prev = contentPos();
         let pv = { x: 0, y: 0, s: 0 };
         let last = performance.now();
+        // Light slides (data-light) wash out the pink, so over one the logo
+        // takes a deeper pink. Checked a few times a second: whichever slide
+        // sits under the logo, on the canvas or scrolling past on phones.
+        let lightFrame = 0;
+        const checkLight = () => {
+          const r = logo.getBoundingClientRect();
+          const under = document
+            .elementsFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+            .map((el) => el.closest('[data-tile]'))
+            .find(Boolean);
+          document.documentElement.classList.toggle('on-light', !!under && under.hasAttribute('data-light'));
+        };
         const tick = (now) => {
           requestAnimationFrame(tick);
+          if (++lightFrame % 8 === 0) checkLight();
           const dt = Math.min(0.033, (now - last) / 1000);
           last = now;
           if (!dt) return;
