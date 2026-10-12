@@ -315,6 +315,13 @@ const jsonLd = {
         }
         animateView(g1, s1, instant, true);
         if (!animate) return;
+        if (prev !== tile) playEntrance(tile);
+        // How I work: the note stack and sticky notes are laid in as it arrives.
+        if (prev !== tile && tile.id === 'how-i-work') {
+          tile.classList.remove('hiw-enter');
+          void tile.offsetWidth; // restart the keyframes
+          tile.classList.add('hiw-enter');
+        }
         if (prev !== tile && isCase(prev)) caseLeave(prev);
         if (isCase(tile)) caseEnter(tile);
       }
@@ -322,6 +329,31 @@ const jsonLd = {
       // duration), so the cut lands just after the last piece has gone.
       const CASE_SWAP_OUT_MS = 330;
       const isCase = (t) => !!(t && t.querySelector(':scope > .case-open'));
+      // A slide's pieces fade up one after another as a jump lands on it
+      // (keyframes in global.css): the outermost text blocks, list items,
+      // buttons and anything marked data-enter, in reading order. Expertise
+      // areas have their own choreography, and How I work's sticky notes
+      // theirs.
+      function playEntrance(tile) {
+        if (isCase(tile)) return;
+        const inner = tile.querySelector(':scope > .tile-inner');
+        if (!inner) return;
+        const found = [...inner.querySelectorAll('p, h1, h2, h3, li, .btn'), ...tile.querySelectorAll('[data-enter]')].filter((el) => !el.matches('.hiw-note'));
+        const set = new Set(found);
+        const pieces = found
+          .filter((el) => {
+            for (let p = el.parentElement; p && p !== tile; p = p.parentElement) if (set.has(p) || p.matches('.hiw-note')) return false;
+            return true;
+          })
+          .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+        tile.classList.remove('is-entering');
+        pieces.forEach((el, i) => {
+          el.classList.add('enter-piece');
+          el.style.setProperty('--enter-i', String(Math.min(i, 14)));
+        });
+        void tile.offsetWidth; // restart the keyframes
+        tile.classList.add('is-entering');
+      }
       // Is the view sitting on this slide (not the map, not mid-glide)?
       function landedOn(t) {
         if (anim || canvasGrid.classList.contains('is-overview')) return false;

@@ -782,26 +782,46 @@ html.cases-unlocked .case-gate {
   }
 }
 
-/* ── How I work blueprint ───────────────────────────────────────────
-   A weathered supercar blueprint behind the slide: pale lines on blueprint
-   blue. The doubled id beats the canvas's own slide-surface rule. */
+/* ── How I work: the workshop ────────────────────────────────────────
+   Brown butcher paper, dark ink, the five ways of working as sticky notes,
+   and a stack of notes in the corner (canvas only). The
+   doubled id beats the canvas's own slide-surface rule. */
 #how-i-work,
 #canvas-grid #how-i-work {
-  background-color: #18488a;
-  background-image: url('/images/supercar-blueprint-soft.webp');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  color: #2e2820;
+  background: #b98f62 url('/workshop/kraft-paper.webp') center / cover no-repeat;
 }
-/* Cards are deep blue and slightly see-through so the drawing reads
-   behind them. */
-/* The intro sits straight on the drawing, so it gets a brighter ink. */
+#how-i-work .led-eyebrow {
+  color: #9b1f2c;
+}
+#how-i-work .tape-title {
+  color: #1f1a15;
+}
 #how-i-work .tile-inner > p {
-  color: #e3ebf5;
+  color: #2e2820;
 }
-#how-i-work li {
-  background-color: rgba(12, 38, 78, 0.82);
-  border-color: rgba(214, 230, 248, 0.18);
+/* Sticky notes: square-cornered paper in three colours, each stuck on at
+   its own slight angle, with a soft lift at the bottom. */
+.hiw-note {
+  position: relative;
+  background: var(--note, #f6e27f);
+  color: #3a3226;
+  box-shadow: 0 1px 1px rgba(40, 25, 5, 0.15), 0 12px 18px -6px rgba(40, 25, 5, 0.35);
+  rotate: var(--note-r, 0deg);
+}
+.hiw-note:nth-child(5n + 1) { --note: #f6e27f; --note-r: -1.6deg; }
+.hiw-note:nth-child(5n + 2) { --note: #f6b6c6; --note-r: 1.2deg; }
+.hiw-note:nth-child(5n + 3) { --note: #e8e3c4; --note-r: -0.8deg; }
+.hiw-note:nth-child(5n + 4) { --note: #f6b6c6; --note-r: 1.8deg; }
+.hiw-note:nth-child(5n + 5) { --note: #f6e27f; --note-r: -1.2deg; }
+.hiw-note-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 24px;
+  line-height: 1.15;
+  color: #1f1a15;
+}
+.hiw-props {
+  display: none;
 }
 
 /* ── Expertise: off-white paper ─────────────────────────────────────
@@ -1143,6 +1163,55 @@ html.cases-unlocked .case-gate {
   }
 }
 
+/* Arriving on a slide: after a jump, its pieces (label, title, paragraphs,
+   buttons, list items, cards, the About me photo) fade up into place one
+   after another in reading order, as the glide settles (see playEntrance).
+   The photo comes in from the right. */
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .is-entering .enter-piece {
+    animation: piece-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) calc(0.42s + var(--enter-i, 0) * 55ms) both;
+  }
+  .is-entering .enter-piece[data-enter='photo'] {
+    animation-name: piece-in-right;
+    animation-duration: 0.9s;
+  }
+}
+@keyframes piece-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes piece-in-right {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Setting up the workshop: as a glide lands on How I work, the note stack
+   drops in at the corner and the sticky notes are stuck up one after
+   another (see animateTo). */
+@media (min-width: 901px) and (prefers-reduced-motion: no-preference) {
+  .hiw-enter .hiw-stack {
+    animation: hiw-drop 0.8s cubic-bezier(0.22, 1.2, 0.36, 1) 0.45s both;
+  }
+  .hiw-enter .hiw-note {
+    animation: hiw-stick 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) both;
+  }
+  .hiw-enter .hiw-note:nth-child(1) { animation-delay: 0.7s; }
+  .hiw-enter .hiw-note:nth-child(2) { animation-delay: 0.8s; }
+  .hiw-enter .hiw-note:nth-child(3) { animation-delay: 0.9s; }
+  .hiw-enter .hiw-note:nth-child(4) { animation-delay: 1s; }
+  .hiw-enter .hiw-note:nth-child(5) { animation-delay: 1.1s; }
+}
+@keyframes hiw-drop {
+  from { opacity: 0; transform: translate(80px, -220px) rotate(24deg); }
+  30% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hiw-stick {
+  from { opacity: 0; transform: translateY(-18px) scale(1.08) rotate(5deg); }
+  40% { opacity: 1; }
+  to { opacity: 1; transform: none; }
+}
+
 /* Laying out the desk: when a glide heads for an area slide, the
    index card drops in from above, the paper slides in from below and the
    samples come in from the right, landing one after another as the slide
@@ -1209,14 +1278,21 @@ html.cases-unlocked .case-gate {
 }
 
 /* ── Why me ───────────────────────────────────────────────────────────
-   Site charcoal, with Dante's cutout photo anchored bottom right behind
-   the copy. The doubled id beats the canvas's own slide-surface rule. */
+   Charcoal construction paper: matte, with pale fibre flecks and a soft
+   uneven tone, drawn here (no image). Dante's cutout photo is taped to it
+   bottom right with clear tape, behind the copy. The doubled id beats the
+   canvas's own slide-surface rule. */
 #why-me,
 #canvas-grid #why-me {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  background-color: var(--color-charcoal);
+  background-color: #2a2826;
+  background-image:
+    radial-gradient(ellipse at 40% 30%, rgba(255, 255, 255, 0.05), transparent 65%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.83  0 0 0 0 0.8  0 0 0 -1.1 0.62'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='m'><feTurbulence type='fractalNoise' baseFrequency='0.008 0.02' numOctaves='3' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 -0.08'/></filter><rect width='100%' height='100%' filter='url(%23m)'/></svg>");
+  background-size: auto, 300px 300px, 600px 600px;
   /* Room under the copy on phones, where the photo sits. */
   padding-bottom: 450px;
 }
@@ -1224,31 +1300,37 @@ html.cases-unlocked .case-gate {
   position: relative;
   z-index: 1;
 }
-.why-figure {
+.why-photo {
   position: absolute;
   right: -10px;
   bottom: 0;
   height: 420px;
-  width: auto;
+  aspect-ratio: 879 / 1000;
   pointer-events: none;
   user-select: none;
 }
-/* Flashlight: the photo rests at half strength; a full-strength copy shows
-   only inside a soft circle at the pointer (set by the page script), so
-   only the photo itself lights up, never the wall behind it. */
 .why-figure {
-  opacity: 0.5;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-.why-figure--lit {
-  opacity: 0;
-  /* Sized in % of the photo (a pixel radius didn't render in Chrome here);
-     60% x 52% of an 879x1000 photo is close to a circle. */
-  -webkit-mask-image: radial-gradient(60% 52% at var(--mx, 50%) var(--my, 40%), #000 35%, transparent 100%);
-  mask-image: radial-gradient(60% 52% at var(--mx, 50%) var(--my, 40%), #000 35%, transparent 100%);
-  transition: opacity 0.35s ease;
-}
-#why-me.is-lit .why-figure--lit {
-  opacity: 1;
+/* Clear tape: a glossy, barely-there strip laid across the photo at
+   --x/--y (in % of the photo), with fine dispenser-cut teeth at each end,
+   a faint diagonal sheen and soft highlights along its long edges. */
+.clear-tape {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: 6.5%;
+  rotate: var(--r);
+  background:
+    linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.16) 34%, transparent 46%, transparent 62%, rgba(255, 255, 255, 0.08) 72%, transparent 82%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.05) 70%, rgba(255, 255, 255, 0.12));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.16), 0 1px 2px rgba(0, 0, 0, 0.22);
+  backdrop-filter: brightness(1.06) saturate(0.92);
+  -webkit-backdrop-filter: brightness(1.06) saturate(0.92);
+  clip-path: polygon(0 0%, 3px 3.12%, 0 6.25%, 3px 9.38%, 0 12.5%, 3px 15.6%, 0 18.8%, 3px 21.9%, 0 25%, 3px 28.1%, 0 31.2%, 3px 34.4%, 0 37.5%, 3px 40.6%, 0 43.8%, 3px 46.9%, 0 50%, 3px 53.1%, 0 56.2%, 3px 59.4%, 0 62.5%, 3px 65.6%, 0 68.8%, 3px 71.9%, 0 75%, 3px 78.1%, 0 81.2%, 3px 84.4%, 0 87.5%, 3px 90.6%, 0 93.8%, 3px 96.9%, 0 100%, calc(100% - 0px) 100%, calc(100% - 3px) 96.9%, calc(100% - 0px) 93.8%, calc(100% - 3px) 90.6%, calc(100% - 0px) 87.5%, calc(100% - 3px) 84.4%, calc(100% - 0px) 81.2%, calc(100% - 3px) 78.1%, calc(100% - 0px) 75%, calc(100% - 3px) 71.9%, calc(100% - 0px) 68.8%, calc(100% - 3px) 65.6%, calc(100% - 0px) 62.5%, calc(100% - 3px) 59.4%, calc(100% - 0px) 56.2%, calc(100% - 3px) 53.1%, calc(100% - 0px) 50%, calc(100% - 3px) 46.9%, calc(100% - 0px) 43.8%, calc(100% - 3px) 40.6%, calc(100% - 0px) 37.5%, calc(100% - 3px) 34.4%, calc(100% - 0px) 31.2%, calc(100% - 3px) 28.1%, calc(100% - 0px) 25%, calc(100% - 3px) 21.9%, calc(100% - 0px) 18.8%, calc(100% - 3px) 15.6%, calc(100% - 0px) 12.5%, calc(100% - 3px) 9.38%, calc(100% - 0px) 6.25%, calc(100% - 3px) 3.12%, calc(100% - 0px) 0%);
 }
 .why-copy {
   color: #c9c9c9;
@@ -1270,7 +1352,7 @@ html.cases-unlocked .case-gate {
     overflow: visible;
     padding-bottom: 48px;
   }
-  .why-figure {
+  .why-photo {
     right: 0;
     height: 100%;
     /* In tall windows the slide gets taller; past this the photo would
@@ -1810,6 +1892,30 @@ html.cases-unlocked .case-gate {
     font-size: 26px;
   }
   /* How I work: scaled up to match the hero's presence on the slide. */
+  /* Workshop props, clipped to the slide so nothing spills onto the
+     whiteboard: the note stack off the top-right corner. */
+  #canvas-grid .hiw-props {
+    display: block;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hiw-prop {
+    position: absolute;
+    height: auto;
+  }
+  .hiw-stack {
+    top: -70px;
+    right: -60px;
+    width: 280px;
+    rotate: 9deg;
+  }
+  /* In the open spot right of the bottom row of notes, clear of the
+     signposts in the corner. */
+  .hiw-note-title {
+    font-size: 27px;
+  }
   #how-i-work .tape-title {
     font-size: 64px;
     max-width: none; /* two lines, broken after "leadership." */

@@ -167,8 +167,13 @@ const pillSecondary = 'btn btn--dark';
       </section>
 
       <!-- HOW I WORK -->
-      <section id="how-i-work" style="--c:2;--r:1;--dx:110px;--dy:-140px;--tilt:0.9deg" data-tile data-label="How I work" class={`tile ${section}`} data-reveal>
+      <section id="how-i-work" style="--c:2;--r:1;--dx:110px;--dy:-140px;--tilt:0.9deg" data-tile data-light data-label="How I work" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:2.5deg;width:220px" aria-hidden="true"></span>
+        <!-- A stack of sticky notes on the butcher paper (canvas only); it
+             and the notes are laid in as the slide arrives. -->
+        <div class="hiw-props" aria-hidden="true">
+          <img class="hiw-prop hiw-stack" src="/workshop/sticky-stack.webp" alt="" width="520" height="552" decoding="async" />
+        </div>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>How I work.</p>
           <h2 class={`${h2} max-w-3xl mb-6`}>Short-term leadership.<br /> Full-time commitment to the work.</h2>
@@ -178,8 +183,8 @@ const pillSecondary = 'btn btn--dark';
 
           <ul class="grid sm:grid-cols-2 slide:grid-cols-3 gap-4 slide:gap-5">
             {ways.map((w) => (
-              <li class="rounded-2xl border border-white/10 bg-card p-6 slide:p-7">
-                <h3 class="font-display font-normal text-[22px] slide:text-[26px] leading-tight tracking-[-0.01em] text-white mb-3">{w.title}</h3>
+              <li class="hiw-note p-6 slide:p-7">
+                <h3 class="hiw-note-title mb-3">{w.title}</h3>
                 <p class="text-base slide:text-lg leading-relaxed">{w.body}</p>
               </li>
             ))}
@@ -191,8 +196,11 @@ const pillSecondary = 'btn btn--dark';
       <section id="why-me" style="--c:3;--r:1;--dx:-40px;--dy:120px;--tilt:-0.8deg" data-tile data-label="About me" class={`tile ${section}`} data-reveal>
         <span class="tape tile-tape" style="--tape-r:-1.5deg;width:240px" aria-hidden="true"></span>
         <div class="tile-clip">
-          <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
-          <img src="/images/dante-portrait.webp" alt="" class="why-figure why-figure--lit" width="879" height="1000" loading="eager" decoding="async" aria-hidden="true" />
+          <!-- The photo, with a strip of clear tape across the sneaker. -->
+          <div class="why-photo" data-enter="photo">
+            <img src="/images/dante-portrait.webp" alt="L Dante Guarin in an A's cap and white-framed glasses, holding up a sneaker." class="why-figure" width="879" height="1000" loading="eager" decoding="async" />
+            <span class="clear-tape" style="--x:6%;--y:52%;--w:28%;--r:14deg" aria-hidden="true"></span>
+          </div>
         </div>
         <div class="tile-inner max-w-6xl mx-auto px-6 md:px-8">
           <p class={eyebrow}>About me</p>
@@ -354,23 +362,6 @@ const pillSecondary = 'btn btn--dark';
   </div>
 
   <script>
-    // Why me: the photo sits at half strength; a spotlight follows the
-    // pointer and lights it up to full, only on the photo's own pixels. The
-    // position is set in percentages of the photo, so it lines up at any
-    // canvas zoom.
-    const whyMe = document.getElementById('why-me');
-    const whyLit = whyMe?.querySelector('.why-figure--lit');
-    if (whyMe && whyLit) {
-      const pct = (v, start, size) => `${(((v - start) / size) * 100).toFixed(2)}%`;
-      whyMe.addEventListener('pointermove', (e) => {
-        const r = whyLit.getBoundingClientRect();
-        whyLit.style.setProperty('--mx', pct(e.clientX, r.left, r.width));
-        whyLit.style.setProperty('--my', pct(e.clientY, r.top, r.height));
-        whyMe.classList.add('is-lit');
-      });
-      whyMe.addEventListener('pointerleave', () => whyMe.classList.remove('is-lit'));
-    }
-
     // Links that leave the site (marked target="_blank") open in a new
     // tab explicitly, so they do even where a browser would otherwise
     // reuse the current one.
