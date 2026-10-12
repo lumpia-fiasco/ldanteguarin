@@ -834,8 +834,8 @@ html.cases-unlocked .case-gate {
   color: #1f1d1a;
 }
 
-/* Hub cards, one per area: photo on top, then the title, a short
-   description and one stat pinned to the bottom so all four line up. */
+/* Hub cards, one per area: the collage on top, then the title and a
+   short description. */
 .exp-cards {
   text-align: left;
 }
@@ -886,28 +886,6 @@ html.cases-unlocked .case-gate {
   line-height: 1.5;
   color: #4a4540;
 }
-.exp-card-stat {
-  margin-top: auto;
-  padding-top: 12px;
-  border-top: 1px solid rgba(60, 45, 20, 0.12);
-  font-size: 13px;
-  line-height: 1.35;
-  color: #6b655c;
-}
-/* Two lines reserved for every label, so the numbers line up across. */
-.exp-card-stat > span {
-  display: block;
-  min-height: 2.7em;
-}
-.exp-card-stat strong {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: 28px;
-  line-height: 1.1;
-  color: #b3263a;
-}
-
 /* Area slides: the label and title (.case-card) and the story
    (.case-sheet) set straight on the paper, no containers. */
 .case-card .led-eyebrow {

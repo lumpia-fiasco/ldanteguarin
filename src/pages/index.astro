@@ -56,37 +56,29 @@ const clients = ['Adobe', 'Teamshares', 'Upwork', 'T-Mobile', 'Microsoft', 'Gree
 
 // Work's branch slides. Copy is still to come, so each is a title for now.
 // Work sits nudged right so it's centred over all four.
-// The Expertise slide's cards, one per area: a collage, a short description
-// and one stat. The same collage, cut out, decorates the area's own slide. Descriptions are kept to about the same length so the cards
-// match. Facts and figures are from the resume and case studies.
+// The Expertise slide's cards, one per area: a collage and a short
+// description. The same collage, cut out, decorates the area's own slide.
+// Descriptions are kept to about the same length so the cards match.
 const areaCards = {
   'expertise-strategy': {
     img: '/expertise/strategy-yarn.webp',
     corner: '/expertise/strategy-corner.webp',
     blurb: 'Finding the real problem under the brief, then shaping the roadmap and research around it.',
-    stat: '10x',
-    statLabel: 'addressable market after the Meroxa pivot',
   },
   'expertise-systems-thinking': {
     img: '/expertise/systems-thinking-yarn.webp',
     corner: '/expertise/systems-thinking-corner.webp',
     blurb: 'Designing the model under the screens first: the data, ownership and flow everything rests on.',
-    stat: '20+',
-    statLabel: 'leaders placed with one Teamshares system',
   },
   'expertise-design-systems': {
     img: '/expertise/design-systems-yarn.webp',
     corner: '/expertise/design-systems-corner.webp',
     blurb: 'Systems that teams actually adopt, and lately, Figma libraries AI can read and build from.',
-    stat: '100%',
-    statLabel: 'of Marketo product teams on Sky',
   },
   'expertise-product': {
     img: '/expertise/product-yarn.webp',
     corner: '/expertise/product-corner.webp',
     blurb: 'End-to-end product design across web and mobile, shaped by how it will really ship.',
-    stat: '$3.1M',
-    statLabel: 'estimated yearly savings at Teamshares',
   },
 };
 
@@ -235,7 +227,6 @@ const pillSecondary = 'btn btn--dark';
                     <span class="exp-card-body">
                       <span class="exp-card-title">{a.title}</span>
                       <span class="exp-card-blurb">{c.blurb}</span>
-                      <span class="exp-card-stat"><strong>{c.stat}</strong> <span>{c.statLabel}</span></span>
                     </span>
                   </a>
                 </li>
